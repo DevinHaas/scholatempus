@@ -22,14 +22,16 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft } from "lucide-react";
 import {
-  schulleitungSetupSchema,
+  schulleitungSetupFormSchema,
   type SchulleitungSetupFormData,
 } from "@/lib/validations";
-import { number, z } from "zod";
+import { useProfileDataActions } from "@/lib/stores/profileData";
+import type { WeeklyLessonsForTransportation } from "@/lib/schemas";
+import { z } from "zod";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
 import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
-import { log } from "console";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 
 interface SchulleitungSetupScreenProps {
   onComplete: () => void;
@@ -44,23 +46,26 @@ export function SchulleitungSetupScreen({
 }: SchulleitungSetupScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
 
+  const { updateSpecialFunctionData } = useProfileDataActions();
+
   const form = useForm({
     defaultValues: {
-      beschaeftigungsgrad: 0,
-      uebertragSemester: 0,
-      klassenlehrperson: false,
-      wochenlektionenWegzeit: 0,
+      headshipEmploymentFactor: 0,
+      carryOverLessons: 0,
+      classTeacher: false,
+      weeklyLessonsForTransportation: 0 as WeeklyLessonsForTransportation,
     },
     validators: {
-      onSubmit: schulleitungSetupSchema,
+      onSubmit: schulleitungSetupFormSchema,
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
       try {
         console.log(value);
-
+        const parsed: SchulleitungSetupFormData =
+          schulleitungSetupFormSchema.parse(value);
+        updateSpecialFunctionData(parsed);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-
         onComplete();
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -116,31 +121,36 @@ export function SchulleitungSetupScreen({
             >
               <FieldGroup>
                 <form.Field
-                  name="beschaeftigungsgrad"
+                  name="headshipEmploymentFactor"
                   children={(field) => {
                     const hasError = field.state.meta.errors.length > 0;
 
                     return (
                       <Field data-invalid={hasError}>
                         <FieldLabel
-                          htmlFor="beschaeftigungsgrad"
+                          htmlFor="headshipEmploymentFactor"
                           className="text-sm font-medium"
                         >
                           Beschäftigungsgrad %
                         </FieldLabel>
-                        <Input
-                          id="beschaeftigungsgrad"
-                          inputMode="numeric"
-                          min="1"
-                          max="100"
-                          value={field.state.value}
-                          placeholder="20%"
-                          onChange={(event) =>
-                            field.setValue(event.target.value)
-                          }
-                          className={`h-11 ${hasError ? "border-destructive" : ""}`}
-                          aria-invalid={hasError}
-                        />
+                        <InputGroup>
+                          <InputGroupInput
+                            id="headshipEmploymentFactor"
+                            inputMode="numeric"
+                            min="1"
+                            max="100"
+                            value={String(field.state.value ?? "")}
+                            placeholder="20%"
+                            onChange={(event) =>
+                              field.handleChange(Number(event.target.value))
+                            }
+                            className={`h-11 border-amber-100 ${hasError ? "border-destructive" : ""}`}
+                            aria-invalid={hasError}
+                          />
+                          <InputGroupAddon align="inline-end">
+                            <span>%</span>
+                          </InputGroupAddon>
+                        </InputGroup>
                         {hasError && (
                           <FieldError errors={field.state.meta.errors} />
                         )}
@@ -150,26 +160,26 @@ export function SchulleitungSetupScreen({
                 />
 
                 <form.Field
-                  name="uebertragSemester"
+                  name="carryOverLessons"
                   children={(field) => {
                     const hasError = field.state.meta.errors.length > 0;
 
                     return (
                       <Field data-invalid={hasError}>
                         <FieldLabel
-                          htmlFor="uebertragSemester"
+                          htmlFor="carryOverLessons"
                           className="text-sm font-medium"
                         >
                           Übertrag letztes Semester
                         </FieldLabel>
                         <Input
-                          id="uebertragSemester"
+                          id="carryOverLessons"
                           type="number"
                           inputMode="numeric"
                           min="0"
-                          value={field.state.value}
+                          value={String(field.state.value ?? "")}
                           onChange={(event) =>
-                            field.setValue(event.target.value)
+                            field.handleChange(Number(event.target.value))
                           }
                           className={`h-11 ${hasError ? "border-destructive" : ""}`}
                           aria-invalid={hasError}
@@ -183,7 +193,7 @@ export function SchulleitungSetupScreen({
                 />
 
                 <form.Field
-                  name="klassenlehrperson"
+                  name="classTeacher"
                   children={(field) => {
                     const hasError = field.state.meta.errors.length > 0;
 
@@ -194,15 +204,17 @@ export function SchulleitungSetupScreen({
                         className="items-center justify-between"
                       >
                         <FieldLabel
-                          htmlFor="klassenlehrperson"
+                          htmlFor="classTeacher"
                           className="text-sm font-medium"
                         >
                           Klassenlehrperson
                         </FieldLabel>
                         <Switch
-                          id="klassenlehrperson"
-                          checked={field.state.value}
-                          onCheckedChange={(checked) => field.setValue(checked)}
+                          id="classTeacher"
+                          checked={Boolean(field.state.value)}
+                          onCheckedChange={(checked) =>
+                            field.handleChange(checked)
+                          }
                           aria-invalid={hasError}
                         />
                         {hasError && (
@@ -214,7 +226,7 @@ export function SchulleitungSetupScreen({
                 />
 
                 <form.Field
-                  name="wochenlektionenWegzeit"
+                  name="weeklyLessonsForTransportation"
                   children={(field) => {
                     const hasError = field.state.meta.errors.length > 0;
 
@@ -227,7 +239,9 @@ export function SchulleitungSetupScreen({
                           name={field.name}
                           value={field.state.value.toString()}
                           onValueChange={(value) =>
-                            field.setValue(Number(value))
+                            field.handleChange(
+                              Number(value) as WeeklyLessonsForTransportation,
+                            )
                           }
                           aria-invalid={hasError}
                         >

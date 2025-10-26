@@ -20,13 +20,11 @@ import {
 } from "@/components/ui/select";
 import { GradeLevel } from "@/lib/enums/grade";
 import { calculateMandatoryLectures } from "@/lib/helpers/OverviewDataCalculators";
-import { ClassData, useProfileDataActions } from "@/lib/stores/profileData";
+import { useProfileDataActions } from "@/lib/stores/profileData";
+import { setupFormSchema, type SetupFormData } from "@/lib/validations";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
-import { z } from "zod";
 import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
-import { log } from "console";
-import { useUser } from "@clerk/nextjs";
 import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 
 interface SetupScreenProps {
@@ -34,21 +32,6 @@ interface SetupScreenProps {
   email: string;
 }
 
-const GradeLevelSchema = z.nativeEnum(GradeLevel);
-
-const formSchema = z
-  .object({
-    grade: GradeLevelSchema,
-    givenLectures: z.number().min(1, "Erteilte Lektionen können nicht 0 sein"),
-    mandatoryLectures: z
-      .number()
-      .min(1, "Pflichtlektionen können nicht 0 sein"),
-    carryOverLectures: z.number(),
-  })
-  .refine((data) => data.givenLectures <= data.mandatoryLectures, {
-    message: "given lectures cannot be greater than mandatory lectures",
-    path: ["givenLectures"],
-  });
 
 export function SetupScreen({ onComplete, email }: SetupScreenProps) {
   const { updateClassData } = useProfileDataActions();
@@ -62,11 +45,12 @@ export function SetupScreen({ onComplete, email }: SetupScreenProps) {
       carryOverLectures: 0,
     },
     validators: {
-      onSubmit: formSchema,
+      onSubmit: setupFormSchema,
     },
     onSubmit: async ({ value }) => {
       console.log(value);
-
+      const parsed: SetupFormData = setupFormSchema.parse(value);
+      updateClassData(parsed);
       setIsLoading(true);
       try {
         onComplete();
@@ -119,15 +103,23 @@ export function SetupScreen({ onComplete, email }: SetupScreenProps) {
                 <form.Field
                   name="grade"
                   listeners={{
-                    onChange: ({ value }) => {
-                      const newMandatoryLectures =
-                        calculateMandatoryLectures(value);
+                    onChange: ({ value, fieldApi }) => {
+                      const options = calculateMandatoryLectures(
+                        value as GradeLevel,
+                      );
+                      if (!options.length) return;
 
-                      if (!newMandatoryLectures.length) return;
-
-                      form.setFieldValue(
+                      const nextMandatory = options[0];
+                      fieldApi.form.setFieldValue(
                         "mandatoryLectures",
-                        newMandatoryLectures[0],
+                        nextMandatory,
+                      );
+                      fieldApi.form.setFieldValue(
+                        "givenLectures",
+                        (prev: number | undefined) => {
+                          if (prev == null || prev === 0) return nextMandatory;
+                          return Math.min(prev, nextMandatory);
+                        },
                       );
                     },
                   }}
@@ -185,10 +177,11 @@ export function SetupScreen({ onComplete, email }: SetupScreenProps) {
                         </FieldLabel>
                         <Input
                           id={field.name}
+                          name={field.name}
                           placeholder="z.B. 24"
                           value={field.state.value}
                           onChange={(e) =>
-                            field.handleChange(parseInt(e.target.value))
+                            field.handleChange(Number(e.target.value))
                           }
                           className={`h-11 ${hasError ? "border-destructive" : ""}`}
                           min="0"
@@ -208,13 +201,6 @@ export function SetupScreen({ onComplete, email }: SetupScreenProps) {
                 {/* Mandatory Lectures */}
                 <form.Field
                   name="mandatoryLectures"
-                  validators={{
-                    onChangeListenTo: ["grade"],
-                    onChange: ({ value, fieldApi }) => {
-                      console.log("grade changed");
-                      console.log("currentValue", value);
-                    },
-                  }}
                   children={(field) => {
                     const isInvalid =
                       field.state.meta.isTouched && !field.state.meta.isValid;
@@ -228,8 +214,13 @@ export function SetupScreen({ onComplete, email }: SetupScreenProps) {
                         </FieldLabel>
                         <Select
                           name={field.name}
-                          value={field.state.value.toString()}
-                          onValueChange={() => field.handleChange}
+                          value={String(field.state.value ?? "")}
+                          onValueChange={(val) => {
+                            if (!val) return;
+                            const next = Number(val);
+                            if (!Number.isFinite(next)) return;
+                            field.handleChange(next);
+                          }}
                           aria-invalid={isInvalid}
                         >
                           <SelectTrigger className={`h-11 `}>
@@ -247,12 +238,9 @@ export function SetupScreen({ onComplete, email }: SetupScreenProps) {
                           </SelectContent>
                         </Select>
                         {isInvalid && (
-                          <div>
-                            {field.state.value}
-                            <FieldError
-                              errors={field.state.meta.errors}
-                            ></FieldError>
-                          </div>
+                          <FieldError
+                            errors={field.state.meta.errors}
+                          ></FieldError>
                         )}
                       </Field>
                     );
@@ -275,8 +263,8 @@ export function SetupScreen({ onComplete, email }: SetupScreenProps) {
                           id="uebertragSemester"
                           placeholder="z.B. 15"
                           value={field.state.value}
-                          onChange={(value) =>
-                            field.setValue(parseInt(value.target.value) || 0)
+                          onChange={(event) =>
+                            field.handleChange(Number(event.target.value) || 0)
                           }
                           aria-invalid={isInvalid}
                           className={`h-11`}

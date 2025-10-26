@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useWorkTimeOverview } from "@/lib/stores/profileData";
 import { ArrowLeft } from "lucide-react";
 
 interface OverviewScreenProps {
@@ -29,41 +30,7 @@ export function OverviewScreen({
   onBack,
   email,
 }: OverviewScreenProps) {
-  // Calculate values based on input data
-  const calculateValues = () => {
-    const beschaeftigungsgrad = Number.parseFloat(
-      schulleitungData?.beschaeftigungsgrad || "100",
-    );
-    const anzahlLektionen = Number.parseInt(setupData?.anzahlLektionen || "24");
-    const pflichtlektionen = Number.parseInt(
-      setupData?.pflichtlektionen || "24",
-    );
-
-    // Base calculation for total employment level
-    const totalBeschaeftigungsgrad =
-      beschaeftigungsgrad + (anzahlLektionen / pflichtlektionen) * 100;
-
-    // Calculate hours for different categories (based on typical Swiss teaching standards)
-    const baseHours = 1940; // Standard annual working hours
-    const adjustedHours = (baseHours * beschaeftigungsgrad) / 100;
-
-    const unterrichtenHours = Math.round(adjustedHours * 0.85); // 85% for teaching activities
-    const zusammenarbeitHours = Math.round(adjustedHours * 0.12); // 12% for collaboration
-    const weiterbildungHours = Math.round(adjustedHours * 0.03); // 3% for continuing education
-
-    // Calculate lesson control based on lessons taught
-    const unterrichtskontrolleLektionen = Math.round(anzahlLektionen * 22.8); // Approximate lessons per year
-
-    return {
-      totalBeschaeftigungsgrad: totalBeschaeftigungsgrad.toFixed(3),
-      unterrichtenHours,
-      zusammenarbeitHours,
-      weiterbildungHours,
-      unterrichtskontrolleLektionen,
-    };
-  };
-
-  const calculations = calculateValues();
+  const overviewData = useWorkTimeOverview();
 
   return (
     <div className="min-h-screen bg-background p-4">

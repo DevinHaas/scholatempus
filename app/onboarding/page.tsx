@@ -1,7 +1,7 @@
 "use client";
-import { OverviewScreen } from "@/components/overview-screen";
-import { SchulleitungSetupScreen } from "@/components/schulleitung-setup-screen";
-import { SetupScreen } from "@/components/setup-screen";
+import { OverviewScreen } from "@/components/overview-setup-screen";
+import { SchulleitungSetupScreen } from "@/components/specialfunction-setup-screen";
+import { SetupScreen } from "@/components/classdata-setup-screen";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useState } from "react";

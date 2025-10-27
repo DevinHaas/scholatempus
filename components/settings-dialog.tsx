@@ -1,45 +1,70 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { User, GraduationCap, Building } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { User, GraduationCap, Building } from "lucide-react";
+import { SignOutButton } from "@clerk/nextjs";
 
 interface SettingsDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  setupData: any
-  schulleitungData: any
-  onSave: (setupData: any, schulleitungData: any, profileData: any) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  setupData: any;
+  schulleitungData: any;
+  onSave: (setupData: any, schulleitungData: any, profileData: any) => void;
 }
 
-export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData, onSave }: SettingsDialogProps) {
+export function SettingsDialog({
+  open,
+  onOpenChange,
+  setupData,
+  schulleitungData,
+  onSave,
+}: SettingsDialogProps) {
   const [profileData, setProfileData] = useState({
     name: "Devin Hasler",
     username: "devinhasler1023",
-  })
+  });
 
   const [currentSetupData, setCurrentSetupData] = useState({
     stufe: "",
     anzahlLektionen: "",
     pflichtlektionen: "",
     uebertragSemester: "",
-  })
+  });
 
   const [currentSchulleitungData, setCurrentSchulleitungData] = useState({
     beschaeftigungsgrad: "",
     uebertragSemester: "",
     klassenlehrperson: false,
     wochenlektionenWegzeit: "",
-  })
+  });
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   // Initialize data when dialog opens
   useEffect(() => {
@@ -49,7 +74,7 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
         anzahlLektionen: setupData.anzahlLektionen || "",
         pflichtlektionen: setupData.pflichtlektionen || "",
         uebertragSemester: setupData.uebertragSemester || "",
-      })
+      });
     }
     if (open && schulleitungData) {
       setCurrentSchulleitungData({
@@ -57,27 +82,29 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
         uebertragSemester: schulleitungData.uebertragSemester || "",
         klassenlehrperson: schulleitungData.klassenlehrperson || false,
         wochenlektionenWegzeit: schulleitungData.wochenlektionenWegzeit || "",
-      })
+      });
     }
-  }, [open, setupData, schulleitungData])
+  }, [open, setupData, schulleitungData]);
 
   const handleSave = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     // Simulate save process
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    onSave(currentSetupData, currentSchulleitungData, profileData)
-    setIsLoading(false)
-    onOpenChange(false)
-  }
+    onSave(currentSetupData, currentSchulleitungData, profileData);
+    setIsLoading(false);
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Einstellungen</DialogTitle>
-          <DialogDescription>Bearbeiten Sie Ihre Profil- und Arbeitszeit-Einstellungen</DialogDescription>
+          <DialogDescription>
+            Bearbeiten Sie Ihre Profil- und Arbeitszeit-Einstellungen
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="profile" className="w-full">
@@ -100,7 +127,9 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm">Profil Informationen</CardTitle>
-                <CardDescription className="text-xs">Bearbeiten Sie Ihre persönlichen Daten</CardDescription>
+                <CardDescription className="text-xs">
+                  Bearbeiten Sie Ihre persönlichen Daten
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -110,7 +139,12 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                   <Input
                     id="name"
                     value={profileData.name}
-                    onChange={(e) => setProfileData((prev) => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     className="h-9"
                   />
                 </div>
@@ -121,10 +155,22 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                   <Input
                     id="username"
                     value={profileData.username}
-                    onChange={(e) => setProfileData((prev) => ({ ...prev, username: e.target.value }))}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        username: e.target.value,
+                      }))
+                    }
                     className="h-9"
                   />
                 </div>
+                <SignOutButton
+                  children={
+                    <Button className="w-full" variant={"outline"}>
+                      Ausloggen
+                    </Button>
+                  }
+                ></SignOutButton>
               </CardContent>
             </Card>
           </TabsContent>
@@ -132,8 +178,12 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
           <TabsContent value="setup" className="space-y-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Lehrperson Einstellungen</CardTitle>
-                <CardDescription className="text-xs">Arbeitszeit-Berechnungsparameter</CardDescription>
+                <CardTitle className="text-sm">
+                  Lehrperson Einstellungen
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Arbeitszeit-Berechnungsparameter
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -142,16 +192,24 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                   </Label>
                   <Select
                     value={currentSetupData.stufe}
-                    onValueChange={(value) => setCurrentSetupData((prev) => ({ ...prev, stufe: value }))}
+                    onValueChange={(value) =>
+                      setCurrentSetupData((prev) => ({ ...prev, stufe: value }))
+                    }
                   >
                     <SelectTrigger className="h-9">
                       <SelectValue placeholder="Auswählen..." />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="kindergarten">Kindergarten</SelectItem>
-                      <SelectItem value="unterstufe">Unterstufe (1.-3. Klasse)</SelectItem>
-                      <SelectItem value="mittelstufe">Mittelstufe (4.-6. Klasse)</SelectItem>
-                      <SelectItem value="oberstufe">Oberstufe (7.-9. Klasse)</SelectItem>
+                      <SelectItem value="unterstufe">
+                        Unterstufe (1.-3. Klasse)
+                      </SelectItem>
+                      <SelectItem value="mittelstufe">
+                        Mittelstufe (4.-6. Klasse)
+                      </SelectItem>
+                      <SelectItem value="oberstufe">
+                        Oberstufe (7.-9. Klasse)
+                      </SelectItem>
                       <SelectItem value="gymnasium">Gymnasium</SelectItem>
                     </SelectContent>
                   </Select>
@@ -165,7 +223,12 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                     id="anzahlLektionen"
                     type="number"
                     value={currentSetupData.anzahlLektionen}
-                    onChange={(e) => setCurrentSetupData((prev) => ({ ...prev, anzahlLektionen: e.target.value }))}
+                    onChange={(e) =>
+                      setCurrentSetupData((prev) => ({
+                        ...prev,
+                        anzahlLektionen: e.target.value,
+                      }))
+                    }
                     className="h-9"
                     min="1"
                     max="50"
@@ -178,7 +241,12 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                   </Label>
                   <Select
                     value={currentSetupData.pflichtlektionen}
-                    onValueChange={(value) => setCurrentSetupData((prev) => ({ ...prev, pflichtlektionen: value }))}
+                    onValueChange={(value) =>
+                      setCurrentSetupData((prev) => ({
+                        ...prev,
+                        pflichtlektionen: value,
+                      }))
+                    }
                   >
                     <SelectTrigger className="h-9">
                       <SelectValue placeholder="Auswählen..." />
@@ -202,7 +270,12 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                     id="uebertragSemester"
                     type="number"
                     value={currentSetupData.uebertragSemester}
-                    onChange={(e) => setCurrentSetupData((prev) => ({ ...prev, uebertragSemester: e.target.value }))}
+                    onChange={(e) =>
+                      setCurrentSetupData((prev) => ({
+                        ...prev,
+                        uebertragSemester: e.target.value,
+                      }))
+                    }
                     className="h-9"
                     min="0"
                   />
@@ -214,8 +287,12 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
           <TabsContent value="schulleitung" className="space-y-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Schulleitung Einstellungen</CardTitle>
-                <CardDescription className="text-xs">Spezialfunktion und Führungsaufgaben</CardDescription>
+                <CardTitle className="text-sm">
+                  Schulleitung Einstellungen
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Spezialfunktion und Führungsaufgaben
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -227,7 +304,10 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                     type="number"
                     value={currentSchulleitungData.beschaeftigungsgrad}
                     onChange={(e) =>
-                      setCurrentSchulleitungData((prev) => ({ ...prev, beschaeftigungsgrad: e.target.value }))
+                      setCurrentSchulleitungData((prev) => ({
+                        ...prev,
+                        beschaeftigungsgrad: e.target.value,
+                      }))
                     }
                     className="h-9"
                     min="1"
@@ -244,7 +324,10 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                     type="number"
                     value={currentSchulleitungData.uebertragSemester}
                     onChange={(e) =>
-                      setCurrentSchulleitungData((prev) => ({ ...prev, uebertragSemester: e.target.value }))
+                      setCurrentSchulleitungData((prev) => ({
+                        ...prev,
+                        uebertragSemester: e.target.value,
+                      }))
                     }
                     className="h-9"
                     min="0"
@@ -259,7 +342,10 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                     id="klassenlehrperson"
                     checked={currentSchulleitungData.klassenlehrperson}
                     onCheckedChange={(checked) =>
-                      setCurrentSchulleitungData((prev) => ({ ...prev, klassenlehrperson: checked }))
+                      setCurrentSchulleitungData((prev) => ({
+                        ...prev,
+                        klassenlehrperson: checked,
+                      }))
                     }
                   />
                 </div>
@@ -271,7 +357,10 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
                   <Select
                     value={currentSchulleitungData.wochenlektionenWegzeit}
                     onValueChange={(value) =>
-                      setCurrentSchulleitungData((prev) => ({ ...prev, wochenlektionenWegzeit: value }))
+                      setCurrentSchulleitungData((prev) => ({
+                        ...prev,
+                        wochenlektionenWegzeit: value,
+                      }))
                     }
                   >
                     <SelectTrigger className="h-9">
@@ -310,5 +399,5 @@ export function SettingsDialog({ open, onOpenChange, setupData, schulleitungData
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

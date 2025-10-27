@@ -20,6 +20,12 @@ export default function Onboarding() {
     setCurrentScreen("schulleitung");
   };
 
+  function handleSetupComplete(): void {
+    toast("Einrichtung abgeschlossen 😍", {
+      description: "Du kannst jetzt deine Zeiterfassung einsehen",
+    });
+  }
+
   const handleSchulleitungBack = () => {
     setCurrentScreen("setup");
   };
@@ -47,11 +53,6 @@ export default function Onboarding() {
   }
 
   if (currentScreen === "overview") {
-    function handleSetupComplete(): void {
-      toast("Einrichtung abgeschlossen 😍", {
-        description: "Du kannst jetzt deine Zeiterfassung einsehen",
-      });
-    }
     return (
       <OverviewScreen
         onComplete={handleSetupComplete}

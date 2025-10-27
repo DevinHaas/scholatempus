@@ -159,11 +159,16 @@ const useProfileDataStore = create<ProfileDataState>()((set) => ({
         return { ...state, specialFunctionData: newSpecialFunctionDataState };
       }),
 
-    updateWorkTimeSummary: (newClassData, workTimeOverviewData) =>
+    updateWorkTimeSummary: (
+      newClassData,
+      workTimeOverviewData,
+      specialFunctionData,
+    ) =>
       set((state) => {
         const newWorkTimeOverviewData = calculateTargetOverviewParams(
           newClassData,
           workTimeOverviewData,
+          specialFunctionData,
         );
 
         return {

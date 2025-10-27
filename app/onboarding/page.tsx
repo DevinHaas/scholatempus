@@ -3,8 +3,8 @@ import { OverviewScreen } from "@/components/overview-setup-screen";
 import { SchulleitungSetupScreen } from "@/components/specialfunction-setup-screen";
 import { SetupScreen } from "@/components/classdata-setup-screen";
 import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/router";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Onboarding() {
   const [currentScreen, setCurrentScreen] = useState<
@@ -47,13 +47,16 @@ export default function Onboarding() {
   }
 
   if (currentScreen === "overview") {
+    function handleSetupComplete(): void {
+      toast("Einrichtung abgeschlossen 😍", {
+        description: "Du kannst jetzt deine Zeiterfassung einsehen",
+      });
+    }
     return (
       <OverviewScreen
         onComplete={handleSetupComplete}
         onBack={handleOverviewBack}
-        user={user}
-        setupData={setupData}
-        schulleitungData={schulleitungData}
+        email={email}
       />
     );
   }

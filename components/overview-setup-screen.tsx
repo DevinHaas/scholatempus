@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { WorkTimeCategory } from "@/lib/enums/workTimeCategory";
 import { useWorkTimeOverview } from "@/lib/stores/profileData";
 import { ArrowLeft } from "lucide-react";
 
@@ -63,7 +64,8 @@ export function OverviewScreen({
           <CardContent className="space-y-4">
             {/* Total Employment Level */}
             <div className="bg-yellow-400 text-black px-3 py-2 rounded font-medium text-sm">
-              Tot. Beschäftigungsgrad: {calculations.totalBeschaeftigungsgrad}%
+              Tot. Beschäftigungsgrad:{" "}
+              {overviewData.summary.totalEmploymentFactor}%
             </div>
 
             {/* Calculations Table */}
@@ -89,7 +91,11 @@ export function OverviewScreen({
                       Stunden Soll (85%):
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {calculations.unterrichtenHours}
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.TeachingAdvisingSupporting
+                        ].targetHours
+                      }
                     </TableCell>
                   </TableRow>
                   <TableRow className="bg-blue-100 hover:bg-blue-100">
@@ -100,7 +106,10 @@ export function OverviewScreen({
                       Stunden Soll (12%):
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {calculations.zusammenarbeitHours}
+                      {
+                        overviewData.details?.[WorkTimeCategory.Collaboration]
+                          .targetHours
+                      }
                     </TableCell>
                   </TableRow>
                   <TableRow className="bg-blue-100 hover:bg-blue-100">
@@ -111,7 +120,11 @@ export function OverviewScreen({
                       Stunden Soll (3%):
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {calculations.weiterbildungHours}
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.FurtherEducation
+                        ].targetHours
+                      }
                     </TableCell>
                   </TableRow>
                   <TableRow className="bg-orange-200 hover:bg-orange-200">
@@ -122,7 +135,11 @@ export function OverviewScreen({
                       Lektionen Soll:
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {calculations.unterrichtskontrolleLektionen}
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.TeachingSupervision
+                        ].targetHours
+                      }
                     </TableCell>
                   </TableRow>
                 </TableBody>

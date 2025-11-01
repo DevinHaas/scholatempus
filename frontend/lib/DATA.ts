@@ -1,0 +1,3 @@
+export const HOURS_TO_WORK = 1930;
+export const HOURS_TO_WORK_PER_SEMESTER = HOURS_TO_WORK / 2;
+export const NUMBER_OF_SCHOOL_WEEKS = 38;

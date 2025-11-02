@@ -1,15 +1,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
-import { GradeLevel } from "../enums/grade";
-import { WorkTimeCategory } from "../enums/workTimeCategory";
+import { useState, useEffect } from "react";
 import { getHourseMultiplierPerCategory } from "../helpers/OverviewDataCalculators";
+import { HOURS_TO_WORK_PER_SEMESTER, NUMBER_OF_SCHOOL_WEEKS } from "../DATA";
 import {
   ClassData,
+  GradeLevel,
   SpecialFunctionData,
   WeeklyLessonsForTransportation,
-} from "../schemas";
-import { NUMBER_OF_SCHOOL_WEEKS } from "../DATA";
+  WorkTimeCategory,
+} from "scholatempus-backend/shared";
 
 interface WorkTimeDetail {
   targetHours: number | null;
@@ -72,8 +73,23 @@ const calculateTargetOverviewParams = (
       console.log("category", category);
       const multiplier = getHourseMultiplierPerCategory(category);
 
-      const targetHours = multiplier * lecturesShouldPerSemester;
-      totalTeacherWorkTime += targetHours;
+      let targetHours: number = 0;
+      if (category == WorkTimeCategory.SchoolManagement) {
+        targetHours =
+          (multiplier *
+            HOURS_TO_WORK_PER_SEMESTER *
+            specialFunctionData.headshipEmploymentFactor) /
+          100;
+        console.log("lecturesShouldPerSemester", lecturesShouldPerSemester);
+        console.log(
+          "specialFunctionData.headshipEmploymentFactor",
+          specialFunctionData.headshipEmploymentFactor,
+        );
+        totalTeacherWorkTime += targetHours;
+      } else {
+        targetHours = multiplier * HOURS_TO_WORK_PER_SEMESTER;
+        totalTeacherWorkTime += targetHours;
+      }
 
       const actualHours =
         workTimeOverviewData.details?.[category]?.actualHours ?? 0;
@@ -82,7 +98,7 @@ const calculateTargetOverviewParams = (
       acc[category] = {
         targetHours,
         actualHours,
-        differenceHours: targetHours - actualHours,
+        differenceHours: actualHours - targetHours,
       };
 
       return acc;
@@ -98,21 +114,21 @@ const calculateTargetOverviewParams = (
     targetHours: teachingSupervisionTargetHours,
     actualHours: actualTeachingSupervisionHours,
     differenceHours:
-      teachingSupervisionTargetHours - actualTeachingSupervisionHours,
+      actualTeachingSupervisionHours - teachingSupervisionTargetHours,
   };
 
   workTimeOverviewData.summary = {
     totalTeacherWorkTime: {
       targetHours: totalTeacherWorkTime,
       actualHours: totalTeacherActualWorkTime,
-      balanceHours: totalTeacherWorkTime - totalTeacherActualWorkTime,
+      balanceHours: totalTeacherActualWorkTime - totalTeacherWorkTime,
     },
     totalEmploymentFactor: calculateTotatlEmploymentFactor(
       classData,
       specialFunctionData,
     ),
     schoolManagementBalanceHours:
-      totalTeacherWorkTime - totalTeacherActualWorkTime,
+      totalTeacherActualWorkTime - totalTeacherWorkTime,
   };
 
   return {
@@ -234,3 +250,24 @@ export const useSpecialFunctionData = () =>
   useProfileDataStore((state) => state.specialFunctionData);
 export const useWorkTimeOverview = () =>
   useProfileDataStore((state) => state.workTimeOverviewData);
+
+export const useHydration = () => {
+  const [hydrated, setHydrated] = useState(false); // Start with false during SSR
+
+  useEffect(() => {
+    if (!useProfileDataStore.persist) {
+      setHydrated(true); // No persist = no hydration needed
+      return;
+    }
+
+    setHydrated(useProfileDataStore.persist.hasHydrated());
+
+    const unsubscribe = useProfileDataStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  return hydrated;
+};

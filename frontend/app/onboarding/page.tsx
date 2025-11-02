@@ -43,13 +43,10 @@ export default function Onboarding() {
   const email = user?.emailAddresses[0]?.emailAddress ?? "nutzer@email.ch";
 
   const stepParam = searchParams.get("step");
-  if (!isOnboardingStep(stepParam)) {
-    const url = createStepUrl(pathname, searchParams, DEFAULT_STEP);
-    void router.replace(url, { scroll: false });
-    return null;
-  }
 
-  const currentStep: OnboardingStep = stepParam;
+  const currentStep: OnboardingStep = stepParam
+    ? (stepParam as OnboardingStep)
+    : DEFAULT_STEP;
 
   const navigateToStep = useCallback(
     (step: OnboardingStep, options?: { replace?: boolean }) => {

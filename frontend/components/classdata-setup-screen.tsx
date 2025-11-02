@@ -18,18 +18,80 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GradeLevel } from "@/lib/enums/grade";
 import { calculateMandatoryLectures } from "@/lib/helpers/OverviewDataCalculators";
-import { useClassData, useProfileDataActions } from "@/lib/stores/profileData";
-import { setupFormSchema, type SetupFormData } from "@/lib/validations";
-import { useForm, useStore } from "@tanstack/react-form";
+import {
+  useClassData,
+  useProfileDataActions,
+  useHydration,
+} from "@/lib/stores/profileData";
+import { classDataFormSchema, type SetupFormData } from "@/lib/validations";
+import { useForm, useStore, uuid } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
 import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
 import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  ClassData,
+  GRADE_LEVEL_LABELS,
+  GradeLevel,
+} from "scholatempus-backend/shared";
+import { getGradeLevelFromLabel } from "@/lib/helpers/getGradeLevelFromLabel";
 
 interface SetupScreenProps {
   onCompleteAction: () => void;
   email: string;
+}
+
+// Skeleton component for loading state
+function ClassDataSetupSkeleton() {
+  return (
+    <div className="min-h-screen bg-background p-4">
+      <div className="max-w-md mx-auto space-y-6 pt-8">
+        {/* Header */}
+        <div className="flex items-center space-x-4">
+          <div>
+            <Skeleton className="h-7 w-24 mb-2" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </div>
+
+        <Card className="border-border/50 shadow-lg">
+          <CardHeader className="space-y-1">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Form fields skeleton */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-11 w-full" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-11 w-full" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-11 w-full" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-36" />
+                  <Skeleton className="h-11 w-full" />
+                </div>
+              </div>
+
+              {/* Submit button skeleton */}
+              <Skeleton className="h-11 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Skeleton className="h-3 w-72 mx-auto" />
+      </div>
+    </div>
+  );
 }
 
 export function ClassDataSetupComponent({
@@ -38,21 +100,30 @@ export function ClassDataSetupComponent({
 }: SetupScreenProps) {
   const { updateClassData } = useProfileDataActions();
   const classData = useClassData();
+  const hydrated = useHydration();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     defaultValues: {
-      grade: classData.grade ?? GradeLevel.PrimarySchoolGymnasiumEntry,
+      grade:
+        GRADE_LEVEL_LABELS[classData.grade] ??
+        GRADE_LEVEL_LABELS.PRIMARY_SCHOOL_GYM,
       givenLectures: classData.givenLectures ?? 0,
       mandatoryLectures: classData.mandatoryLectures ?? 28,
       carryOverLectures: classData.carryOverLectures ?? 0,
     },
     validators: {
-      onSubmit: setupFormSchema,
+      onSubmit: classDataFormSchema,
     },
     onSubmit: async ({ value }) => {
-      const parsed: SetupFormData = setupFormSchema.parse(value);
-      updateClassData(parsed);
+      const parsed: SetupFormData = classDataFormSchema.parse(value);
+      const newClassData: ClassData = {
+        grade: getGradeLevelFromLabel(parsed.grade),
+        givenLectures: parsed.givenLectures,
+        mandatoryLectures: parsed.mandatoryLectures,
+        carryOverLectures: parsed.carryOverLectures,
+      };
+      updateClassData(newClassData);
       setIsLoading(true);
       try {
         onCompleteAction();
@@ -66,9 +137,14 @@ export function ClassDataSetupComponent({
 
   const grade = useStore(form.store, (state) => state.values.grade);
   const mandatoryLectures = useMemo(
-    () => calculateMandatoryLectures(grade),
+    () => calculateMandatoryLectures(getGradeLevelFromLabel(grade)),
     [grade],
   );
+
+  // Show skeleton while data is loading from localStorage
+  if (!hydrated) {
+    return <ClassDataSetupSkeleton />;
+  }
 
   return (
     <div className="min-h-screen bg-background p-4">
@@ -107,7 +183,7 @@ export function ClassDataSetupComponent({
                   listeners={{
                     onChange: ({ value, fieldApi }) => {
                       const options = calculateMandatoryLectures(
-                        value as GradeLevel,
+                        getGradeLevelFromLabel(value),
                       );
                       if (!options.length) return;
 
@@ -146,11 +222,13 @@ export function ClassDataSetupComponent({
                             <SelectValue placeholder="Auswählen..." />
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.values(GradeLevel).map((grade) => (
-                              <SelectItem key={grade} value={grade}>
-                                {grade}
-                              </SelectItem>
-                            ))}
+                            {Object.values(GRADE_LEVEL_LABELS).map(
+                              (gradeLable) => (
+                                <SelectItem key={gradeLable} value={gradeLable}>
+                                  {gradeLable}
+                                </SelectItem>
+                              ),
+                            )}
                           </SelectContent>
                         </Select>
                         {hasError && (

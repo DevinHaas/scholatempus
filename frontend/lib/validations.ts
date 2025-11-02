@@ -2,11 +2,13 @@ import { z } from "zod";
 
 import {
   ClassDataSchema,
+  GRADE_LEVEL_LABELS,
   SpecialFunctionDataSchema,
   WeeklyLessonsForTransportationSchema,
-} from "@/lib/schemas";
+} from "scholatempus-backend/shared";
 
-export const setupFormSchema = ClassDataSchema.extend({
+export const classDataFormSchema = ClassDataSchema.extend({
+  grade: z.enum(Object.values(GRADE_LEVEL_LABELS) as [string, ...string[]]),
   givenLectures: z.coerce
     .number()
     .min(1, "Erteilte Lektionen können nicht 0 sein"),
@@ -38,7 +40,7 @@ export const schulleitungSetupFormSchema = SpecialFunctionDataSchema.extend({
     .pipe(WeeklyLessonsForTransportationSchema),
 });
 
-export type SetupFormData = z.infer<typeof setupFormSchema>;
+export type SetupFormData = z.infer<typeof classDataFormSchema>;
 export type SchulleitungSetupFormData = z.infer<
   typeof schulleitungSetupFormSchema
 >;

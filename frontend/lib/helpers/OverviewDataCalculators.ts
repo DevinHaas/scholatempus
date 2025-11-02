@@ -1,5 +1,4 @@
-import { GradeLevel } from "../enums/grade";
-import { WorkTimeCategory } from "../enums/workTimeCategory";
+import { GradeLevel, WorkTimeCategory } from "scholatempus-backend/shared";
 
 export function calculateMandatoryLectures(gradeLevel: GradeLevel): number[] {
   switch (gradeLevel) {
@@ -23,7 +22,7 @@ export function calculateMandatoryLectures(gradeLevel: GradeLevel): number[] {
       return [23, 23.5];
     }
     default:
-      throw Error("no mapping found for this gradelevel");
+      throw Error(`no mapping found for this gradelevel ${gradeLevel}`);
   }
 }
 

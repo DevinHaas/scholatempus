@@ -7,6 +7,7 @@ import "./globals.css";
 import { Suspense } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "SchulaTempus - Zeiterfassung für Lehrpersonen",
@@ -28,6 +29,8 @@ export default function RootLayout({
             <QueryProvider>{children}</QueryProvider>
             <Analytics />
           </Suspense>
+
+          <Toaster closeButton />
         </body>
       </html>
     </ClerkProvider>

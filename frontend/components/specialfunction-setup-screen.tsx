@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
 import {
   schulleitungSetupFormSchema,
@@ -28,8 +29,9 @@ import {
 import {
   useProfileDataActions,
   useSpecialFunctionData,
+  useHydration,
 } from "@/lib/stores/profileData";
-import type { WeeklyLessonsForTransportation } from "@/lib/schemas";
+import type { WeeklyLessonsForTransportation } from "scholatempus-backend/shared";
 import { z } from "zod";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
@@ -42,12 +44,80 @@ interface SchulleitungSetupScreenProps {
   email: string;
 }
 
+// Skeleton component for loading state
+function SchulleitungSetupSkeleton({
+  onBackAction,
+}: {
+  onBackAction: () => void;
+}) {
+  return (
+    <div className="min-h-screen bg-background p-4">
+      <div className="max-w-md mx-auto space-y-6 pt-8">
+        {/* Header */}
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10"
+            onClick={onBackAction}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <Skeleton className="h-7 w-24 mb-2" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </div>
+
+        <Card className="border-border/50 shadow-lg">
+          <CardHeader className="space-y-1">
+            <Skeleton className="h-6 w-64" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Form fields skeleton */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-11 w-full" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-11 w-full" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-6 w-12" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-56" />
+                  <Skeleton className="h-11 w-full" />
+                </div>
+              </div>
+
+              {/* Buttons skeleton */}
+              <div className="flex gap-3 pt-4">
+                <Skeleton className="flex-1 h-11" />
+                <Skeleton className="flex-1 h-11" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Skeleton className="h-3 w-72 mx-auto" />
+      </div>
+    </div>
+  );
+}
+
 export function SchulleitungSetupComponent({
   onCompleteAction,
   onBackAction,
   email,
 }: SchulleitungSetupScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const hydrated = useHydration();
 
   const { updateSpecialFunctionData } = useProfileDataActions();
 
@@ -85,6 +155,11 @@ export function SchulleitungSetupComponent({
       }
     },
   });
+
+  // Show skeleton while data is loading from localStorage
+  if (!hydrated) {
+    return <SchulleitungSetupSkeleton onBackAction={onBackAction} />;
+  }
 
   return (
     <div className="min-h-screen bg-background p-4">

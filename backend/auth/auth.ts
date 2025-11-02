@@ -4,6 +4,7 @@ import { authHandler } from "encore.dev/auth";
 
 import log from "encore.dev/log";
 import { AUTHORIZED_PARTIES } from "./config";
+import "@dotenvx/dotenvx/config";
 
 const clerkSecretKey = process.env.CLERK_SECRET_KEY;
 

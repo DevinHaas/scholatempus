@@ -26,9 +26,10 @@ export const profileTable = pgTable("profile", {
   userId: char({ length: 32 }).unique(),
   classDataId: integer("classDataId").references(
     () => classDataTable.classDataId,
+    { onDelete: "cascade" },
   ),
   specialFunctionId: integer("specialFunctionId")
-    .references(() => specialFunctionTable.specialFunctionId)
+    .references(() => specialFunctionTable.specialFunctionId, { onDelete: "cascade" })
     .notNull(),
 });
 
@@ -72,7 +73,7 @@ export const workTimeEntryTable = pgTable("workTimeEntry", {
   workTimeEntryId: serial("id").primaryKey(),
   userId: char({ length: 32 })
     .notNull()
-    .references(() => profileTable.userId),
+    .references(() => profileTable.userId, { onDelete: "cascade" }),
   date: date().notNull(),
   workamount: smallint().notNull(),
   category: workTimeCategoryEnum("category").notNull(),

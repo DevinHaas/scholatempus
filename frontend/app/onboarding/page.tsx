@@ -12,6 +12,8 @@ import {
   useSearchParams,
   type ReadonlyURLSearchParams,
 } from "next/navigation";
+import { useCreateProfile } from "@/features/onboarding/hooks/createProfile";
+import { useClassData, useSpecialFunctionData } from "@/lib/stores/profileData";
 
 const DEFAULT_STEP = "setup" as const;
 const ONBOARDING_STEPS = ["setup", "schulleitung", "overview"] as const;
@@ -35,6 +37,9 @@ function createStepUrl(
 }
 
 export default function Onboarding() {
+  const { isPending, isError, data, mutate } = useCreateProfile();
+  const classData = useClassData();
+  const specialFunctionData = useSpecialFunctionData();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -97,14 +102,23 @@ export default function Onboarding() {
   return (
     <OverviewScreen
       onCompleteAction={() => {
-        toast("Einrichtung abgeschlossen 😍", {
-          description: "Du kannst jetzt deine Zeiterfassung einsehen",
+        mutate({
+          classData: classData,
+          specialFunctionData: specialFunctionData,
         });
+
+        console.log("data", data);
+        if (isError) {
+          console.log("error");
+          return;
+        }
+
         localStorage.removeItem("scholatempus:onboarding");
         router.push("/home");
       }}
       onBackAction={() => navigateRelative("previous")}
       email={email}
+      mutationIsPending={isPending}
     />
   );
 }

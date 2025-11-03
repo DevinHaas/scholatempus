@@ -70,7 +70,6 @@ const calculateTargetOverviewParams = (
   const details = Object.values(WorkTimeCategory)
     .filter((c) => c !== WorkTimeCategory.TeachingSupervision)
     .reduce<WorkedTimePerCategory>((acc, category) => {
-      console.log("category", category);
       const multiplier = getHourseMultiplierPerCategory(category);
 
       let targetHours: number = 0;
@@ -80,11 +79,6 @@ const calculateTargetOverviewParams = (
             HOURS_TO_WORK_PER_SEMESTER *
             specialFunctionData.headshipEmploymentFactor) /
           100;
-        console.log("lecturesShouldPerSemester", lecturesShouldPerSemester);
-        console.log(
-          "specialFunctionData.headshipEmploymentFactor",
-          specialFunctionData.headshipEmploymentFactor,
-        );
         totalTeacherWorkTime += targetHours;
       } else {
         targetHours = multiplier * HOURS_TO_WORK_PER_SEMESTER;
@@ -175,7 +169,6 @@ const useProfileDataStore = create<ProfileDataState>()(
             ...state.classData,
             ...newClassData,
           };
-          console.log("class data" + newClassData);
 
           const newWorkTimeOverviewData = calculateTargetOverviewParams(
             newClassDataState,
@@ -217,8 +210,6 @@ const useProfileDataStore = create<ProfileDataState>()(
             newSpecialFunctionData,
             workTimeOverviewData,
           );
-
-          console.log(newWorkTimeOverviewData);
 
           return {
             workTimeOverviewData: newWorkTimeOverviewData,

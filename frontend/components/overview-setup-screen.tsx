@@ -14,11 +14,13 @@ import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import { useWorkTimeOverview, useHydration } from "@/lib/stores/profileData";
 import { ArrowLeft } from "lucide-react";
 import { WorkTimeCategory } from "scholatempus-backend/shared";
+import { Spinner } from "./ui/spinner";
 
 interface OverviewScreenProps {
   onCompleteAction: () => void;
   onBackAction: () => void;
   email: string;
+  mutationIsPending: boolean;
 }
 
 // Skeleton component for loading state
@@ -96,6 +98,7 @@ export function OverviewScreen({
   onCompleteAction,
   onBackAction,
   email,
+  mutationIsPending,
 }: OverviewScreenProps) {
   const overviewData = useWorkTimeOverview();
   const hydrated = useHydration();
@@ -232,6 +235,7 @@ export function OverviewScreen({
                 Back
               </Button>
               <Button className="flex-1 h-11" onClick={onCompleteAction}>
+                {mutationIsPending && <Spinner className="mr-2" />}
                 Finish
               </Button>
             </div>

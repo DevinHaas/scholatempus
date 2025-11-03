@@ -1,6 +1,6 @@
 {
-  "name": "SchulaTempus - Zeiterfassung für Lehrpersonen",
-  "short_name": "SchulaTempus",
+  "name": "ScholaTempus - Zeiterfassung für Lehrpersonen",
+  "short_name": "ScholaTempus",
   "description": "Professionelle Zeiterfassung für Lehrpersonen",
   "start_url": "/",
   "display": "standalone",

@@ -1,28 +1,20 @@
+"use client";
 import { api } from "@/lib/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  ClassData,
-  CreateProfileRequestData,
-  SpecialFunctionData,
-} from "scholatempus-backend/shared";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { CreateProfileRequestData } from "scholatempus-backend/shared";
 import { toast } from "sonner";
 
-export const useCreateProfile = (
-  classData: ClassData,
-  specialFunctionData: SpecialFunctionData,
-) => {
+export const useCreateProfile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
-      createProfile({
-        classData: classData,
-        specialFunctionData: specialFunctionData,
-      }),
+    mutationFn: (createProfileRequestData: CreateProfileRequestData) =>
+      createProfile(createProfileRequestData),
     onSuccess: () => {
       toast.success("😀 Profile created successfully");
     },
-    onError: () => {
+    onError: (error) => {
+      console.log(error);
       toast.error("😥 Problem creating profile", {
         description: "Please try again",
       });

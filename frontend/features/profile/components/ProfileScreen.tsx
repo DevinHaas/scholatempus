@@ -23,6 +23,8 @@ import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import { SettingsDialog } from "./SettingsDialog";
 import { useUser } from "@clerk/nextjs";
 import { hash as md5Hash } from "spark-md5";
+import { useWorkTimeOverview } from "@/lib/stores/profileData";
+import { WorkTimeCategory } from "scholatempus-backend/shared";
 
 interface ProfileScreenProps {
   user: { email: string } | null;
@@ -42,37 +44,39 @@ export function ProfileScreen({
   setupData,
   schulleitungData,
 }: ProfileScreenProps) {
+  const overviewData = useWorkTimeOverview();
   const { user: clerkUser } = useUser();
   const [showSettings, setShowSettings] = useState(false);
   const [currentSetupData, setCurrentSetupData] = useState(setupData);
-  const [currentSchulleitungData, setCurrentSchulleitungData] = useState(schulleitungData);
+  const [currentSchulleitungData, setCurrentSchulleitungData] =
+    useState(schulleitungData);
   const [profileData, setProfileData] = useState({
     name: "Devin Hasler",
     username: "devinhasler1023",
   });
 
-  const emailAddress = useMemo(() => {
+  const emailAddress = () => {
     if (clerkUser?.primaryEmailAddress?.emailAddress) {
       return clerkUser.primaryEmailAddress.emailAddress;
     }
     return user?.email ?? "";
-  }, [clerkUser?.primaryEmailAddress?.emailAddress, user?.email]);
+  };
 
   const displayName = useMemo(() => {
     if (emailAddress) {
-      return getNameFromEmailadress(emailAddress);
+      return getNameFromEmailadress(emailAddress());
     }
     return profileData.name;
   }, [emailAddress, profileData.name]);
 
-  const displayEmail = emailAddress || profileData.username;
+  const displayEmail = emailAddress() || profileData.username;
 
   const avatarImageUrl = useMemo(() => {
     if (clerkUser?.imageUrl) {
       return clerkUser.imageUrl;
     }
     if (emailAddress) {
-      return getGravatarUrl(emailAddress);
+      return getGravatarUrl(emailAddress());
     }
     return "/teacher.webp";
   }, [clerkUser?.imageUrl, emailAddress]);
@@ -96,71 +100,6 @@ export function ProfileScreen({
       newProfileData,
     });
   };
-
-  const calculateShouldState = () => {
-    const beschaeftigungsgrad = Number.parseFloat(
-      currentSchulleitungData?.beschaeftigungsgrad || "100",
-    );
-    const anzahlLektionen = Number.parseInt(
-      currentSetupData?.anzahlLektionen || "24",
-    );
-
-    const baseHours = 1940;
-    const adjustedHours = (baseHours * beschaeftigungsgrad) / 100;
-
-    const unterrichtenHours = Math.round(adjustedHours * 0.85);
-    const zusammenarbeitHours = Math.round(adjustedHours * 0.12);
-    const weiterbildungHours = Math.round(adjustedHours * 0.03);
-    const schulleitungHours = Math.round(adjustedHours * 0.15);
-    const unterrichtskontrolleLektionen = Math.round(anzahlLektionen * 22.8);
-
-    return {
-      unterrichtenHours,
-      zusammenarbeitHours,
-      weiterbildungHours,
-      schulleitungHours,
-      unterrichtskontrolleLektionen,
-    };
-  };
-
-  const getCurrentState = () => {
-    return {
-      unterrichtenHours: 1200,
-      zusammenarbeitHours: 150,
-      weiterbildungHours: 25,
-      schulleitungHours: 405,
-      unterrichtskontrolleLektionen: 420,
-    };
-  };
-
-  const shouldState = calculateShouldState();
-  const currentState = getCurrentState();
-
-  const differences = {
-    schulleitungHours:
-      shouldState.schulleitungHours - currentState.schulleitungHours,
-    unterrichtenHours:
-      shouldState.unterrichtenHours - currentState.unterrichtenHours,
-    zusammenarbeitHours:
-      shouldState.zusammenarbeitHours - currentState.zusammenarbeitHours,
-    weiterbildungHours:
-      shouldState.weiterbildungHours - currentState.weiterbildungHours,
-    unterrichtskontrolleLektionen:
-      shouldState.unterrichtskontrolleLektionen -
-      currentState.unterrichtskontrolleLektionen,
-  };
-
-  const totalTeacherSoll =
-    shouldState.unterrichtenHours +
-    shouldState.zusammenarbeitHours +
-    shouldState.weiterbildungHours;
-  const totalTeacherIst =
-    currentState.unterrichtenHours +
-    currentState.zusammenarbeitHours +
-    currentState.weiterbildungHours;
-  const teacherBilanz = totalTeacherSoll - totalTeacherIst;
-
-  const schulleitungBilanz = -15;
 
   return (
     <div className="min-h-screen bg-background p-4">
@@ -218,18 +157,22 @@ export function ProfileScreen({
                   <TableRow className="bg-yellow-300 hover:bg-yellow-400">
                     <TableCell className="text-xs py-2">Schulleitung</TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {shouldState.schulleitungHours}h
+                      {overviewData.details?.Schulleitung.targetHours}h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {currentState.schulleitungHours}h
+                      {overviewData.details?.Schulleitung.actualHours}h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        schulleitungBilanz > 0 ? "text-red-600" : "text-green-600"
+                        overviewData.details?.Schulleitung.differenceHours! > 0
+                          ? "text-red-600"
+                          : "text-green-600"
                       }`}
                     >
-                      {differences.schulleitungHours > 0 ? "+" : ""}
-                      {differences.schulleitungHours}h
+                      {overviewData.details?.Schulleitung.differenceHours! > 0
+                        ? "+"
+                        : ""}
+                      {overviewData.details?.Schulleitung.differenceHours!}h
                     </TableCell>
                   </TableRow>
 
@@ -238,20 +181,41 @@ export function ProfileScreen({
                       Unterrichten, beraten, begleiten
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {shouldState.unterrichtenHours}h
+                      {
+                        overviewData.details?.[
+                          "Unterrichten, beraten, begleiten"
+                        ]?.targetHours
+                      }
+                      h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {currentState.unterrichtenHours}h
+                      {
+                        overviewData.details?.[
+                          "Unterrichten, beraten, begleiten"
+                        ]?.actualHours
+                      }
+                      h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        differences.unterrichtenHours > 0
+                        overviewData.details?.[
+                          WorkTimeCategory.TeachingAdvisingSupporting
+                        ].differenceHours! > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {differences.unterrichtenHours > 0 ? "+" : ""}
-                      {differences.unterrichtenHours}h
+                      {overviewData.details?.[
+                        WorkTimeCategory.TeachingAdvisingSupporting
+                      ].differenceHours! > 0
+                        ? "+"
+                        : ""}
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.TeachingAdvisingSupporting
+                        ].differenceHours!
+                      }
+                      h
                     </TableCell>
                   </TableRow>
                   <TableRow className="bg-blue-100 hover:bg-blue-100">
@@ -259,39 +223,77 @@ export function ProfileScreen({
                       Zusammenarbeit
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {shouldState.zusammenarbeitHours}h
+                      {
+                        overviewData.details?.[WorkTimeCategory.Collaboration]
+                          .targetHours
+                      }
+                      h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {currentState.zusammenarbeitHours}h
+                      {
+                        overviewData.details?.[WorkTimeCategory.Collaboration]
+                          .actualHours
+                      }
+                      h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        differences.zusammenarbeitHours > 0
+                        overviewData.details?.[WorkTimeCategory.Collaboration]
+                          .differenceHours! > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {differences.zusammenarbeitHours > 0 ? "+" : ""}
-                      {differences.zusammenarbeitHours}h
+                      {overviewData.details?.[WorkTimeCategory.Collaboration]
+                        .differenceHours! > 0
+                        ? "+"
+                        : ""}
+                      {
+                        overviewData.details?.[WorkTimeCategory.Collaboration]
+                          .differenceHours!
+                      }
+                      h
                     </TableCell>
                   </TableRow>
                   <TableRow className="bg-blue-100 hover:bg-blue-100">
-                    <TableCell className="text-xs py-2">Weiterbildung</TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {shouldState.weiterbildungHours}h
+                    <TableCell className="text-xs py-2">
+                      Weiterbildung
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {currentState.weiterbildungHours}h
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.FurtherEducation
+                        ].targetHours
+                      }
+                      h
+                    </TableCell>
+                    <TableCell className="text-xs py-2 text-right font-medium">
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.FurtherEducation
+                        ].actualHours
+                      }
+                      h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        differences.weiterbildungHours > 0
+                        overviewData.details?.[
+                          WorkTimeCategory.FurtherEducation
+                        ].differenceHours! > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {differences.weiterbildungHours > 0 ? "+" : ""}
-                      {differences.weiterbildungHours}h
+                      {overviewData.details?.[WorkTimeCategory.FurtherEducation]
+                        .differenceHours! > 0
+                        ? "+"
+                        : ""}
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.FurtherEducation
+                        ].differenceHours!
+                      }
+                      h
                     </TableCell>
                   </TableRow>
 
@@ -300,20 +302,41 @@ export function ProfileScreen({
                       Unterrichtskontrolle
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {shouldState.unterrichtskontrolleLektionen}
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.TeachingSupervision
+                        ]?.targetHours
+                      }
+                      h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {currentState.unterrichtskontrolleLektionen}
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.TeachingSupervision
+                        ]?.actualHours
+                      }
+                      h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        differences.unterrichtskontrolleLektionen > 0
+                        overviewData.details?.[
+                          WorkTimeCategory.TeachingSupervision
+                        ]?.differenceHours! > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {differences.unterrichtskontrolleLektionen > 0 ? "+" : ""}
-                      {differences.unterrichtskontrolleLektionen}
+                      {overviewData.details?.[
+                        WorkTimeCategory.TeachingSupervision
+                      ]?.differenceHours! > 0
+                        ? "+"
+                        : ""}
+                      {
+                        overviewData.details?.[
+                          WorkTimeCategory.TeachingSupervision
+                        ]?.differenceHours!
+                      }
+                      h
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -333,22 +356,30 @@ export function ProfileScreen({
                   <div>
                     <span className="text-muted-foreground">Soll:</span>
                     <span className="font-medium ml-1">
-                      {totalTeacherSoll}h
+                      {overviewData.summary.totalTeacherWorkTime.targetHours}h
                     </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Ist:</span>
-                    <span className="font-medium ml-1">{totalTeacherIst}h</span>
+                    <span className="font-medium ml-1">
+                      {overviewData.summary.totalTeacherWorkTime.actualHours}h
+                    </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Bilanz:</span>
                     <span
                       className={`font-bold ml-1 ${
-                        teacherBilanz > 0 ? "text-red-600" : "text-green-600"
+                        overviewData.summary.totalTeacherWorkTime.balanceHours >
+                        0
+                          ? "text-red-600"
+                          : "text-green-600"
                       }`}
                     >
-                      {teacherBilanz > 0 ? "+" : ""}
-                      {teacherBilanz}h
+                      {overviewData.summary.totalTeacherWorkTime.balanceHours >
+                      0
+                        ? "+"
+                        : ""}
+                      {overviewData.summary.totalTeacherWorkTime.balanceHours}h
                     </span>
                   </div>
                 </div>
@@ -361,11 +392,15 @@ export function ProfileScreen({
                   </span>
                   <span
                     className={`text-xs font-bold ${
-                      schulleitungBilanz > 0 ? "text-red-600" : "text-green-600"
+                      overviewData.summary.schoolManagementBalanceHours > 0
+                        ? "text-red-600"
+                        : "text-green-600"
                     }`}
                   >
-                    {schulleitungBilanz > 0 ? "+" : ""}
-                    {schulleitungBilanz}h
+                    {overviewData.summary.schoolManagementBalanceHours > 0
+                      ? "+"
+                      : ""}
+                    {overviewData.summary.schoolManagementBalanceHours}h
                   </span>
                 </div>
               </div>

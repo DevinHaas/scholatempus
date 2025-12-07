@@ -5,6 +5,12 @@
   "description": "The official backend for scholatempus",
   "license": "MPL-2.0",
   "type": "module",
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
   "exports": {
     "./shared": "./shared/index.ts",
     "./shared/*": "./shared/*.ts"
@@ -26,7 +32,7 @@
     "@dotenvx/dotenvx": "^1.51.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",
-    "encore.dev": "1.50.7",
+    "encore.dev": "^1.52.3",
     "pg": "^8.16.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

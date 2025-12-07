@@ -1,4 +1,6 @@
+import { InferSelectModel } from "drizzle-orm";
 import { GradeLevel } from "./enums";
+import { profileTable } from "../db/schema";
 
 // TypeScript type definitions matching the Zod schemas
 // These are manually maintained to match schemas.ts
@@ -23,3 +25,5 @@ export interface ProfileData {
   classData: ClassData;
   specialFunctionData: SpecialFunctionData;
 }
+
+export type ProfileSelect = InferSelectModel<typeof profileTable>;

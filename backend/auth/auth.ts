@@ -22,7 +22,7 @@ interface AuthData {
   emailAddress: string | null;
 }
 
-const myAuthHandler = authHandler(
+export const myAuthHandler = authHandler(
   async (params: AuthParams): Promise<AuthData> => {
     const token = params.authorization.replace("Bearer ", "");
 

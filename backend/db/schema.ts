@@ -1,5 +1,5 @@
 import { GradeLevel, WorkTimeCategory } from "~/shared";
-import { relations } from "drizzle-orm";
+import { InferSelectModel, relations } from "drizzle-orm";
 import { boolean } from "drizzle-orm/pg-core";
 import {
   char,
@@ -29,7 +29,9 @@ export const profileTable = pgTable("profile", {
     { onDelete: "cascade" },
   ),
   specialFunctionId: integer("specialFunctionId")
-    .references(() => specialFunctionTable.specialFunctionId, { onDelete: "cascade" })
+    .references(() => specialFunctionTable.specialFunctionId, {
+      onDelete: "cascade",
+    })
     .notNull(),
 });
 

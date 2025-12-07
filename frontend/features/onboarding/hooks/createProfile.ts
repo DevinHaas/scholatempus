@@ -1,14 +1,14 @@
 "use client";
 import { api } from "@/lib/api";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { CreateProfileRequestData } from "scholatempus-backend/shared";
+import { UpsertProfileRequestData } from "scholatempus-backend/shared";
 import { toast } from "sonner";
 
 export const useCreateProfile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (createProfileRequestData: CreateProfileRequestData) =>
+    mutationFn: (createProfileRequestData: UpsertProfileRequestData) =>
       createProfile(createProfileRequestData),
     onSuccess: () => {
       toast.success("😀 Profile created successfully");
@@ -26,9 +26,9 @@ export const useCreateProfile = () => {
 };
 
 const createProfile = async (
-  createProfileRequestData: CreateProfileRequestData,
+  createProfileRequestData: UpsertProfileRequestData,
 ) => {
   return await api
-    .post("/profile", createProfileRequestData)
+    .put("/profile", createProfileRequestData)
     .then((res) => res.data);
 };

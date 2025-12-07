@@ -8,22 +8,21 @@ import {
 } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 import log from "encore.dev/log";
-import { CreateProfileRequestData } from "~/shared";
+import { UpsertProfileRequestData } from "~/shared";
 
-interface CreateProfileResponse {
-  success: boolean;
+interface UpsertProfileResponse {
   userId: string;
   message: string;
 }
 
-export const createProfile = api(
+export const upsertProfile = api(
   {
     expose: true,
     path: "/profile",
-    method: "POST",
+    method: "PUT",
     auth: true,
   },
-  async (params: CreateProfileRequestData): Promise<CreateProfileResponse> => {
+  async (params: UpsertProfileRequestData): Promise<UpsertProfileResponse> => {
     const authData = getAuthData();
     if (!authData) {
       throw APIError.unauthenticated("Not authenticated");
@@ -35,21 +34,9 @@ export const createProfile = api(
     try {
       log.info("Input validation successful", { userId });
 
-      // 3. Check if profile already exists
-      const existingProfile = await db.query.profileTable.findFirst({
-        where: eq(profileTable.userId, userId),
-      });
-
-      if (existingProfile) {
-        log.warn("Profile already exists", { userId });
-        throw APIError.alreadyExists(
-          "Profile already exists for this user. Use PUT /profile to update.",
-        );
-      }
-
       const result = await db.transaction(async (tx) => {
         // 4a. Insert class data
-        const [classDataRecord] = await tx
+        const [newClassDataRecord] = await tx
           .insert(classDataTable)
           .values({
             grade: params.classData.grade,
@@ -57,15 +44,19 @@ export const createProfile = api(
             mandatoryLectures: params.classData.mandatoryLectures,
             carryOverLectures: params.classData.carryOverLectures,
           })
+          .onConflictDoUpdate({
+            target: classDataTable.classDataId,
+            set: params.classData,
+          })
           .returning({ id: classDataTable.classDataId });
 
-        log.info("Class data inserted", {
+        log.info("Class data updated", {
           userId,
-          classDataId: classDataRecord.id,
+          classDataId: newClassDataRecord.id,
         });
 
         // 4b. Insert special function data
-        const [specialFunctionRecord] = await tx
+        const [newSpecialFunctionRecord] = await tx
           .insert(specialFunctionTable)
           .values({
             headshipEmploymentFactor:
@@ -75,29 +66,39 @@ export const createProfile = api(
             weeklyLessonsForTransportation:
               params.specialFunctionData.weeklyLessonsForTransportation,
           })
+          .onConflictDoUpdate({
+            target: specialFunctionTable.specialFunctionId,
+            set: params.specialFunctionData,
+          })
           .returning({ id: specialFunctionTable.specialFunctionId });
 
-        log.info("Special function data inserted", {
+        log.info("Special function data upserted", {
           userId,
-          specialFunctionId: specialFunctionRecord.id,
+          specialFunctionId: newSpecialFunctionRecord.id,
         });
 
         const [profileRecord] = await tx
           .insert(profileTable)
           .values({
             userId: userId,
-            classDataId: classDataRecord.id,
-            specialFunctionId: specialFunctionRecord.id,
+            classDataId: newClassDataRecord.id,
+            specialFunctionId: newSpecialFunctionRecord.id,
+          })
+          .onConflictDoUpdate({
+            target: profileTable.userId,
+            set: {
+              classDataId: newClassDataRecord.id,
+              specialFunctionId: newSpecialFunctionRecord.id,
+            },
           })
           .returning();
 
-        log.info("Profile created successfully", { userId });
+        log.info("Profile upserted successfully", { userId });
 
         return profileRecord;
       });
 
       return {
-        success: true,
         userId: result.userId!,
         message: "Profile created successfully",
       };

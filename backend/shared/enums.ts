@@ -6,6 +6,11 @@ export enum WorkTimeCategory {
   TeachingSupervision = "Unterrichtskontrolle",
 }
 
+export type TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES =
+  | "class"
+  | "preperation"
+  | "supporting";
+
 // Short enum values for database (under 63 chars)
 export enum GradeLevel {
   PrimarySchoolGymnasiumEntry = "PRIMARY_SCHOOL_GYM",
@@ -24,6 +29,15 @@ export const WORK_TIME_CATEGORY_LABELS: Record<WorkTimeCategory, string> = {
   [WorkTimeCategory.Collaboration]: "Zusammenarbeit",
   [WorkTimeCategory.FurtherEducation]: "Weiterbildung",
   [WorkTimeCategory.TeachingSupervision]: "Unterrichtskontrolle",
+};
+
+export const TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES_LABELS: Record<
+  TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES,
+  string
+> = {
+  class: "Unterricht",
+  preperation: "Vor- und Nachbereitung",
+  supporting: "Beraten, begleiten",
 };
 
 export const GRADE_LEVEL_LABELS: Record<GradeLevel, string> = {

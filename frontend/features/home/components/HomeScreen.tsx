@@ -40,6 +40,8 @@ export function HomeScreen() {
   const handleStartStop = () => {
     if (isTracking) {
       setIsTracking(false);
+      console.log("stop tracking");
+      console.log(elapsedTime);
       setShowCategoryDialog(true);
     } else {
       setIsTracking(true);

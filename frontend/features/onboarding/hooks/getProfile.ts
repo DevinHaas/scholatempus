@@ -2,6 +2,7 @@ import { api } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { GetProfileResponse } from "scholatempus-backend/shared";
+import { AxiosError } from "axios";
 
 export const useGetProfile = () => {
   const { user, isLoaded } = useUser();
@@ -9,6 +10,14 @@ export const useGetProfile = () => {
     queryKey: ["profile"],
     queryFn: () => getProfile(),
     enabled: !!user && !!isLoaded,
+    retry: (failureCount, error) => {
+      // Don't retry on 404 (profile not found is expected for new users)
+      if (error instanceof AxiosError && error.response?.status === 500 || error instanceof AxiosError && error.response?.status === 404) {
+        return false;
+      }
+      // Retry other errors up to 3 times (default behavior)
+      return failureCount < 3;
+    },
   });
 };
 

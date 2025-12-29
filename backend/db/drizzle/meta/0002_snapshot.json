@@ -1,6 +1,6 @@
 {
-  "id": "d6d71fef-f544-4aca-9df3-1079d1eb240c",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "cb3b0ec7-3edf-4d95-91f3-a6f65de839cd",
+  "prevId": "18a55336-1809-4476-9351-f94a79e163ce",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -255,9 +255,9 @@
       "name": "subcategory",
       "schema": "public",
       "values": [
-        "class",
-        "preperation",
-        "supporting"
+        "Class",
+        "Preparation",
+        "Supporting"
       ]
     }
   },

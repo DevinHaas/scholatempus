@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 import { useState, useEffect } from "react";
-import { getHourseMultiplierPerCategory } from "../helpers/OverviewDataCalculators";
+import { getHourseMultiplierPerCategory } from "../helpers/SetupCalculators";
 import { HOURS_TO_WORK_PER_SEMESTER, NUMBER_OF_SCHOOL_WEEKS } from "../DATA";
 import {
   ClassData,

@@ -1,15 +1,19 @@
 export enum WorkTimeCategory {
-  SchoolManagement = "Schulleitung",
-  TeachingAdvisingSupporting = "Unterrichten, beraten, begleiten",
-  Collaboration = "Zusammenarbeit",
-  FurtherEducation = "Weiterbildung",
-  TeachingSupervision = "Unterrichtskontrolle",
+  SchoolManagement = "SchoolManagement",
+  TeachingAdvisingSupporting = "TeachingAdvisingSupporting",
+  Collaboration = "Collaboration",
+  FurtherEducation = "FurtherEducation",
+  TeachingSupervision = "TeachingSupervision",
 }
 
-export type TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES =
-  | "class"
-  | "preperation"
-  | "supporting";
+export enum WorkTimeSubCategory {
+  Class = "Class",
+  Preparation = "Preparation",
+  Supporting = "Supporting",
+}
+
+// Keep the old type alias for backward compatibility during migration
+export type WORKTIME_SUBCATEGORIES = WorkTimeSubCategory;
 
 // Short enum values for database (under 63 chars)
 export enum GradeLevel {
@@ -32,12 +36,12 @@ export const WORK_TIME_CATEGORY_LABELS: Record<WorkTimeCategory, string> = {
 };
 
 export const TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES_LABELS: Record<
-  TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES,
+  WorkTimeSubCategory,
   string
 > = {
-  class: "Unterricht",
-  preperation: "Vor- und Nachbereitung",
-  supporting: "Beraten, begleiten",
+  [WorkTimeSubCategory.Class]: "Unterricht",
+  [WorkTimeSubCategory.Preparation]: "Vor- und Nachbereitung",
+  [WorkTimeSubCategory.Supporting]: "Beraten, begleiten",
 };
 
 export const GRADE_LEVEL_LABELS: Record<GradeLevel, string> = {

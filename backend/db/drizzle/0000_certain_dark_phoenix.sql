@@ -1,5 +1,6 @@
 CREATE TYPE "public"."grade" AS ENUM('PRIMARY_SCHOOL_GYM', 'VOC_PREP_FULL', 'VOC_PREP_PRACT', 'COMM_MID_VOC_EXT', 'VOC_BACC_SPEC', 'GYMNASIUM_ACADEMIC');--> statement-breakpoint
-CREATE TYPE "public"."category" AS ENUM('Schulleitung', 'Unterrichten, beraten, begleiten', 'Zusammenarbeit', 'Weiterbildung', 'Unterrichtskontrolle');--> statement-breakpoint
+CREATE TYPE "public"."category" AS ENUM('SchoolManagement', 'TeachingAdvisingSupporting', 'Collaboration', 'FurtherEducation', 'TeachingSupervision');--> statement-breakpoint
+CREATE TYPE "public"."subcategory" AS ENUM('class', 'preperation', 'supporting');--> statement-breakpoint
 CREATE TABLE "classData" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"grade" "grade" NOT NULL,
@@ -26,11 +27,12 @@ CREATE TABLE "specialFunctionTable" (
 CREATE TABLE "workTimeEntry" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"userId" char(32) NOT NULL,
-	"date" date NOT NULL,
-	"workamount" smallint NOT NULL,
-	"category" "category" NOT NULL
+	"date" timestamp NOT NULL,
+	"workingTime" smallint NOT NULL,
+	"category" "category" NOT NULL,
+	"subcategory" "subcategory"
 );
 --> statement-breakpoint
-ALTER TABLE "profile" ADD CONSTRAINT "profile_classDataId_classData_id_fk" FOREIGN KEY ("classDataId") REFERENCES "public"."classData"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "profile" ADD CONSTRAINT "profile_specialFunctionId_specialFunctionTable_id_fk" FOREIGN KEY ("specialFunctionId") REFERENCES "public"."specialFunctionTable"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "workTimeEntry" ADD CONSTRAINT "workTimeEntry_userId_profile_userId_fk" FOREIGN KEY ("userId") REFERENCES "public"."profile"("userId") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "profile" ADD CONSTRAINT "profile_classDataId_classData_id_fk" FOREIGN KEY ("classDataId") REFERENCES "public"."classData"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "profile" ADD CONSTRAINT "profile_specialFunctionId_specialFunctionTable_id_fk" FOREIGN KEY ("specialFunctionId") REFERENCES "public"."specialFunctionTable"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "workTimeEntry" ADD CONSTRAINT "workTimeEntry_userId_profile_userId_fk" FOREIGN KEY ("userId") REFERENCES "public"."profile"("userId") ON DELETE cascade ON UPDATE no action;

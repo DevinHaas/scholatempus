@@ -4,12 +4,17 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit3 } from "lucide-react";
 import { CategorySelectionDialog } from "./CategorySelectionDialog";
+import { useAddWorkEntries } from "../hooks/addWorkEntries";
+import { AddWorkEntriesRequest } from "scholatempus-backend/shared";
+import { TimeEntry } from "scholatempus-backend/shared";
 
 export function HomeScreen() {
   const [isTracking, setIsTracking] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
+  const [isManually, setIsManually] = useState(false);
+  const addWorkEntriesMutation = useAddWorkEntries();
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -42,6 +47,7 @@ export function HomeScreen() {
       setIsTracking(false);
       console.log("stop tracking");
       console.log(elapsedTime);
+      setIsManually(false); // Timer was running, so not manually added
       setShowCategoryDialog(true);
     } else {
       setIsTracking(true);
@@ -56,12 +62,7 @@ export function HomeScreen() {
     setElapsedTime(0);
   };
 
-  const handleCategorySelection = (categories: unknown[]) => {
-    console.log("Time entries saved:", categories);
-    setShowCategoryDialog(false);
-    setStartTime(null);
-    setElapsedTime(0);
-  };
+
 
   const handleCategoryCancel = () => {
     setIsTracking(true);
@@ -137,7 +138,10 @@ export function HomeScreen() {
       <Button
         variant="ghost"
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-        onClick={() => setShowCategoryDialog(true)}
+        onClick={() => {
+          setIsManually(true); // Opening from "Add manually" button
+          setShowCategoryDialog(true);
+        }}
       >
         <Edit3 className="h-4 w-4" />
         Add manually
@@ -147,8 +151,8 @@ export function HomeScreen() {
         open={showCategoryDialog}
         onOpenChangeAction={setShowCategoryDialog}
         totalTime={elapsedTime}
-        onSaveAction={handleCategorySelection}
         onCancelAction={handleCategoryCancel}
+        isManually={isManually}
       />
     </div>
   );

@@ -1,0 +1,1 @@
+ALTER TABLE "workTimeEntry" RENAME COLUMN "workamount" TO "workingTime";

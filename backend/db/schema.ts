@@ -1,6 +1,6 @@
-import { GradeLevel, WorkTimeCategory } from "~/shared";
+import { GradeLevel, WorkTimeCategory, WorkTimeSubCategory } from "~/shared";
 import { InferSelectModel, relations } from "drizzle-orm";
-import { boolean } from "drizzle-orm/pg-core";
+import { boolean, text } from "drizzle-orm/pg-core";
 import {
   char,
   date,
@@ -10,6 +10,7 @@ import {
   pgTable,
   serial,
   smallint,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
 export const gradeLevelEnum = pgEnum(
@@ -19,8 +20,15 @@ export const gradeLevelEnum = pgEnum(
 
 export const workTimeCategoryEnum = pgEnum(
   "category",
-  Object.values(WorkTimeCategory) as [string, ...string[]],
+  Object.keys(WorkTimeCategory) as [string, ...string[]]
 );
+
+
+export const workTimeSubCategories = pgEnum(
+  "subcategory",
+  Object.values(WorkTimeSubCategory) as [string, ...string[]]
+);
+
 
 export const profileTable = pgTable("profile", {
   userId: char({ length: 32 }).unique(),
@@ -76,9 +84,10 @@ export const workTimeEntryTable = pgTable("workTimeEntry", {
   userId: char({ length: 32 })
     .notNull()
     .references(() => profileTable.userId, { onDelete: "cascade" }),
-  date: date().notNull(),
-  workamount: smallint().notNull(),
+  date: timestamp().notNull(),
+  workingTime: smallint().notNull(),
   category: workTimeCategoryEnum("category").notNull(),
+  subcategory: workTimeSubCategories("subcategory"),
 });
 
 export const workTimeEntriesRelation = relations(

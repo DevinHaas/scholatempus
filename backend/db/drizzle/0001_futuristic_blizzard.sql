@@ -1,0 +1,1 @@
+ALTER TABLE "workTimeEntry" ADD COLUMN "isManually" boolean DEFAULT false NOT NULL;

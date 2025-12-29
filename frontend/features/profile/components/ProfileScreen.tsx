@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,8 +24,19 @@ import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import { SettingsDialog } from "./SettingsDialog";
 import { useUser } from "@clerk/nextjs";
 import { hash as md5Hash } from "spark-md5";
-import { useWorkTimeOverview } from "@/lib/stores/profileData";
-import { WorkTimeCategory } from "scholatempus-backend/shared";
+import {
+  WorkTimeCategory,
+  GradeLevel,
+  ClassData,
+  SpecialFunctionData,
+} from "scholatempus-backend/shared";
+import { useGetProfile } from "@/features/onboarding/hooks/getProfile";
+import { useGetWorkEntries } from "../hooks/useGetWorkEntries";
+import { aggregateWorkEntriesByCategory } from "@/lib/helpers/aggregateWorkEntries";
+import {
+  calculateWorkTimeOverview,
+  type WorkTimeOverviewData,
+} from "@/lib/helpers/calculateWorkTimeOverview";
 
 interface ProfileScreenProps {
   user: { email: string } | null;
@@ -39,12 +51,79 @@ function getGravatarUrl(email: string) {
   return `https://www.gravatar.com/avatar/${digest}?d=identicon`;
 }
 
+// Skeleton component for table loading state
+function WorkTimeTableSkeleton() {
+  return (
+    <>
+      {/* Employment factor skeleton */}
+      <div className="bg-muted px-3 py-2 rounded">
+        <Skeleton className="h-4 w-48" />
+      </div>
+
+      {/* Table skeleton */}
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-300 hover:bg-gray-400">
+              <TableHead className="text-black font-medium text-xs h-8">
+                <Skeleton className="h-4 w-20" />
+              </TableHead>
+              <TableHead className="text-black font-medium text-xs h-8 text-right">
+                <Skeleton className="h-4 w-12 ml-auto" />
+              </TableHead>
+              <TableHead className="text-black font-medium text-xs h-8 text-right">
+                <Skeleton className="h-4 w-12 ml-auto" />
+              </TableHead>
+              <TableHead className="text-black font-medium text-xs h-8 text-right">
+                <Skeleton className="h-4 w-16 ml-auto" />
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[...Array(5)].map((_, i) => (
+              <TableRow key={i}>
+                <TableCell className="text-xs py-2">
+                  <Skeleton className="h-3 w-32" />
+                </TableCell>
+                <TableCell className="text-xs py-2 text-right">
+                  <Skeleton className="h-3 w-12 ml-auto" />
+                </TableCell>
+                <TableCell className="text-xs py-2 text-right">
+                  <Skeleton className="h-3 w-12 ml-auto" />
+                </TableCell>
+                <TableCell className="text-xs py-2 text-right">
+                  <Skeleton className="h-3 w-12 ml-auto" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Summary skeleton */}
+      <div className="bg-muted/50 p-4 rounded-lg">
+        <Skeleton className="h-4 w-32 mb-2" />
+        <div className="bg-purple-100 p-3 rounded border mb-3">
+          <Skeleton className="h-4 w-48 mb-2" />
+          <div className="grid grid-cols-3 gap-2">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-3 w-16" />
+          </div>
+        </div>
+        <div className="bg-yellow-100 p-3 rounded border">
+          <Skeleton className="h-4 w-32" />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function ProfileScreen({
   user,
   setupData,
   schulleitungData,
 }: ProfileScreenProps) {
-  const overviewData = useWorkTimeOverview();
   const { user: clerkUser } = useUser();
   const [showSettings, setShowSettings] = useState(false);
   const [currentSetupData, setCurrentSetupData] = useState(setupData);
@@ -54,6 +133,54 @@ export function ProfileScreen({
     name: "Devin Hasler",
     username: "devinhasler1023",
   });
+
+  // Fetch profile and work entries
+  const {
+    data: profile,
+    isLoading: isLoadingProfile,
+    error: profileError,
+  } = useGetProfile();
+  const {
+    data: workEntries,
+    isLoading: isLoadingWorkEntries,
+    error: workEntriesError,
+  } = useGetWorkEntries();
+
+  // Calculate overview from fetched data
+  const overviewData = useMemo<WorkTimeOverviewData | null>(() => {
+    if (!profile?.classData || !profile?.specialFunctionData || !workEntries) {
+      return null;
+    }
+
+    // Transform API response to ClassData and SpecialFunctionData
+    const classData: ClassData = {
+      grade: profile.classData.grade as GradeLevel,
+      givenLectures: profile.classData.givenLectures,
+      mandatoryLectures: profile.classData.mandatoryLectures,
+      carryOverLectures: profile.classData.carryOverLectures,
+    };
+
+    const specialFunctionData: SpecialFunctionData = {
+      headshipEmploymentFactor:
+        profile.specialFunctionData.headshipEmploymentFactor,
+      carryOverLessons: profile.specialFunctionData.carryOverLessons,
+      classTeacher: profile.specialFunctionData.classTeacher,
+      weeklyLessonsForTransportation:
+        profile.specialFunctionData.weeklyLessonsForTransportation,
+    };
+
+    // Aggregate work entries by category
+    const actualHoursPerCategory = aggregateWorkEntriesByCategory(workEntries);
+
+    // Calculate overview
+    return calculateWorkTimeOverview(
+      classData,
+      specialFunctionData,
+      actualHoursPerCategory,
+    );
+  }, [profile, workEntries]);
+
+  const isLoading = isLoadingProfile || isLoadingWorkEntries;
 
   const emailAddress = () => {
     if (clerkUser?.primaryEmailAddress?.emailAddress) {
@@ -101,11 +228,31 @@ export function ProfileScreen({
     });
   };
 
+  const isTableLoading = isLoading || !overviewData;
+
+  // Show error state if profile fetch failed (but work entries might still be loading/empty)
+  if (profileError && !profile && !isLoadingProfile) {
+    return (
+      <div className="min-h-screen bg-background p-4">
+        <div className="max-w-md mx-auto space-y-6">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-center text-muted-foreground">
+                Fehler beim Laden des Profils. Bitte versuchen Sie es später
+                erneut.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-md mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Profile</h1>
+          <h1 className="text-2xl font-bold text-foreground">Profil</h1>
           <Button
             variant="ghost"
             size="icon"
@@ -135,7 +282,22 @@ export function ProfileScreen({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="border rounded-lg overflow-hidden">
+            {isTableLoading ? (
+              <WorkTimeTableSkeleton />
+            ) : overviewData ? (
+              <>
+                {/* Total Employment Level */}
+                <div className="bg-green-400 text-black px-3 py-2 rounded font-medium text-sm">
+                  Tot. Beschäftigungsgrad:{" "}
+                  {overviewData.summary.totalEmploymentFactor.toFixed(2)}%
+                </div>
+                {overviewData.summary.totalEmploymentFactor > 105 && (
+                  <div className="bg-red-400 text-black px-3 py-2 rounded font-medium text-sm">
+                    Warnung: Beschäftigungsgrad zu hoch!
+                  </div>
+                )}
+
+                <div className="border rounded-lg overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-300 hover:bg-gray-400">
@@ -157,22 +319,35 @@ export function ProfileScreen({
                   <TableRow className="bg-yellow-300 hover:bg-yellow-400">
                     <TableCell className="text-xs py-2">Schulleitung</TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.Schulleitung.targetHours}h
+                      {overviewData.details?.[
+                        WorkTimeCategory.SchoolManagement
+                      ]?.targetHours.toFixed(0)}
+                      h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.Schulleitung.actualHours}h
+                      {overviewData.details?.[
+                        WorkTimeCategory.SchoolManagement
+                      ]?.actualHours.toFixed(0)}
+                      h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        overviewData.details?.Schulleitung.differenceHours! > 0
+                        (overviewData.details?.[
+                          WorkTimeCategory.SchoolManagement
+                        ]?.differenceHours ?? 0) > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {overviewData.details?.Schulleitung.differenceHours! > 0
+                      {(overviewData.details?.[
+                        WorkTimeCategory.SchoolManagement
+                      ]?.differenceHours ?? 0) > 0
                         ? "+"
                         : ""}
-                      {overviewData.details?.Schulleitung.differenceHours!}h
+                      {overviewData.details?.[
+                        WorkTimeCategory.SchoolManagement
+                      ]?.differenceHours.toFixed(0)}
+                      h
                     </TableCell>
                   </TableRow>
 
@@ -181,40 +356,34 @@ export function ProfileScreen({
                       Unterrichten, beraten, begleiten
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {
-                        overviewData.details?.[
-                          "Unterrichten, beraten, begleiten"
-                        ]?.targetHours
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.TeachingAdvisingSupporting
+                      ]?.targetHours.toFixed(0)}
                       h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {
-                        overviewData.details?.[
-                          "Unterrichten, beraten, begleiten"
-                        ]?.actualHours
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.TeachingAdvisingSupporting
+                      ]?.actualHours.toFixed(0)}
                       h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        overviewData.details?.[
+                        (overviewData.details?.[
                           WorkTimeCategory.TeachingAdvisingSupporting
-                        ].differenceHours! > 0
+                        ]?.differenceHours ?? 0) > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {overviewData.details?.[
+                      {(overviewData.details?.[
                         WorkTimeCategory.TeachingAdvisingSupporting
-                      ].differenceHours! > 0
+                      ]?.differenceHours ?? 0) > 0
                         ? "+"
                         : ""}
-                      {
-                        overviewData.details?.[
-                          WorkTimeCategory.TeachingAdvisingSupporting
-                        ].differenceHours!
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.TeachingAdvisingSupporting
+                      ]?.differenceHours.toFixed(0)}
                       h
                     </TableCell>
                   </TableRow>
@@ -223,35 +392,29 @@ export function ProfileScreen({
                       Zusammenarbeit
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {
-                        overviewData.details?.[WorkTimeCategory.Collaboration]
-                          .targetHours
-                      }
+                      {overviewData.details?.[WorkTimeCategory.Collaboration]
+                        ?.targetHours.toFixed(0)}
                       h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {
-                        overviewData.details?.[WorkTimeCategory.Collaboration]
-                          .actualHours
-                      }
+                      {overviewData.details?.[WorkTimeCategory.Collaboration]
+                        ?.actualHours.toFixed(0)}
                       h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        overviewData.details?.[WorkTimeCategory.Collaboration]
-                          .differenceHours! > 0
+                        (overviewData.details?.[WorkTimeCategory.Collaboration]
+                          ?.differenceHours ?? 0) > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {overviewData.details?.[WorkTimeCategory.Collaboration]
-                        .differenceHours! > 0
+                      {(overviewData.details?.[WorkTimeCategory.Collaboration]
+                        ?.differenceHours ?? 0) > 0
                         ? "+"
                         : ""}
-                      {
-                        overviewData.details?.[WorkTimeCategory.Collaboration]
-                          .differenceHours!
-                      }
+                      {overviewData.details?.[WorkTimeCategory.Collaboration]
+                        ?.differenceHours.toFixed(0)}
                       h
                     </TableCell>
                   </TableRow>
@@ -260,39 +423,34 @@ export function ProfileScreen({
                       Weiterbildung
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {
-                        overviewData.details?.[
-                          WorkTimeCategory.FurtherEducation
-                        ].targetHours
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.FurtherEducation
+                      ]?.targetHours.toFixed(0)}
                       h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {
-                        overviewData.details?.[
-                          WorkTimeCategory.FurtherEducation
-                        ].actualHours
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.FurtherEducation
+                      ]?.actualHours.toFixed(0)}
                       h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        overviewData.details?.[
+                        (overviewData.details?.[
                           WorkTimeCategory.FurtherEducation
-                        ].differenceHours! > 0
+                        ]?.differenceHours ?? 0) > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {overviewData.details?.[WorkTimeCategory.FurtherEducation]
-                        .differenceHours! > 0
+                      {(overviewData.details?.[
+                        WorkTimeCategory.FurtherEducation
+                      ]?.differenceHours ?? 0) > 0
                         ? "+"
                         : ""}
-                      {
-                        overviewData.details?.[
-                          WorkTimeCategory.FurtherEducation
-                        ].differenceHours!
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.FurtherEducation
+                      ]?.differenceHours.toFixed(0)}
                       h
                     </TableCell>
                   </TableRow>
@@ -302,40 +460,34 @@ export function ProfileScreen({
                       Unterrichtskontrolle
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {
-                        overviewData.details?.[
-                          WorkTimeCategory.TeachingSupervision
-                        ]?.targetHours
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.TeachingSupervision
+                      ]?.targetHours.toFixed(0)}
                       h
                     </TableCell>
                     <TableCell className="text-xs py-2 text-right font-medium">
-                      {
-                        overviewData.details?.[
-                          WorkTimeCategory.TeachingSupervision
-                        ]?.actualHours
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.TeachingSupervision
+                      ]?.actualHours.toFixed(0)}
                       h
                     </TableCell>
                     <TableCell
                       className={`text-xs py-2 text-right font-medium ${
-                        overviewData.details?.[
+                        (overviewData.details?.[
                           WorkTimeCategory.TeachingSupervision
-                        ]?.differenceHours! > 0
+                        ]?.differenceHours ?? 0) > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {overviewData.details?.[
+                      {(overviewData.details?.[
                         WorkTimeCategory.TeachingSupervision
-                      ]?.differenceHours! > 0
+                      ]?.differenceHours ?? 0) > 0
                         ? "+"
                         : ""}
-                      {
-                        overviewData.details?.[
-                          WorkTimeCategory.TeachingSupervision
-                        ]?.differenceHours!
-                      }
+                      {overviewData.details?.[
+                        WorkTimeCategory.TeachingSupervision
+                      ]?.differenceHours.toFixed(0)}
                       h
                     </TableCell>
                   </TableRow>
@@ -356,13 +508,19 @@ export function ProfileScreen({
                   <div>
                     <span className="text-muted-foreground">Soll:</span>
                     <span className="font-medium ml-1">
-                      {overviewData.summary.totalTeacherWorkTime.targetHours}h
+                      {overviewData.summary.totalTeacherWorkTime.targetHours.toFixed(
+                        0,
+                      )}
+                      h
                     </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Ist:</span>
                     <span className="font-medium ml-1">
-                      {overviewData.summary.totalTeacherWorkTime.actualHours}h
+                      {overviewData.summary.totalTeacherWorkTime.actualHours.toFixed(
+                        0,
+                      )}
+                      h
                     </span>
                   </div>
                   <div>
@@ -379,7 +537,10 @@ export function ProfileScreen({
                       0
                         ? "+"
                         : ""}
-                      {overviewData.summary.totalTeacherWorkTime.balanceHours}h
+                      {overviewData.summary.totalTeacherWorkTime.balanceHours.toFixed(
+                        0,
+                      )}
+                      h
                     </span>
                   </div>
                 </div>
@@ -400,11 +561,14 @@ export function ProfileScreen({
                     {overviewData.summary.schoolManagementBalanceHours > 0
                       ? "+"
                       : ""}
-                    {overviewData.summary.schoolManagementBalanceHours}h
+                    {overviewData.summary.schoolManagementBalanceHours.toFixed(0)}
+                    h
                   </span>
                 </div>
               </div>
             </div>
+              </>
+            ) : null}
           </CardContent>
         </Card>
 

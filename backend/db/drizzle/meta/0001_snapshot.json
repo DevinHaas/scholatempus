@@ -1,6 +1,6 @@
 {
-  "id": "30ae4cd9-15e0-4216-b4f6-bb55e919a0cb",
-  "prevId": "0afb95e2-f305-4c3a-9d6c-864a9e09af8f",
+  "id": "18a55336-1809-4476-9351-f94a79e163ce",
+  "prevId": "d6d71fef-f544-4aca-9df3-1079d1eb240c",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -179,12 +179,12 @@
         },
         "date": {
           "name": "date",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },
-        "workamount": {
-          "name": "workamount",
+        "workingTime": {
+          "name": "workingTime",
           "type": "smallint",
           "primaryKey": false,
           "notNull": true
@@ -195,6 +195,20 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
+        },
+        "subcategory": {
+          "name": "subcategory",
+          "type": "subcategory",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isManually": {
+          "name": "isManually",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
@@ -237,11 +251,20 @@
       "name": "category",
       "schema": "public",
       "values": [
-        "Schulleitung",
-        "Unterrichten, beraten, begleiten",
-        "Zusammenarbeit",
-        "Weiterbildung",
-        "Unterrichtskontrolle"
+        "SchoolManagement",
+        "TeachingAdvisingSupporting",
+        "Collaboration",
+        "FurtherEducation",
+        "TeachingSupervision"
+      ]
+    },
+    "public.subcategory": {
+      "name": "subcategory",
+      "schema": "public",
+      "values": [
+        "class",
+        "preperation",
+        "supporting"
       ]
     }
   },

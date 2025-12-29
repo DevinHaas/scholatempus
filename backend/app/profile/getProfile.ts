@@ -16,11 +16,8 @@ export const getProfile = api(
     path: "/profile",
   },
   async (): Promise<GetProfileResponse> => {
-    console.log("get profile");
     const authData = getAuthData();
-    console.log(authData);
     if (!authData) {
-      console.log("not working this shit");
       throw APIError.unauthenticated("Not authenticated");
     }
     const userId = authData.userID;

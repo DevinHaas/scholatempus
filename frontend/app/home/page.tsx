@@ -1,9 +1,13 @@
 "use client"
 
 import { MainApp } from "@/features/app-shell"
+import { useUser } from "@clerk/nextjs"
 
 export default function HomePage() {
-  const testUser = { email: "test@example.com" }
+  const { user } = useUser()
+
+  // Middleware has already verified profile exists, so we can render directly
+  const testUser = { email: user?.emailAddresses[0]?.emailAddress ?? "test@example.com" }
 
   const testSetupData = {
     stufe: "Sekundarstufe I",

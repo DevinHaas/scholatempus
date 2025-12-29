@@ -4,6 +4,8 @@ import { getAuthData } from "~encore/auth";
 import { db } from "../../db";
 import { workTimeEntryTable } from "../../db/schema";
 import { eq } from "drizzle-orm";
+import { GetWorkEntriesResponse } from "~/shared/api-types";
+
 
 export const getWorkEntries = api(
   {
@@ -11,9 +13,9 @@ export const getWorkEntries = api(
     path: "/workentries",
     method: "GET",
   },
-  async () => {
+  async () : Promise<GetWorkEntriesResponse> => {
     const authData = getAuthData();
-    console.log(authData);
+    console.log("getWorkEntries");
     if (!authData) {
       throw APIError.unauthenticated("Not authenticated");
     }
@@ -25,13 +27,16 @@ export const getWorkEntries = api(
         .select()
         .from(workTimeEntryTable)
         .where(eq(workTimeEntryTable.userId, userId));
+      
+      console.log("work entries", workEntries);
 
       return {
         message: "Worktime entries fetched successfully",
         workEntries,
       };
     } catch (error) {
-      return APIError.notFound("Workentries could not be found for user");
+      console.log("error", error);
+      throw APIError.notFound("Workentries could not be found for user");
     }
   },
 );

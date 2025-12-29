@@ -29,3 +29,59 @@ export interface GetProfileResponse {
     } | null;
   };
 }
+
+export interface WorkEntry {
+  category: string;
+  subcategory: string | undefined;
+  workingTime: number;
+  isManually?: boolean;
+}
+
+export interface AddWorkEntriesRequest {
+  entries: WorkEntry[];
+}
+
+export interface AddWorkEntriesResponse {
+  message: string;
+  count: number;
+}
+
+export interface CheckProfileExistsResponse {
+  exists: boolean;
+}
+
+export interface GetWorkEntriesResponse {
+  message: string;
+  workEntries: Array<{
+    workTimeEntryId: number;
+    userId: string;
+    date: Date;
+    workingTime: number;
+    category: string;
+    subcategory: string | null;
+  }>;
+}
+
+export interface UpdateWorkEntryRequest {
+  category: string;
+  subcategory: string | undefined;
+  workingTime: number;
+  date?: Date;
+}
+
+export interface UpdateWorkEntryResponse {
+  message: string;
+  workEntry: {
+    workTimeEntryId: number;
+    userId: string;
+    date: Date;
+    workingTime: number;
+    category: string;
+    subcategory: string | null;
+    isManually: boolean;
+  };
+}
+
+export interface DeleteWorkEntryResponse {
+  message: string;
+}

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { calculateMandatoryLectures } from "@/lib/helpers/OverviewDataCalculators";
+import { calculateMandatoryLectures } from "@/lib/helpers/SetupCalculators";
 import {
   useClassData,
   useProfileDataActions,

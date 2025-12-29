@@ -4,7 +4,7 @@ import { ClassDataSetupComponent } from "@/components/classdata-setup-screen";
 import { OverviewScreen } from "@/components/overview-setup-screen";
 import { SchulleitungSetupComponent } from "@/components/specialfunction-setup-screen";
 import { useUser } from "@clerk/nextjs";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import {
   usePathname,
   useRouter,
@@ -13,7 +13,6 @@ import {
 } from "next/navigation";
 import { useCreateProfile } from "@/features/onboarding/hooks/createProfile";
 import { useClassData, useSpecialFunctionData } from "@/lib/stores/profileData";
-import { useGetProfile } from "@/features/onboarding/hooks/getProfile";
 import { ClassDataSetupSkeleton } from "@/components/classdata-skeleton";
 
 const DEFAULT_STEP = "setup" as const;
@@ -35,7 +34,6 @@ function createStepUrl(
 
 export default function Onboarding() {
   const { isPending, isError, data, mutate } = useCreateProfile();
-  const { data: profileData, isLoading: isProfileLoading } = useGetProfile();
   const classData = useClassData();
   const specialFunctionData = useSpecialFunctionData();
   const router = useRouter();
@@ -78,14 +76,8 @@ export default function Onboarding() {
     [currentStep, navigateToStep],
   );
 
-  // Redirect to home if profile already exists
-  useEffect(() => {
-    if (profileData) {
-      router.replace("/home");
-    }
-  }, [profileData, router]);
-
-  if (!isLoaded || isProfileLoading) {
+  // Middleware handles redirect if profile exists, so we only show skeleton while Clerk loads
+  if (!isLoaded) {
     return <ClassDataSetupSkeleton />;
   }
 

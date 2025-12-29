@@ -2,17 +2,13 @@
 
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useGetWorkEntries } from "@/features/profile/hooks/useGetWorkEntries";
 import { WorkEntriesTable, type WorkEntry } from "./WorkEntriesTable";
 import {
   getWeekStart,
-  getWeekEnd,
   getWeekRange,
-  formatWeekRange,
-  getNextWeek,
-  getPreviousWeek,
-  isDateInWeek,
+  isDateInRange,
 } from "@/lib/helpers/calendarHelpers";
 import { CategorySelectionDialog } from "@/features/home/components/CategorySelectionDialog";
 import { useDeleteWorkEntry } from "../hooks/useDeleteWorkEntry";
@@ -24,11 +20,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DateRangePicker } from "./DateRangePicker";
 
 export function CalendarScreen() {
-  const [currentWeekStart, setCurrentWeekStart] = useState(() =>
-    getWeekStart(new Date())
-  );
+  // Initialize with current week range
+  const [dateRange, setDateRange] = useState(() => {
+    const weekRange = getWeekRange(getWeekStart(new Date()));
+    return {
+      start: weekRange.start,
+      end: weekRange.end,
+    };
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -40,39 +42,22 @@ export function CalendarScreen() {
   const { data: allEntries = [], isLoading } = useGetWorkEntries();
   const deleteWorkEntryMutation = useDeleteWorkEntry();
 
-  const weekRange = useMemo(
-    () => getWeekRange(currentWeekStart),
-    [currentWeekStart]
-  );
-
-  // Filter entries for the current week
-  const weekEntries = useMemo(() => {
+  // Filter entries for the selected date range
+  const filteredEntries = useMemo(() => {
     return allEntries.filter((entry) => {
       const entryDate =
         typeof entry.date === "string" ? new Date(entry.date) : entry.date;
-      return isDateInWeek(entryDate, currentWeekStart);
+      return isDateInRange(entryDate, dateRange);
     });
-  }, [allEntries, currentWeekStart]);
-
-  const handlePreviousWeek = () => {
-    setCurrentWeekStart(getPreviousWeek(currentWeekStart));
-  };
-
-  const handleNextWeek = () => {
-    setCurrentWeekStart(getNextWeek(currentWeekStart));
-  };
-
-  const handleToday = () => {
-    setCurrentWeekStart(getWeekStart(new Date()));
-  };
+  }, [allEntries, dateRange]);
 
   const handleAddEntry = () => {
     setEditingEntry(null);
-    // Default to today if in current week, otherwise first day of week
+    // Default to today if in current range, otherwise start of range
     const today = new Date();
-    const defaultDate = isDateInWeek(today, currentWeekStart)
+    const defaultDate = isDateInRange(today, dateRange)
       ? today
-      : currentWeekStart;
+      : dateRange.start;
     setSelectedDateForNewEntry(defaultDate);
     setDialogOpen(true);
   };
@@ -113,40 +98,13 @@ export function CalendarScreen() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground mb-4">Calendar</h1>
 
-          {/* Week Navigation */}
+          {/* Date Range Picker and Actions */}
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePreviousWeek}
-                className="h-8"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="text-center min-w-[200px]">
-                <div className="text-sm font-medium">
-                  {formatWeekRange(weekRange.start, weekRange.end)}
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleNextWeek}
-                className="h-8"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleToday}>
-                Today
-              </Button>
-              <Button onClick={handleAddEntry} size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Entry
-              </Button>
-            </div>
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
+            <Button onClick={handleAddEntry} size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Entry
+            </Button>
           </div>
         </div>
 
@@ -157,7 +115,7 @@ export function CalendarScreen() {
           </div>
         ) : (
           <WorkEntriesTable
-            data={weekEntries}
+            data={filteredEntries}
             onEdit={handleEditEntry}
             onDelete={handleDeleteClick}
           />

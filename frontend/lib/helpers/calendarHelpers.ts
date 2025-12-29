@@ -1,4 +1,24 @@
-import { format, startOfWeek, endOfWeek, isWithinInterval, addWeeks, subWeeks } from "date-fns";
+import {
+  format,
+  startOfWeek,
+  endOfWeek,
+  isWithinInterval,
+  addWeeks,
+  subWeeks,
+  startOfDay,
+  endOfDay,
+  startOfToday,
+  startOfYesterday,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+  subDays,
+  subMonths,
+  subYears,
+  addMonths,
+  isSameDay,
+} from "date-fns";
 
 /**
  * Get the Monday of the week for a given date
@@ -82,5 +102,132 @@ export function getPreviousWeek(weekStart: Date): Date {
 export function formatDateForTable(date: Date | string): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
   return format(dateObj, "EEE, MMM d");
+}
+
+/**
+ * Format a date range for display
+ */
+export function formatDateRange(start: Date, end: Date): string {
+  const startFormatted = format(start, "MMM d, yyyy");
+  const endFormatted = format(end, "MMM d, yyyy");
+  return `${startFormatted} - ${endFormatted}`;
+}
+
+/**
+ * Check if a date is within a date range
+ */
+export function isDateInRange(
+  date: Date,
+  range: { start: Date; end: Date }
+): boolean {
+  return isWithinInterval(date, {
+    start: startOfDay(range.start),
+    end: endOfDay(range.end),
+  });
+}
+
+/**
+ * Get preset date ranges
+ */
+export type DateRangePreset =
+  | "today"
+  | "yesterday"
+  | "thisWeek"
+  | "lastWeek"
+  | "thisMonth"
+  | "lastMonth"
+  | "thisYear"
+  | "lastYear"
+  | "allTime"
+  | "24hours"
+  | "7days"
+  | "30days"
+  | "12months";
+
+export function getDateRangePreset(
+  preset: DateRangePreset
+): { start: Date; end: Date } {
+  const today = startOfToday();
+  const yesterday = startOfYesterday();
+
+  switch (preset) {
+    case "today":
+      return {
+        start: startOfDay(today),
+        end: endOfDay(today),
+      };
+    case "yesterday":
+      return {
+        start: startOfDay(yesterday),
+        end: endOfDay(yesterday),
+      };
+    case "thisWeek":
+      return {
+        start: startOfWeek(today, { weekStartsOn: 1 }),
+        end: endOfWeek(today, { weekStartsOn: 1 }),
+      };
+    case "lastWeek":
+      const lastWeekStart = subWeeks(
+        startOfWeek(today, { weekStartsOn: 1 }),
+        1
+      );
+      return {
+        start: lastWeekStart,
+        end: endOfWeek(lastWeekStart, { weekStartsOn: 1 }),
+      };
+    case "thisMonth":
+      return {
+        start: startOfMonth(today),
+        end: endOfMonth(today),
+      };
+    case "lastMonth":
+      const lastMonth = subMonths(today, 1);
+      return {
+        start: startOfMonth(lastMonth),
+        end: endOfMonth(lastMonth),
+      };
+    case "thisYear":
+      return {
+        start: startOfYear(today),
+        end: endOfYear(today),
+      };
+    case "lastYear":
+      const lastYear = subYears(today, 1);
+      return {
+        start: startOfYear(lastYear),
+        end: endOfYear(lastYear),
+      };
+    case "24hours":
+      return {
+        start: subDays(today, 1),
+        end: endOfDay(today),
+      };
+    case "7days":
+      return {
+        start: subDays(today, 6),
+        end: endOfDay(today),
+      };
+    case "30days":
+      return {
+        start: subDays(today, 29),
+        end: endOfDay(today),
+      };
+    case "12months":
+      return {
+        start: subMonths(today, 11),
+        end: endOfDay(today),
+      };
+    case "allTime":
+      // Return a very wide range - in practice, you might want to use a specific start date
+      return {
+        start: new Date(2000, 0, 1),
+        end: endOfDay(today),
+      };
+    default:
+      return {
+        start: startOfDay(today),
+        end: endOfDay(today),
+      };
+  }
 }
 

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "react-day-picker/dist/style.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -37,6 +38,19 @@
   --sidebar-accent-foreground: oklch(0.15 0.02 258);
   --sidebar-border: oklch(0.9 0.01 258);
   --sidebar-ring: oklch(0.55 0.18 258);
+  
+  /* React Day Picker responsive variables */
+  --rdp-day-height: 2.75rem; /* ~44px at 16px base */
+  --rdp-day-width: 2.75rem;
+  --rdp-day_button-height: 2.625rem; /* ~42px at 16px base */
+  --rdp-day_button-width: 2.625rem;
+  --rdp-day_button-border-radius: 100%;
+  --rdp-day_button-border: 2px solid transparent;
+  --rdp-selected-border: 2px solid var(--rdp-accent-color);
+  --rdp-disabled-opacity: 0.5;
+  --rdp-outside-opacity: 0.75;
+  --rdp-today-color: var(--rdp-accent-color);
+  --rdp-accent-color: var(--primary);
 }
 
 .dark {
@@ -67,6 +81,9 @@
   --sidebar-accent-foreground: oklch(0.95 0.005 106);
   --sidebar-border: oklch(0.2 0.025 258);
   --sidebar-ring: oklch(0.65 0.15 258);
+  
+  /* React Day Picker dark mode variables */
+  --rdp-accent-color: var(--primary);
 }
 
 @theme inline {

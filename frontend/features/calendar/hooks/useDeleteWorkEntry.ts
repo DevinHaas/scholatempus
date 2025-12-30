@@ -30,3 +30,4 @@ const deleteWorkEntry = async (entryId: number) => {
     .then((res) => res.data);
 };
 
+

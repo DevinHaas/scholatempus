@@ -128,8 +128,8 @@ export function ProfileScreen({
   const [currentSchulleitungData, setCurrentSchulleitungData] =
     useState<SpecialFunctionData | undefined>(undefined);
   const [profileData, setProfileData] = useState({
-    name: "Devin Hasler",
-    username: "devinhasler1023",
+    name: clerkUser?.firstName || "",
+    username: clerkUser?.emailAddresses[0]?.emailAddress || "",
   });
 
   // Fetch profile and work entries
@@ -213,24 +213,20 @@ export function ProfileScreen({
   }, [displayName, displayEmail]);
 
   const handleSaveSettings = (
-    newSetupData: any,
-    newSchulleitungData: any,
+    newSetupData: ClassData,
+    newSchulleitungData: SpecialFunctionData,
     newProfileData: any,
   ) => {
+    // The profile will be automatically refetched via useGetProfile
+    // due to query invalidation in useCreateProfile hook
+    // This is just for immediate UI update if needed
     setCurrentSetupData(newSetupData);
     setCurrentSchulleitungData(newSchulleitungData);
     setProfileData(newProfileData);
-    console.log("Settings saved:", {
-      newSetupData,
-      newSchulleitungData,
-      newProfileData,
-    });
   };
 
-  const isTableLoading = isLoading || !overviewData;
-
   // Show error state if profile fetch failed (but work entries might still be loading/empty)
-  if (profileError && !profile && !isLoadingProfile) {
+  if (profileError && !profile) {
     return (
       <div className="min-h-screen bg-background p-4">
         <div className="max-w-md mx-auto space-y-6">
@@ -268,9 +264,9 @@ export function ProfileScreen({
             <AvatarFallback>{avatarFallback}</AvatarFallback>
           </Avatar>
           <h2 className="text-xl font-semibold text-foreground">
-            {displayName}
+            {clerkUser?.firstName} {clerkUser?.lastName}
           </h2>
-          <p className="text-sm text-muted-foreground">{displayEmail}</p>
+          <p className="text-sm text-muted-foreground">{clerkUser?.emailAddresses[0]?.emailAddress}</p>
         </div>
 
         <Card className="border-border/50 shadow-lg">

@@ -1,1 +1,1 @@
-export { MainApp } from "./components/MainApp";
+export { TabNavigation } from "./components/TabNavigation";

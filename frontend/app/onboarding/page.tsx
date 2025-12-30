@@ -1,8 +1,8 @@
 "use client";
 
-import { ClassDataSetupComponent } from "@/components/classdata-setup-screen";
-import { OverviewScreen } from "@/components/overview-setup-screen";
-import { SchulleitungSetupComponent } from "@/components/specialfunction-setup-screen";
+import { ClassDataSetupComponent } from "@/features/onboarding/components/classdata-setup-screen";
+import { OverviewScreen } from "@/features/onboarding/components/overview-setup-screen";
+import { SchulleitungSetupComponent } from "@/features/onboarding/components/specialfunction-setup-screen";
 import { useUser } from "@clerk/nextjs";
 import { useCallback } from "react";
 import {
@@ -13,7 +13,7 @@ import {
 } from "next/navigation";
 import { useCreateProfile } from "@/features/onboarding/hooks/createProfile";
 import { useClassData, useSpecialFunctionData } from "@/lib/stores/profileData";
-import { ClassDataSetupSkeleton } from "@/components/classdata-skeleton";
+import { ClassDataSetupSkeleton } from "@/features/onboarding/components/classdata-skeleton";
 
 const DEFAULT_STEP = "setup" as const;
 const ONBOARDING_STEPS = ["setup", "schulleitung", "overview"] as const;

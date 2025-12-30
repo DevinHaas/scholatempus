@@ -34,9 +34,9 @@ import {
 import type { WeeklyLessonsForTransportation } from "scholatempus-backend/shared";
 import { z } from "zod";
 import { useForm } from "@tanstack/react-form";
-import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../../../components/ui/field";
 import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../../../components/ui/input-group";
 
 interface SchulleitungSetupScreenProps {
   onCompleteAction: () => void;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useGetWorkEntries } from "@/features/profile/hooks/useGetWorkEntries";
@@ -109,17 +109,15 @@ export function CalendarScreen() {
         </div>
 
         {/* Work Entries Table */}
-        {isLoading ? (
-          <div className="text-center py-8 text-muted-foreground">
-            Loading entries...
-          </div>
-        ) : (
-          <WorkEntriesTable
-            data={filteredEntries}
+        <div className="w-full">
+          <Suspense fallback={<div>Loading Entries...</div>}>
+            <WorkEntriesTable
+              data={filteredEntries}
             onEdit={handleEditEntry}
             onDelete={handleDeleteClick}
-          />
-        )}
+            />
+          </Suspense>
+        </div>
 
         {/* Add/Edit Entry Dialog */}
         <CategorySelectionDialog

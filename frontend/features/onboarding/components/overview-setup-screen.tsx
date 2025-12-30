@@ -14,7 +14,7 @@ import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import { useWorkTimeOverview, useHydration } from "@/lib/stores/profileData";
 import { ArrowLeft } from "lucide-react";
 import { WorkTimeCategory } from "scholatempus-backend/shared";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "../../../components/ui/spinner";
 
 interface OverviewScreenProps {
   onCompleteAction: () => void;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -39,7 +39,7 @@ import {
 } from "@/lib/helpers/calculateWorkTimeOverview";
 
 interface ProfileScreenProps {
-  user: { email: string } | null;
+  user: { email: string | null } | null;
   setupData: any;
   schulleitungData: any;
 }
@@ -121,14 +121,12 @@ function WorkTimeTableSkeleton() {
 
 export function ProfileScreen({
   user,
-  setupData,
-  schulleitungData,
 }: ProfileScreenProps) {
   const { user: clerkUser } = useUser();
   const [showSettings, setShowSettings] = useState(false);
-  const [currentSetupData, setCurrentSetupData] = useState(setupData);
+  const [currentSetupData, setCurrentSetupData] = useState<ClassData | undefined>(undefined);
   const [currentSchulleitungData, setCurrentSchulleitungData] =
-    useState(schulleitungData);
+    useState<SpecialFunctionData | undefined>(undefined);
   const [profileData, setProfileData] = useState({
     name: "Devin Hasler",
     username: "devinhasler1023",
@@ -159,6 +157,7 @@ export function ProfileScreen({
       mandatoryLectures: profile.classData.mandatoryLectures,
       carryOverLectures: profile.classData.carryOverLectures,
     };
+    setCurrentSetupData(classData);
 
     const specialFunctionData: SpecialFunctionData = {
       headshipEmploymentFactor:
@@ -168,7 +167,7 @@ export function ProfileScreen({
       weeklyLessonsForTransportation:
         profile.specialFunctionData.weeklyLessonsForTransportation,
     };
-
+    setCurrentSchulleitungData(specialFunctionData);
     // Aggregate work entries by category
     const actualHoursPerCategory = aggregateWorkEntriesByCategory(workEntries);
 
@@ -281,295 +280,295 @@ export function ProfileScreen({
               Vergleich zwischen Soll-Zustand und Ist-Zustand
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {isTableLoading ? (
-              <WorkTimeTableSkeleton />
-            ) : overviewData ? (
-              <>
-                {/* Total Employment Level */}
-                <div className="bg-green-400 text-black px-3 py-2 rounded font-medium text-sm">
-                  Tot. Beschäftigungsgrad:{" "}
-                  {overviewData.summary.totalEmploymentFactor.toFixed(2)}%
-                </div>
-                {overviewData.summary.totalEmploymentFactor > 105 && (
-                  <div className="bg-red-400 text-black px-3 py-2 rounded font-medium text-sm">
-                    Warnung: Beschäftigungsgrad zu hoch!
+          <Suspense fallback={<WorkTimeTableSkeleton />}>
+            <CardContent className="space-y-4">
+              {overviewData ? (
+                <>
+                  {/* Total Employment Level */}
+                  <div className="bg-green-400 text-black px-3 py-2 rounded font-medium text-sm">
+                    Tot. Beschäftigungsgrad:{" "}
+                    {overviewData.summary.totalEmploymentFactor.toFixed(2)}%
                   </div>
-                )}
+                  {overviewData.summary.totalEmploymentFactor > 105 && (
+                    <div className="bg-red-400 text-black px-3 py-2 rounded font-medium text-sm">
+                      Warnung: Beschäftigungsgrad zu hoch!
+                    </div>
+                  )}
 
-                <div className="border rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-300 hover:bg-gray-400">
-                    <TableHead className="text-black font-medium text-xs h-8">
-                      Kategorie
-                    </TableHead>
-                    <TableHead className="text-black font-medium text-xs h-8 text-right">
-                      Soll
-                    </TableHead>
-                    <TableHead className="text-black font-medium text-xs h-8 text-right">
-                      Ist
-                    </TableHead>
-                    <TableHead className="text-black font-medium text-xs h-8 text-right">
-                      Differenz
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow className="bg-yellow-300 hover:bg-yellow-400">
-                    <TableCell className="text-xs py-2">Schulleitung</TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[
-                        WorkTimeCategory.SchoolManagement
-                      ]?.targetHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[
-                        WorkTimeCategory.SchoolManagement
-                      ]?.actualHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell
-                      className={`text-xs py-2 text-right font-medium ${
-                        (overviewData.details?.[
+                  <div className="border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-300 hover:bg-gray-400">
+                      <TableHead className="text-black font-medium text-xs h-8">
+                        Kategorie
+                      </TableHead>
+                      <TableHead className="text-black font-medium text-xs h-8 text-right">
+                        Soll
+                      </TableHead>
+                      <TableHead className="text-black font-medium text-xs h-8 text-right">
+                        Ist
+                      </TableHead>
+                      <TableHead className="text-black font-medium text-xs h-8 text-right">
+                        Differenz
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow className="bg-yellow-300 hover:bg-yellow-400">
+                      <TableCell className="text-xs py-2">Schulleitung</TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[
+                          WorkTimeCategory.SchoolManagement
+                        ]?.targetHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[
+                          WorkTimeCategory.SchoolManagement
+                        ]?.actualHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell
+                        className={`text-xs py-2 text-right font-medium ${
+                          (overviewData.details?.[
+                            WorkTimeCategory.SchoolManagement
+                          ]?.differenceHours ?? 0) > 0
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {(overviewData.details?.[
                           WorkTimeCategory.SchoolManagement
                         ]?.differenceHours ?? 0) > 0
-                          ? "text-red-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {(overviewData.details?.[
-                        WorkTimeCategory.SchoolManagement
-                      ]?.differenceHours ?? 0) > 0
-                        ? "+"
-                        : ""}
-                      {overviewData.details?.[
-                        WorkTimeCategory.SchoolManagement
-                      ]?.differenceHours.toFixed(0)}
-                      h
-                    </TableCell>
-                  </TableRow>
+                          ? "+"
+                          : ""}
+                        {overviewData.details?.[
+                          WorkTimeCategory.SchoolManagement
+                        ]?.differenceHours.toFixed(0)}
+                        h
+                      </TableCell>
+                    </TableRow>
 
-                  <TableRow className="bg-blue-100 hover:bg-blue-100">
-                    <TableCell className="text-xs py-2">
-                      Unterrichten, beraten, begleiten
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[
-                        WorkTimeCategory.TeachingAdvisingSupporting
-                      ]?.targetHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[
-                        WorkTimeCategory.TeachingAdvisingSupporting
-                      ]?.actualHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell
-                      className={`text-xs py-2 text-right font-medium ${
-                        (overviewData.details?.[
+                    <TableRow className="bg-blue-100 hover:bg-blue-100">
+                      <TableCell className="text-xs py-2">
+                        Unterrichten, beraten, begleiten
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[
+                          WorkTimeCategory.TeachingAdvisingSupporting
+                        ]?.targetHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[
+                          WorkTimeCategory.TeachingAdvisingSupporting
+                        ]?.actualHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell
+                        className={`text-xs py-2 text-right font-medium ${
+                          (overviewData.details?.[
+                            WorkTimeCategory.TeachingAdvisingSupporting
+                          ]?.differenceHours ?? 0) > 0
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {(overviewData.details?.[
                           WorkTimeCategory.TeachingAdvisingSupporting
                         ]?.differenceHours ?? 0) > 0
-                          ? "text-red-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {(overviewData.details?.[
-                        WorkTimeCategory.TeachingAdvisingSupporting
-                      ]?.differenceHours ?? 0) > 0
-                        ? "+"
-                        : ""}
-                      {overviewData.details?.[
-                        WorkTimeCategory.TeachingAdvisingSupporting
-                      ]?.differenceHours.toFixed(0)}
-                      h
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className="bg-blue-100 hover:bg-blue-100">
-                    <TableCell className="text-xs py-2">
-                      Zusammenarbeit
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[WorkTimeCategory.Collaboration]
-                        ?.targetHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[WorkTimeCategory.Collaboration]
-                        ?.actualHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell
-                      className={`text-xs py-2 text-right font-medium ${
-                        (overviewData.details?.[WorkTimeCategory.Collaboration]
+                          ? "+"
+                          : ""}
+                        {overviewData.details?.[
+                          WorkTimeCategory.TeachingAdvisingSupporting
+                        ]?.differenceHours.toFixed(0)}
+                        h
+                      </TableCell>
+                    </TableRow>
+                    <TableRow className="bg-blue-100 hover:bg-blue-100">
+                      <TableCell className="text-xs py-2">
+                        Zusammenarbeit
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[WorkTimeCategory.Collaboration]
+                          ?.targetHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[WorkTimeCategory.Collaboration]
+                          ?.actualHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell
+                        className={`text-xs py-2 text-right font-medium ${
+                          (overviewData.details?.[WorkTimeCategory.Collaboration]
+                            ?.differenceHours ?? 0) > 0
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {(overviewData.details?.[WorkTimeCategory.Collaboration]
                           ?.differenceHours ?? 0) > 0
-                          ? "text-red-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {(overviewData.details?.[WorkTimeCategory.Collaboration]
-                        ?.differenceHours ?? 0) > 0
-                        ? "+"
-                        : ""}
-                      {overviewData.details?.[WorkTimeCategory.Collaboration]
-                        ?.differenceHours.toFixed(0)}
-                      h
-                    </TableCell>
-                  </TableRow>
-                  <TableRow className="bg-blue-100 hover:bg-blue-100">
-                    <TableCell className="text-xs py-2">
-                      Weiterbildung
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[
-                        WorkTimeCategory.FurtherEducation
-                      ]?.targetHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[
-                        WorkTimeCategory.FurtherEducation
-                      ]?.actualHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell
-                      className={`text-xs py-2 text-right font-medium ${
-                        (overviewData.details?.[
+                          ? "+"
+                          : ""}
+                        {overviewData.details?.[WorkTimeCategory.Collaboration]
+                          ?.differenceHours.toFixed(0)}
+                        h
+                      </TableCell>
+                    </TableRow>
+                    <TableRow className="bg-blue-100 hover:bg-blue-100">
+                      <TableCell className="text-xs py-2">
+                        Weiterbildung
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[
+                          WorkTimeCategory.FurtherEducation
+                        ]?.targetHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[
+                          WorkTimeCategory.FurtherEducation
+                        ]?.actualHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell
+                        className={`text-xs py-2 text-right font-medium ${
+                          (overviewData.details?.[
+                            WorkTimeCategory.FurtherEducation
+                          ]?.differenceHours ?? 0) > 0
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {(overviewData.details?.[
                           WorkTimeCategory.FurtherEducation
                         ]?.differenceHours ?? 0) > 0
-                          ? "text-red-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {(overviewData.details?.[
-                        WorkTimeCategory.FurtherEducation
-                      ]?.differenceHours ?? 0) > 0
-                        ? "+"
-                        : ""}
-                      {overviewData.details?.[
-                        WorkTimeCategory.FurtherEducation
-                      ]?.differenceHours.toFixed(0)}
-                      h
-                    </TableCell>
-                  </TableRow>
+                          ? "+"
+                          : ""}
+                        {overviewData.details?.[
+                          WorkTimeCategory.FurtherEducation
+                        ]?.differenceHours.toFixed(0)}
+                        h
+                      </TableCell>
+                    </TableRow>
 
-                  <TableRow className="bg-orange-200 hover:bg-orange-200">
-                    <TableCell className="text-xs py-2">
-                      Unterrichtskontrolle
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[
-                        WorkTimeCategory.TeachingSupervision
-                      ]?.targetHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell className="text-xs py-2 text-right font-medium">
-                      {overviewData.details?.[
-                        WorkTimeCategory.TeachingSupervision
-                      ]?.actualHours.toFixed(0)}
-                      h
-                    </TableCell>
-                    <TableCell
-                      className={`text-xs py-2 text-right font-medium ${
-                        (overviewData.details?.[
+                    <TableRow className="bg-orange-200 hover:bg-orange-200">
+                      <TableCell className="text-xs py-2">
+                        Unterrichtskontrolle
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[
+                          WorkTimeCategory.TeachingSupervision
+                        ]?.targetHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell className="text-xs py-2 text-right font-medium">
+                        {overviewData.details?.[
+                          WorkTimeCategory.TeachingSupervision
+                        ]?.actualHours.toFixed(0)}
+                        h
+                      </TableCell>
+                      <TableCell
+                        className={`text-xs py-2 text-right font-medium ${
+                          (overviewData.details?.[
+                            WorkTimeCategory.TeachingSupervision
+                          ]?.differenceHours ?? 0) > 0
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {(overviewData.details?.[
                           WorkTimeCategory.TeachingSupervision
                         ]?.differenceHours ?? 0) > 0
-                          ? "text-red-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {(overviewData.details?.[
-                        WorkTimeCategory.TeachingSupervision
-                      ]?.differenceHours ?? 0) > 0
-                        ? "+"
-                        : ""}
-                      {overviewData.details?.[
-                        WorkTimeCategory.TeachingSupervision
-                      ]?.differenceHours.toFixed(0)}
-                      h
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
+                          ? "+"
+                          : ""}
+                        {overviewData.details?.[
+                          WorkTimeCategory.TeachingSupervision
+                        ]?.differenceHours.toFixed(0)}
+                        h
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
 
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <h3 className="font-medium text-sm mb-2">Zusammenfassung</h3>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <h3 className="font-medium text-sm mb-2">Zusammenfassung</h3>
 
-              <div className="bg-purple-100 p-3 rounded border">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs font-semibold">
-                    Arbeitszeit Lehrperson Total
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div>
-                    <span className="text-muted-foreground">Soll:</span>
-                    <span className="font-medium ml-1">
-                      {overviewData.summary.totalTeacherWorkTime.targetHours.toFixed(
-                        0,
-                      )}
-                      h
+                <div className="bg-purple-100 p-3 rounded border">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-semibold">
+                      Arbeitszeit Lehrperson Total
                     </span>
                   </div>
-                  <div>
-                    <span className="text-muted-foreground">Ist:</span>
-                    <span className="font-medium ml-1">
-                      {overviewData.summary.totalTeacherWorkTime.actualHours.toFixed(
-                        0,
-                      )}
-                      h
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Bilanz:</span>
-                    <span
-                      className={`font-bold ml-1 ${
-                        overviewData.summary.totalTeacherWorkTime.balanceHours >
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div>
+                      <span className="text-muted-foreground">Soll:</span>
+                      <span className="font-medium ml-1">
+                        {overviewData.summary.totalTeacherWorkTime.targetHours.toFixed(
+                          0,
+                        )}
+                        h
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Ist:</span>
+                      <span className="font-medium ml-1">
+                        {overviewData.summary.totalTeacherWorkTime.actualHours.toFixed(
+                          0,
+                        )}
+                        h
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Bilanz:</span>
+                      <span
+                        className={`font-bold ml-1 ${
+                          overviewData.summary.totalTeacherWorkTime.balanceHours >
+                          0
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {overviewData.summary.totalTeacherWorkTime.balanceHours >
                         0
+                          ? "+"
+                          : ""}
+                        {overviewData.summary.totalTeacherWorkTime.balanceHours.toFixed(
+                          0,
+                        )}
+                        h
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-100 p-3 rounded border">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-semibold">
+                      Az Schulleitung Bilanz
+                    </span>
+                    <span
+                      className={`text-xs font-bold ${
+                        overviewData.summary.schoolManagementBalanceHours > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {overviewData.summary.totalTeacherWorkTime.balanceHours >
-                      0
+                      {overviewData.summary.schoolManagementBalanceHours > 0
                         ? "+"
                         : ""}
-                      {overviewData.summary.totalTeacherWorkTime.balanceHours.toFixed(
-                        0,
-                      )}
+                      {overviewData.summary.schoolManagementBalanceHours.toFixed(0)}
                       h
                     </span>
                   </div>
                 </div>
               </div>
-
-              <div className="bg-yellow-100 p-3 rounded border">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-semibold">
-                    Az Schulleitung Bilanz
-                  </span>
-                  <span
-                    className={`text-xs font-bold ${
-                      overviewData.summary.schoolManagementBalanceHours > 0
-                        ? "text-red-600"
-                        : "text-green-600"
-                    }`}
-                  >
-                    {overviewData.summary.schoolManagementBalanceHours > 0
-                      ? "+"
-                      : ""}
-                    {overviewData.summary.schoolManagementBalanceHours.toFixed(0)}
-                    h
-                  </span>
-                </div>
-              </div>
-            </div>
               </>
-            ) : null}
-          </CardContent>
+            ) : <WorkTimeTableSkeleton />}
+            </CardContent>
+          </Suspense>
         </Card>
 
         <SettingsDialog

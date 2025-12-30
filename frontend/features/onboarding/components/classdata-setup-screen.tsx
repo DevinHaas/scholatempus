@@ -27,7 +27,7 @@ import {
 import { classDataFormSchema, type SetupFormData } from "@/lib/validations";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
-import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../../../components/ui/field";
 import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import {
   ClassData,

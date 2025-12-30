@@ -3,9 +3,20 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const { isSignedIn, isLoaded } = useUser();
+  const router = useRouter();
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  // Redirect authenticated users to /home
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.push("/home");
+    }
+  }, [isLoaded, isSignedIn, router]);
 
   useEffect(() => {
     const start = Date.now();

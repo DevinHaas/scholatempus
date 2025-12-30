@@ -4,7 +4,14 @@ import { NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)", "/"]);
 const isHomeRoute = createRouteMatcher(["/home(.*)"]);
+const isCalendarRoute = createRouteMatcher(["/calendar(.*)"]);
+const isProfileRoute = createRouteMatcher(["/profile(.*)"]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
+const isMainAppRoute = createRouteMatcher([
+  "/home(.*)",
+  "/calendar(.*)",
+  "/profile(.*)",
+]);
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -14,13 +21,16 @@ export default clerkMiddleware(async (authFn, req) => {
     await authFn.protect();
   }
 
-  // Only check profile for authenticated users on home/onboarding routes
+  // Only check profile for authenticated users on main app/onboarding routes
   if (!isPublicRoute(req)) {
     const url = req.nextUrl.clone();
     const isHome = isHomeRoute(req);
+    const isCalendar = isCalendarRoute(req);
+    const isProfile = isProfileRoute(req);
     const isOnboarding = isOnboardingRoute(req);
+    const isMainApp = isMainAppRoute(req);
 
-    if (isHome || isOnboarding) {
+    if (isMainApp || isOnboarding) {
       try {
         // Get auth token for API call
         const { getToken } = await auth();
@@ -45,8 +55,8 @@ export default clerkMiddleware(async (authFn, req) => {
           const profileExists = data.exists ?? false;
 
           // Redirect logic
-          if (isHome && !profileExists) {
-            // User trying to access home without profile -> redirect to onboarding
+          if (isMainApp && !profileExists) {
+            // User trying to access main app routes without profile -> redirect to onboarding
             url.pathname = "/onboarding";
             return NextResponse.redirect(url);
           } else if (isOnboarding && profileExists) {

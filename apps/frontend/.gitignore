@@ -1,0 +1,23 @@
+# Next.js build outputs
+.next/
+out/
+.vercel/
+
+# Next.js cache
+.next/cache/
+
+# Production build
+dist/
+build/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local env files (if not already in root)
+.env*.local
+
+# TypeScript build info
+*.tsbuildinfo

@@ -1,0 +1,38 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "name": "scholatempus-backend",
+  "private": true,
+  "version": "0.0.1",
+  "description": "The official backend for scholatempus",
+  "license": "MPL-2.0",
+  "type": "module",
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.27",
+    "@types/pg": "^8.15.6",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "drizzle-kit": "^0.31.6",
+    "tsx": "^4.20.6",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@clerk/backend": "^1.18.0",
+    "@clerk/clerk-react": "^5.17.1",
+    "@dotenvx/dotenvx": "^1.51.0",
+    "@scholatempus/shared": "workspace:*",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
+    "encore.dev": "^1.53.2",
+    "pg": "^8.16.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.16.0",
+    "zod": "^3.25.76"
+  }
+}

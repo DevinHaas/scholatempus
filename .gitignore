@@ -1,7 +1,13 @@
 node_modules
 pnpm-lock.yaml
-node_modules/.pnpm
-node_modules/.pnpm
 .env
 .env.local
-.vscode/
+
+# IDE and editor directories (root level)
+/.vscode/
+/.cursor/
+/.github/
+/.pnpm-store/
+
+.nx/cache
+.nx/workspace-data

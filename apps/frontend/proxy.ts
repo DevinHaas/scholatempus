@@ -18,10 +18,8 @@ export default clerkMiddleware(async (auth, req) => {
   if (authResult.userId) {
     // Access profileExists from sessionClaims (configured in Clerk Dashboard)
     const sessionClaims = authResult.sessionClaims;
-    console.log("sessionClaims", sessionClaims);
     // profileExists is now available in sessionClaims since it's configured in the session token
     const profileExists = sessionClaims?.profileExists as boolean | undefined;
-    console.log("profileExists", profileExists);
 
     // Redirect to onboarding if profile doesn't exist (false or undefined)
     if (isProfileRequiredRoute(req) && profileExists !== true) {

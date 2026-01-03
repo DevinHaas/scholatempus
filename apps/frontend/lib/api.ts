@@ -4,6 +4,8 @@ import { Clerk } from "@clerk/clerk-js";
 export const baseURL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
+console.log("baseURL", baseURL);
+
 export const api = axios.create({
   baseURL: baseURL,
   timeout: 10000,

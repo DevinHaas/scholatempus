@@ -3,6 +3,8 @@ nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = [
+  # Install pnpm globally (corepack might not be available)
+  "npm install -g pnpm@9 || corepack enable || true",
   # Install dependencies from repo root (monorepo requires lockfile at root)
   "cd ../.. && pnpm install --frozen-lockfile"
 ]

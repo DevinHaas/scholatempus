@@ -91,9 +91,7 @@ jobs:
 
       - name: Trigger Coolify Deployment
         run: |
-          curl --request GET "${{ secrets.COOLIFY_WEBHOOK }}" \
-            --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-            --fail-with-body
+          curl --request GET "${{ secrets.COOLIFY_WEBHOOK_BACKEND }}" --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
           echo "Coolify backend deployment triggered successfully"
 
       - name: Display build info

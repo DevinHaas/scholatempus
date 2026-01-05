@@ -1,0 +1,20 @@
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = [
+  # Install dependencies from repo root (monorepo requires lockfile at root)
+  "cd ../.. && pnpm install --frozen-lockfile"
+]
+
+[phases.build]
+cmds = [
+  "cd apps/frontend && pnpm build"
+]
+
+[start]
+cmd = "cd apps/frontend && pnpm start"
+
+[variables]
+NODE_ENV = "production"
+NIXPACKS_NODE_VERSION = "20"

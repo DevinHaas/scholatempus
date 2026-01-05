@@ -106,4 +106,3 @@ jobs:
           echo "Latest image: ${{ steps.image-tags.outputs.latest_tag }}"
           echo "=========================================="
 
-

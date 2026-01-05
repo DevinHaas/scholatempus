@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit3 } from "lucide-react";
 import { CategorySelectionDialog } from "./CategorySelectionDialog";
-import { useAddWorkEntries } from "../hooks/addWorkEntries";
-import { AddWorkEntriesRequest } from "@scholatempus/shared";
-import { TimeEntry } from "@scholatempus/shared";
 
 export function HomeScreen() {
   const [isTracking, setIsTracking] = useState(false);
@@ -14,7 +11,6 @@ export function HomeScreen() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const [isManually, setIsManually] = useState(false);
-  const addWorkEntriesMutation = useAddWorkEntries();
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;

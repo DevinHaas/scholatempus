@@ -5,6 +5,7 @@ import { ProfileScreen } from "@/features/profile";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { GradeLevel } from "@scholatempus/shared";
 
 function ProfileScreenSkeleton() {
   return (
@@ -56,17 +57,17 @@ function ProfileContent() {
   };
 
   const testSetupData = {
-    stufe: "Sekundarstufe I",
-    anzahlLektionen: "28",
-    pflichtlektionen: "26",
-    uebertragSemester: "2",
+    grade: GradeLevel.GymnasiumAcademicTrack,
+    givenLectures: 28,
+    mandatoryLectures: 26,
+    carryOverLectures: 2,
   };
 
   const testSchulleitungData = {
-    beschaeftigungsgrad: "85",
-    uebertragSemester: "1",
-    klassenlehrperson: true,
-    wochenlektionenWegzeit: "2",
+    headshipEmploymentFactor: 85,
+    carryOverLessons: 1,
+    classTeacher: true,
+    weeklyLessonsForTransportation: 2,
   };
 
   return (

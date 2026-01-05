@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,11 +21,11 @@ import {
 } from "@/components/ui/card";
 import { Building, GraduationCap, User } from "lucide-react";
 import { SignOutButton, useUser } from "@clerk/nextjs";
-import {
+import type {
   ClassData,
   SpecialFunctionData,
-  GRADE_LEVEL_LABELS,
 } from "@scholatempus/shared";
+import { GRADE_LEVEL_LABELS } from "@scholatempus/shared";
 import { ClassDataForm } from "./ClassDataForm";
 import { SpecialFunctionDataForm } from "./SpecialFunctionDataForm";
 import { useCreateProfile } from "@/features/onboarding/hooks/createProfile";

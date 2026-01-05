@@ -14,7 +14,7 @@ import { classDataFormSchema, type SetupFormData } from "@/lib/validations";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
-  ClassData,
+  type ClassData,
   GRADE_LEVEL_LABELS,
   GradeLevel,
 } from "@scholatempus/shared";
@@ -127,10 +127,10 @@ export function ClassDataForm({
               if (!options.length) return;
 
               const nextMandatory = options[0];
-              fieldApi.form.setFieldValue("mandatoryLectures", nextMandatory);
-              fieldApi.form.setFieldValue("givenLectures", (prev: number | undefined) => {
-                if (prev == null || prev === 0) return nextMandatory;
-                return Math.min(prev, nextMandatory);
+              fieldApi.form.setFieldValue("mandatoryLectures", nextMandatory ?? 0);
+              fieldApi.form.setFieldValue("givenLectures", (prev: number) => {
+                if (prev == null || prev === 0) return nextMandatory ?? 0;
+                return Math.min(prev, nextMandatory ?? 0);
               });
             },
           }}
@@ -223,7 +223,7 @@ export function ClassDataForm({
                     field.handleChange(next);
                   }}
                   aria-invalid={isInvalid}
-                  disabled={isLoading || !grade || mandatoryLectures.length === 0}
+                  disabled={isLoading || !grade || mandatoryLectures === 0}
                 >
                   <SelectTrigger className="h-9 w-full">
                     <SelectValue placeholder="Auswählen..." className="truncate" />

@@ -39,7 +39,7 @@ export function CalendarScreen() {
     () => new Date()
   );
 
-  const { data: allEntries = [], isLoading } = useGetWorkEntries();
+  const { data: allEntries = [] } = useGetWorkEntries();
   const deleteWorkEntryMutation = useDeleteWorkEntry();
 
   // Filter entries for the selected date range

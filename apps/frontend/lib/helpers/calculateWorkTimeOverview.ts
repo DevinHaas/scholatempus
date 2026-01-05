@@ -1,10 +1,10 @@
 import { getHourseMultiplierPerCategory } from "./SetupCalculators";
 import { HOURS_TO_WORK_PER_SEMESTER, NUMBER_OF_SCHOOL_WEEKS } from "../DATA";
-import {
+import type {
   ClassData,
   SpecialFunctionData,
-  WorkTimeCategory,
 } from "@scholatempus/shared";
+import { WorkTimeCategory } from "@scholatempus/shared";
 
 interface WorkTimeDetail {
   targetHours: number;

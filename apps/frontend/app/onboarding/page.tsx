@@ -33,7 +33,7 @@ function createStepUrl(
 }
 
 export default function Onboarding() {
-  const { isPending, isError, data, mutate } = useCreateProfile();
+  const { isPending, isError, mutate } = useCreateProfile();
   const classData = useClassData();
   const specialFunctionData = useSpecialFunctionData();
   const router = useRouter();
@@ -108,9 +108,7 @@ export default function Onboarding() {
           specialFunctionData: specialFunctionData,
         });
 
-        console.log("data", data);
         if (isError) {
-          console.log("error");
           return;
         }
 

@@ -27,8 +27,8 @@ import { hash as md5Hash } from "spark-md5";
 import {
   WorkTimeCategory,
   GradeLevel,
-  ClassData,
-  SpecialFunctionData,
+  type ClassData,
+  type SpecialFunctionData,
 } from "@scholatempus/shared";
 import { useGetProfile } from "@/features/onboarding/hooks/getProfile";
 import { useGetWorkEntries } from "../hooks/useGetWorkEntries";
@@ -40,8 +40,8 @@ import {
 
 interface ProfileScreenProps {
   user: { email: string | null } | null;
-  setupData: any;
-  schulleitungData: any;
+  setupData: ClassData;
+  schulleitungData: SpecialFunctionData;
 }
 
 function getGravatarUrl(email: string) {
@@ -135,13 +135,10 @@ export function ProfileScreen({
   // Fetch profile and work entries
   const {
     data: profile,
-    isLoading: isLoadingProfile,
     error: profileError,
   } = useGetProfile();
   const {
     data: workEntries,
-    isLoading: isLoadingWorkEntries,
-    error: workEntriesError,
   } = useGetWorkEntries();
 
   // Calculate overview from fetched data
@@ -179,7 +176,6 @@ export function ProfileScreen({
     );
   }, [profile, workEntries]);
 
-  const isLoading = isLoadingProfile || isLoadingWorkEntries;
 
   const emailAddress = () => {
     if (clerkUser?.primaryEmailAddress?.emailAddress) {

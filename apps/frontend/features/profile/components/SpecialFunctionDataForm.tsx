@@ -19,7 +19,7 @@ import { z } from "zod";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { SpecialFunctionData } from "@scholatempus/shared";
+import type { SpecialFunctionData } from "@scholatempus/shared";
 import { useStore } from "@tanstack/react-form";
 
 interface SpecialFunctionDataFormProps {
@@ -47,8 +47,7 @@ export function SpecialFunctionDataForm({
       headshipEmploymentFactor: defaultValues?.headshipEmploymentFactor ?? 0,
       carryOverLessons: defaultValues?.carryOverLessons ?? 0,
       classTeacher: defaultValues?.classTeacher ?? false,
-      weeklyLessonsForTransportation:
-        (defaultValues?.weeklyLessonsForTransportation ?? 0) as WeeklyLessonsForTransportation,
+      weeklyLessonsForTransportation: defaultValues?.weeklyLessonsForTransportation ?? 0,
     },
     validators: {
       onSubmit: schulleitungSetupFormSchema,
@@ -61,7 +60,7 @@ export function SpecialFunctionDataForm({
           headshipEmploymentFactor: parsed.headshipEmploymentFactor,
           carryOverLessons: parsed.carryOverLessons,
           classTeacher: parsed.classTeacher,
-          weeklyLessonsForTransportation: parsed.weeklyLessonsForTransportation,
+          weeklyLessonsForTransportation: parsed.weeklyLessonsForTransportation as WeeklyLessonsForTransportation,
         };
         await onSubmit(specialFunctionData);
       } catch (error) {

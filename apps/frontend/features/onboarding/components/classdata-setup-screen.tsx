@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +29,7 @@ import { useMemo, useState } from "react";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../../../components/ui/field";
 import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import {
-  ClassData,
+  type ClassData,
   GRADE_LEVEL_LABELS,
   GradeLevel,
 } from "@scholatempus/shared";
@@ -138,13 +137,13 @@ export function ClassDataSetupComponent({
                       const nextMandatory = options[0];
                       fieldApi.form.setFieldValue(
                         "mandatoryLectures",
-                        nextMandatory,
+                        nextMandatory ?? 0,
                       );
                       fieldApi.form.setFieldValue(
                         "givenLectures",
-                        (prev: number | undefined) => {
-                          if (prev == null || prev === 0) return nextMandatory;
-                          return Math.min(prev, nextMandatory);
+                        (prev: number) => {
+                          if (prev == null || prev === 0) return nextMandatory ?? 0;
+                          return Math.min(prev, nextMandatory ?? 0);
                         },
                       );
                     },

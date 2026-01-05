@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import * as React from "react";
 import {
   Dialog,
@@ -25,13 +24,12 @@ import { FieldError } from "@/components/ui/field";
 import {
   TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES_LABELS,
   WORK_TIME_CATEGORY_LABELS,
-  WorkTimeCategory,
-  WORKTIME_SUBCATEGORIES,
+  WorkTimeCategory
 } from "@scholatempus/shared/enums";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { TimeEntry, TimeEntryZodSchema } from "@scholatempus/shared";
+import { type TimeEntry, TimeEntryZodSchema } from "@scholatempus/shared";
 import { useAddWorkEntries } from "../hooks/addWorkEntries";
-import { AddWorkEntriesRequest } from "@scholatempus/shared";
+import type { AddWorkEntriesRequest } from "@scholatempus/shared";
 import { useUpdateWorkEntry } from "@/features/calendar/hooks/useUpdateWorkEntry";
 
 interface CategorySelectionDialogProps {
@@ -138,7 +136,7 @@ export function CategorySelectionDialog({
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      if (isEditing && entryToEdit) {
+      if (isEditing && entryToEdit && value.entries[0]) {
         handleUpdateEntry(value.entries[0]);
       } else {
         handleCategorySelection(value.entries);
@@ -306,9 +304,7 @@ export function CategorySelectionDialog({
             <form.Field
               name="entries"
               mode="array"
-              children={(field) => {
-                const fieldInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+              children={() => {
                 return (
                   <ScrollArea className="h-100">
                     <div className="space-y-4">
@@ -421,7 +417,7 @@ export function CategorySelectionDialog({
                             />
                             <form.Subscribe
                               selector={(state) =>
-                                state.values.entries[i].category
+                                state.values.entries[i]?.category ?? ""
                               }
                             >
                               {(category) => {

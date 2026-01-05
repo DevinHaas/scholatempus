@@ -4,13 +4,12 @@ import { useShallow } from "zustand/react/shallow";
 import { useState, useEffect } from "react";
 import { getHourseMultiplierPerCategory } from "../helpers/SetupCalculators";
 import { HOURS_TO_WORK_PER_SEMESTER, NUMBER_OF_SCHOOL_WEEKS } from "../DATA";
-import {
+import type {
   ClassData,
-  GradeLevel,
   SpecialFunctionData,
   WeeklyLessonsForTransportation,
-  WorkTimeCategory,
 } from "@scholatempus/shared";
+import { GradeLevel, WorkTimeCategory } from "@scholatempus/shared";
 
 interface WorkTimeDetail {
   targetHours: number | null;
@@ -62,9 +61,6 @@ const calculateTargetOverviewParams = (
   specialFunctionData: SpecialFunctionData,
   workTimeOverviewData: WorkTimeOverviewData,
 ): WorkTimeOverviewData => {
-  const lecturesShouldPerSemester =
-    (classData.mandatoryLectures * classData.givenLectures) / 2;
-
   let totalTeacherWorkTime = 0;
   let totalTeacherActualWorkTime = 0;
   const details = Object.values(WorkTimeCategory)
@@ -159,7 +155,7 @@ interface ProfileDataState {
 
 const useProfileDataStore = create<ProfileDataState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       classData: initialClassData,
       specialFunctionData: initialSpecialFunctionData,
       workTimeOverviewData: initialWorkTimeOverviewData,

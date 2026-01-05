@@ -1,7 +1,7 @@
 "use client";
 import { api } from "@/lib/api";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { UpsertProfileRequestData } from "@scholatempus/shared";
+import type { UpsertProfileRequestData } from "@scholatempus/shared";
 import { toast } from "sonner";
 
 export const useCreateProfile = () => {

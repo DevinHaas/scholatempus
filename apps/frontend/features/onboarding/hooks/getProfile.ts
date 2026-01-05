@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
-import { GetProfileResponse } from "@scholatempus/shared";
+import type { GetProfileResponse } from "@scholatempus/shared";
 import { AxiosError } from "axios";
 
 export const useGetProfile = () => {

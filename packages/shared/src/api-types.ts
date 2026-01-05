@@ -1,5 +1,4 @@
-import { GradeLevel } from "./enums";
-import { ClassData, SpecialFunctionData } from "./types";
+import type { ClassData, SpecialFunctionData } from "./types";
 
 /**
  * Interfaces for profile API endpoints

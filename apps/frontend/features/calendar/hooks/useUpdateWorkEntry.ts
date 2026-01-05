@@ -1,7 +1,7 @@
 "use client";
 import { api } from "@/lib/api";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import {
+import type {
   UpdateWorkEntryRequest,
   UpdateWorkEntryResponse,
 } from "@scholatempus/shared";

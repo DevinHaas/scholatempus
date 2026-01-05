@@ -1,8 +1,8 @@
 import log from "encore.dev/log";
 import { api, APIError } from "encore.dev/api";
 import {
-  AddWorkEntriesRequest,
-  AddWorkEntriesResponse,
+  type AddWorkEntriesRequest,
+  type AddWorkEntriesResponse,
   WorkTimeCategory,
   WORKTIME_SUBCATEGORIES,
 } from "@scholatempus/shared";

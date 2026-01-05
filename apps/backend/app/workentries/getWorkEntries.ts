@@ -15,7 +15,6 @@ export const getWorkEntries = api(
   },
   async () : Promise<GetWorkEntriesResponse> => {
     const authData = getAuthData();
-    console.log("getWorkEntries");
     if (!authData) {
       throw APIError.unauthenticated("Not authenticated");
     }
@@ -28,7 +27,6 @@ export const getWorkEntries = api(
         .from(workTimeEntryTable)
         .where(eq(workTimeEntryTable.userId, userId));
       
-      console.log("work entries", workEntries);
 
       return {
         message: "Worktime entries fetched successfully",

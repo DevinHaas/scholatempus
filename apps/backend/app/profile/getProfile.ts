@@ -21,7 +21,6 @@ export const getProfile = api(
       throw APIError.unauthenticated("Not authenticated");
     }
     const userId = authData.userID;
-    console.log(userId);
 
     try {
       let profile = await db
@@ -44,14 +43,11 @@ export const getProfile = api(
         )
         .limit(1);
 
-      console.log("Raw profile result:", profile);
 
       if (!profile || profile.length === 0) {
-        console.log("no profile found");
         throw APIError.notFound("no profile found");
       }
 
-      console.log("Returning profile:", profile[0]);
 
       return {
         message: "good",

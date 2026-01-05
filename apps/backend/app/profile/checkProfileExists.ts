@@ -12,10 +12,8 @@ export const checkProfileExists = api(
     path: "/profile/exists",
   },
   async (): Promise<CheckProfileExistsResponse> => {
-    console.log("checkProfileExists");
     const authData = getAuthData();
     if (!authData) {
-      console.log("not authenticated");
       throw APIError.unauthenticated("Not authenticated");
     }
     const userId = authData.userID;

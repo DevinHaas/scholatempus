@@ -1,13 +1,13 @@
 name: Deploy Backend to Coolify
 
 on:
-push:
-  branches:
-    - main
-  paths:
-    - 'apps/backend/**'
-    - 'packages/shared/**'
-workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/backend/**'
+      - 'packages/shared/**'
+  workflow_dispatch:
 
 permissions:
   contents: read

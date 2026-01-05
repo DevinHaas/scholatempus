@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - '.github/workflows/deploy-backend.yml'
       - 'apps/backend/**'
       - 'packages/shared/**'
   workflow_dispatch:

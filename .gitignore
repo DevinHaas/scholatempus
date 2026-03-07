@@ -9,3 +9,10 @@ node_modules
 
 .nx/cache
 .nx/workspace-data
+
+# Turborepo cache
+.turbo/
+
+# TypeScript build artifacts
+dist/
+*.tsbuildinfo

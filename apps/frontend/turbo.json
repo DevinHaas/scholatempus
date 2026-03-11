@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": [".next/**", "!.next/cache/**"],
-      "passThroughEnv": ["CLERK_SECRET_KEY"]
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "dev": {
       "persistent": true

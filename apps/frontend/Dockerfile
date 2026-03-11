@@ -10,6 +10,7 @@ WORKDIR /app
 # Copy root package files (needed for monorepo)
 # Note: Build context must be from repo root for this to work
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY turbo.json ./
 
 # Copy shared package
 COPY packages/shared ./packages/shared

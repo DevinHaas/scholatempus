@@ -1,3 +1,6 @@
+# Global build args (must be declared before first FROM to be usable across stages)
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
 # ---- base ----
 FROM node:20-alpine AS base
 RUN corepack enable && corepack prepare pnpm@10.32.1 --activate

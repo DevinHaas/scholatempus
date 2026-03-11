@@ -1,19 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@scholatempus/typescript-config/library.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022"],
-    "module": "ES2022",
-    "moduleResolution": "bundler",
-    "declaration": true,
-    "declarationMap": true,
-    "composite": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "outDir": "dist",
+    "rootDir": "src"
   },
-  "exclude": ["node_modules"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

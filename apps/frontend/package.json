@@ -82,6 +82,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@scholatempus/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.9",
     "@tanstack/eslint-plugin-query": "^5.91.2",
     "@types/node": "^22",

@@ -284,6 +284,9 @@ importers:
         specifier: ^5.0.8
         version: 5.0.9(@types/react@19.2.7)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
     devDependencies:
+      '@scholatempus/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@tailwindcss/postcss':
         specifier: ^4.1.9
         version: 4.1.18
@@ -341,6 +344,12 @@ importers:
       zod:
         specifier: ^3.25.67
         version: 3.25.76
+    devDependencies:
+      '@scholatempus/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+
+  packages/typescript-config: {}
 
 packages:
 

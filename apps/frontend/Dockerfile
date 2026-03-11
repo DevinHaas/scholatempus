@@ -1,61 +1,44 @@
-# Use Node.js 20
+# ---- base ----
 FROM node:20-alpine AS base
-
-# Install pnpm
 RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
-
-# Set working directory
 WORKDIR /app
 
-# Copy root package files (needed for monorepo)
-# Note: Build context must be from repo root for this to work
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY turbo.json ./
+# ---- pruner: generate minimal dependency tree ----
+FROM base AS pruner
+RUN npm install -g turbo@^2
+COPY . .
+RUN turbo prune scholatempus-frontend --docker
 
-# Copy shared package
-COPY packages/shared ./packages/shared
-
-# Copy frontend package
-COPY apps/frontend ./apps/frontend
-
-# Install dependencies
+# ---- installer: install deps then build ----
+FROM base AS installer
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+# Layer 1: install from pruned lockfile only (cached until lockfile/package.json changes)
+COPY --from=pruner /app/out/json/ .
 RUN pnpm install --frozen-lockfile
-
-# Build stage
-FROM base AS builder
-
-WORKDIR /app
-
-# Build from root so Turbo orchestrates shared → frontend ordering
+# Layer 2: copy full source and build
+COPY --from=pruner /app/out/full/ .
 RUN pnpm build
 
-# Production stage
+# ---- runner: production image ----
 FROM node:20-alpine AS runner
-
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
 WORKDIR /app
-
 ENV NODE_ENV=production
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Copy root package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# Copy shared package
-COPY packages/shared ./packages/shared
-
-# Copy frontend package (including .next build)
-COPY --from=builder /app/apps/frontend ./apps/frontend
-
-# Install only production dependencies
+# Install prod-only deps from pruned lockfile (runs as root, files are world-readable)
+COPY --from=pruner /app/out/json/ .
 RUN pnpm install --frozen-lockfile --prod
 
-# Expose port
+# Copy built artifacts with nextjs ownership
+COPY --from=installer --chown=nextjs:nodejs /app/apps/frontend/.next ./apps/frontend/.next
+COPY --from=installer --chown=nextjs:nodejs /app/apps/frontend/public ./apps/frontend/public
+
+USER nextjs
 EXPOSE 3000
-
-# Set working directory to frontend
 WORKDIR /app/apps/frontend
-
-# Start the application
 CMD ["pnpm", "start"]

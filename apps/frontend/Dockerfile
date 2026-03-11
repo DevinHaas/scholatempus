@@ -2,7 +2,7 @@
 FROM node:20-alpine AS base
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
 
 # Set working directory
 WORKDIR /app
@@ -25,8 +25,8 @@ FROM base AS builder
 
 WORKDIR /app
 
-# Build the frontend
-RUN cd apps/frontend && pnpm build
+# Build from root so Turbo orchestrates shared → frontend ordering
+RUN pnpm build
 
 # Production stage
 FROM node:20-alpine AS runner
@@ -36,7 +36,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
 
 # Copy root package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./

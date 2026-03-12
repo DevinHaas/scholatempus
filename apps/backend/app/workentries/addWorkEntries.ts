@@ -16,10 +16,9 @@ export const addWorkEntries = api(
     path: "/workentries",
     method: "POST",
     auth: true,
+    expose: true,
   },
-  async (
-    params: AddWorkEntriesRequest,
-  ): Promise<AddWorkEntriesResponse> => {
+  async (params: AddWorkEntriesRequest): Promise<AddWorkEntriesResponse> => {
     const authData = getAuthData();
 
     if (!authData?.userID) {
@@ -28,7 +27,10 @@ export const addWorkEntries = api(
 
     const userId = authData.userID;
 
-    log.info("Adding work entries", { userId, entryCount: params.entries.length });
+    log.info("Adding work entries", {
+      userId,
+      entryCount: params.entries.length,
+    });
 
     try {
       // Check if profile exists (required for foreign key constraint)
@@ -49,13 +51,15 @@ export const addWorkEntries = api(
       for (const entry of params.entries) {
         // Validate working time
         if (entry.workingTime <= 0) {
-          throw APIError.invalidArgument(
-            "Working time must be greater than 0",
-          );
+          throw APIError.invalidArgument("Working time must be greater than 0");
         }
 
         // Validate category
-        if (!Object.values(WorkTimeCategory).includes(entry.category as WorkTimeCategory)) {
+        if (
+          !Object.values(WorkTimeCategory).includes(
+            entry.category as WorkTimeCategory,
+          )
+        ) {
           throw APIError.invalidArgument(`Invalid category: ${entry.category}`);
         }
 
@@ -68,9 +72,6 @@ export const addWorkEntries = api(
             "Subcategory is required for 'Unterrichten, beraten, begleiten' category",
           );
         }
-
-
-
       }
 
       // Insert entries in a transaction
@@ -85,7 +86,8 @@ export const addWorkEntries = api(
               date: new Date(), // Create timestamp in backend
               workingTime: entry.workingTime,
               category: entry.category as WorkTimeCategory,
-              subcategory: (entry.subcategory ?? null) as WORKTIME_SUBCATEGORIES | null,
+              subcategory: (entry.subcategory ??
+                null) as WORKTIME_SUBCATEGORIES | null,
               isManually: entry.isManually ?? false,
             })
             .returning();
@@ -112,7 +114,8 @@ export const addWorkEntries = api(
       }
 
       // Check for foreign key constraint violations
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       if (
         errorMessage.includes("foreign key") ||
         errorMessage.includes("violates foreign key constraint") ||

@@ -14,6 +14,7 @@ export const getProfile = api(
     auth: true,
     method: "GET",
     path: "/profile",
+    expose: true,
   },
   async (): Promise<GetProfileResponse> => {
     const authData = getAuthData();
@@ -43,11 +44,9 @@ export const getProfile = api(
         )
         .limit(1);
 
-
       if (!profile || profile.length === 0) {
         throw APIError.notFound("no profile found");
       }
-
 
       return {
         message: "good",

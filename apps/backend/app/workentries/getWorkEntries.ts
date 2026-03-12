@@ -6,14 +6,14 @@ import { workTimeEntryTable } from "../../db/schema";
 import { eq } from "drizzle-orm";
 import { GetWorkEntriesResponse } from "@scholatempus/shared";
 
-
 export const getWorkEntries = api(
   {
     auth: true,
     path: "/workentries",
     method: "GET",
+    expose: true,
   },
-  async () : Promise<GetWorkEntriesResponse> => {
+  async (): Promise<GetWorkEntriesResponse> => {
     const authData = getAuthData();
     if (!authData) {
       throw APIError.unauthenticated("Not authenticated");
@@ -26,7 +26,6 @@ export const getWorkEntries = api(
         .select()
         .from(workTimeEntryTable)
         .where(eq(workTimeEntryTable.userId, userId));
-      
 
       return {
         message: "Worktime entries fetched successfully",

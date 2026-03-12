@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/deploy-backend.yml'
-      - 'apps/backend/**'
-      - 'packages/shared/**'
+      - ".github/workflows/deploy-backend.yml"
+      - "apps/backend/**"
+      - "packages/shared/**"
   workflow_dispatch:
 
 permissions:
@@ -18,7 +18,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy to Coolify
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,14 +27,12 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -59,13 +57,13 @@ jobs:
         run: |
           TIMESTAMP=$(date +%Y%m%d-%H%M%S)
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          
+
           # Timestamped tag for version history
           VERSIONED_TAG="ghcr.io/${REPO_LOWER}/scholatempus-backend:main-${TIMESTAMP}"
-          
+
           # Stable tag for Coolify to track
           LATEST_TAG="ghcr.io/${REPO_LOWER}/scholatempus-backend:main-latest"
-          
+
           echo "versioned_tag=${VERSIONED_TAG}" >> $GITHUB_OUTPUT
           echo "latest_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
           echo "Generated tags:"
@@ -83,7 +81,7 @@ jobs:
           # Push versioned tag
           docker push ${{ steps.image-tags.outputs.versioned_tag }}
           echo "Pushed: ${{ steps.image-tags.outputs.versioned_tag }}"
-          
+
           # Tag and push latest
           docker tag ${{ steps.image-tags.outputs.versioned_tag }} ${{ steps.image-tags.outputs.latest_tag }}
           docker push ${{ steps.image-tags.outputs.latest_tag }}
@@ -105,4 +103,3 @@ jobs:
           echo "Versioned image: ${{ steps.image-tags.outputs.versioned_tag }}"
           echo "Latest image: ${{ steps.image-tags.outputs.latest_tag }}"
           echo "=========================================="
-

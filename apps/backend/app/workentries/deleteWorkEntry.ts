@@ -8,6 +8,7 @@ import { eq, and } from "drizzle-orm";
 
 export const deleteWorkEntry = api(
   {
+    expose: true,
     path: "/workentries/:id",
     method: "DELETE",
     auth: true,

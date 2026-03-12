@@ -13,6 +13,7 @@ import { eq, and } from "drizzle-orm";
 
 export const updateWorkEntry = api(
   {
+    expose: true,
     path: "/workentries/:id",
     method: "PUT",
     auth: true,

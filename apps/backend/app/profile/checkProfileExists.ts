@@ -7,6 +7,7 @@ import { CheckProfileExistsResponse } from "@scholatempus/shared";
 
 export const checkProfileExists = api(
   {
+    expose: true,
     auth: true,
     method: "GET",
     path: "/profile/exists",

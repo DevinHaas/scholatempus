@@ -5,7 +5,7 @@ node_modules
 # IDE and editor directories (root level)
 /.vscode/
 /.cursor/
-/.pnpm-store/
+/.bun/
 
 .nx/cache
 .nx/workspace-data

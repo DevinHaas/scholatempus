@@ -2,7 +2,7 @@ import {clerkClient} from "@clerk/nextjs/server";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function POST() {
+export async function POST(req: Request) {
   try {
     const { userId } = await auth();
 
@@ -13,12 +13,13 @@ export async function POST() {
       );
     }
 
-    // Update the user's publicMetadata to set profileExists to true
-    // updateUserMetadata performs a deep merge with existing metadata
+    const body = await req.json().catch(() => ({}));
+    const profileExists: boolean = body.profileExists ?? true;
+
     const client = await clerkClient()
     await client.users.updateUserMetadata(userId, {
       publicMetadata: {
-        profileExists: true,
+        profileExists,
       },
     });
 

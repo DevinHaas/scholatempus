@@ -141,7 +141,7 @@ try {
   });
 
   if (runHeavy) {
-    const out = execSync("pnpm -s tsc --noEmit --pretty false --extendedDiagnostics", {
+    const out = execSync("bunx tsc --noEmit --pretty false --extendedDiagnostics", {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
       maxBuffer: 20 * 1024 * 1024,

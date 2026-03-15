@@ -13,7 +13,15 @@ export async function checkProfileExists(
     const response = await api.get<CheckProfileExistsResponse>("/profile/exists");
     console.log("response", response);
 
-    return response.data.exists ?? false;
+    const exists = response.data.exists ?? false;
+    if (!exists) {
+      await fetch("/api/user/update-profile-metadata", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profileExists: false }),
+      }).catch(() => {});
+    }
+    return exists;
   } catch (error) {
     // On error, return false to avoid blocking users
     // The page components can handle the error state

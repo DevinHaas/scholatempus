@@ -1,24 +1,20 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    /* Basic Options */
     "lib": ["ES2022"],
     "target": "ES2022",
     "module": "ES2022",
     "types": ["node"],
     "paths": {
-      "~encore/*": ["./encore.gen/*"],
       "@scholatempus/shared": ["../../packages/shared/src/index.ts"],
       "@scholatempus/shared/*": ["../../packages/shared/src/*"]
     },
 
-    /* Workspace Settings */
-    "composite": true,
+    "composite": false,
+    "declaration": false,
 
-    /* Strict Type-Checking Options */
     "strict": true,
 
-    /* Module Resolution Options */
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
@@ -26,16 +22,14 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
 
-    "declaration": true,
-
-    /* Advanced Options */
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
   "include": [
-    "**/*.ts",
-    "../../packages/shared/src/**/*.ts",
-    "encore.gen/**/*.ts"
+    "src/**/*.ts",
+    "db/**/*.ts",
+    "drizzle.config.ts",
+    "../../packages/shared/src/**/*.ts"
   ],
   "exclude": [
     "node_modules"

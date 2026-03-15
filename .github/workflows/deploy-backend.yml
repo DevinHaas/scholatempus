@@ -8,6 +8,7 @@ on:
       - ".github/workflows/deploy-backend.yml"
       - "apps/backend/**"
       - "packages/shared/**"
+      - "bun.lock"
   workflow_dispatch:
 
 permissions:

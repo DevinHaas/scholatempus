@@ -7,7 +7,6 @@ pnpm-debug.log*
 .pnpm-store/
 
 # Build outputs
-encore.gen/
 *.tsbuildinfo
 dist/
 build/

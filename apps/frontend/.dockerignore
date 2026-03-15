@@ -1,6 +1,6 @@
 # Dependencies
 node_modules
-.pnpm-store
+.bun
 
 # Build outputs
 .next
@@ -27,6 +27,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+bun-debug.log*
+bun-error.log*
 
 # TypeScript
 *.tsbuildinfo

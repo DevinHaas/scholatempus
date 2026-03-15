@@ -18,6 +18,15 @@ export const useGetProfile = () => {
       // Retry other errors up to 3 times (default behavior)
       return failureCount < 3;
     },
+    onError: async (error) => {
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        await fetch("/api/user/update-profile-metadata", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ profileExists: false }),
+        }).catch(() => {}); // best-effort, don't block
+      }
+    },
   });
 };
 

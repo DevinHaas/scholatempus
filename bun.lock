@@ -23,7 +23,6 @@
         "drizzle-typebox": "latest",
         "elysia": "latest",
         "elysia-clerk": "latest",
-        "encore.dev": "^1.53.2",
         "pg": "^8.16.3",
       },
       "devDependencies": {
@@ -1229,8 +1228,6 @@
     "emoji-regex": ["emoji-regex@9.2.2", "", {}, "sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg=="],
 
     "encodeurl": ["encodeurl@2.0.0", "", {}, "sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg=="],
-
-    "encore.dev": ["encore.dev@1.56.0", "", {}, "sha512-+v+Xao4sii04tfC8/bYE47JsEE3lB4acwV2RNfclo2JEhV4ixjD9+MQmHxLKadUqQ/S5mYL+iF+ca8s6/VAWCQ=="],
 
     "enhanced-resolve": ["enhanced-resolve@5.20.0", "", { "dependencies": { "graceful-fs": "^4.2.4", "tapable": "^2.3.0" } }, "sha512-/ce7+jQ1PQ6rVXwe+jKEg5hW5ciicHwIQUagZkp6IufBoY3YDgdTTY1azVs0qoRgVmvsNB+rbjLJxDAeHHtwsQ=="],
 

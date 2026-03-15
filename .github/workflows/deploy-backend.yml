@@ -34,11 +34,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Install Encore CLI
-        run: |
-          curl -L https://encore.dev/install.sh | bash
-          echo "$HOME/.encore/bin" >> $GITHUB_PATH
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -68,9 +63,12 @@ jobs:
           echo "  Latest: ${LATEST_TAG}"
 
       - name: Build Docker image
-        working-directory: ./apps/backend
         run: |
-          encore build docker ${{ steps.image-tags.outputs.versioned_tag }}
+          docker buildx build \
+            -f apps/backend/Dockerfile \
+            -t ${{ steps.image-tags.outputs.versioned_tag }} \
+            --load \
+            .
           echo "Image built successfully: ${{ steps.image-tags.outputs.versioned_tag }}"
 
       - name: Tag and push Docker images

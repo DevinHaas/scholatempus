@@ -21,11 +21,8 @@ import {
 } from "@/components/ui/card";
 import { Building, GraduationCap, User } from "lucide-react";
 import { SignOutButton, useUser } from "@clerk/nextjs";
-import type {
-  ClassData,
-  SpecialFunctionData,
-} from "@scholatempus/shared";
-import { GRADE_LEVEL_LABELS } from "@scholatempus/shared";
+import { GRADE_LEVEL_LABELS } from "@scholatempus/shared/enums";
+import type { ClassData, SpecialFunctionData } from "@scholatempus/shared/schemas";
 import { ClassDataForm } from "./ClassDataForm";
 import { SpecialFunctionDataForm } from "./SpecialFunctionDataForm";
 import { useCreateProfile } from "@/features/onboarding/hooks/createProfile";

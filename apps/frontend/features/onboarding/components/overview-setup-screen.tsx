@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import { useWorkTimeOverview, useHydration } from "@/lib/stores/profileData";
 import { ArrowLeft } from "lucide-react";
-import { WorkTimeCategory } from "@scholatempus/shared";
+import { WorkTimeCategory } from "@scholatempus/shared/enums";
 import { Spinner } from "../../../components/ui/spinner";
 
 interface OverviewScreenProps {

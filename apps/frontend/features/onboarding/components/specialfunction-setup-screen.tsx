@@ -30,7 +30,7 @@ import {
   useSpecialFunctionData,
   useHydration,
 } from "@/lib/stores/profileData";
-import type { WeeklyLessonsForTransportation } from "@scholatempus/shared";
+import type { WeeklyLessonsForTransportation } from "@scholatempus/shared/schemas";
 import { z } from "zod";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../../../components/ui/field";

@@ -1,7 +1,7 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "../../db/index.js";
 import { workTimeEntryTable, profileTable } from "../../../db/schema.js";
-import { WorkTimeCategory } from "@scholatempus/shared";
+import { WorkTimeCategory } from "@scholatempus/shared/enums";
 import { AppError } from "../../lib/errors.js";
 import type { WorkEntryBodyType, UpdateWorkEntryBodyType } from "./model.js";
 

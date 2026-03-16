@@ -24,12 +24,8 @@ import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import { SettingsDialog } from "./SettingsDialog";
 import { useUser } from "@clerk/nextjs";
 import { hash as md5Hash } from "spark-md5";
-import {
-  WorkTimeCategory,
-  GradeLevel,
-  type ClassData,
-  type SpecialFunctionData,
-} from "@scholatempus/shared";
+import { WorkTimeCategory, GradeLevel } from "@scholatempus/shared/enums";
+import type { ClassData, SpecialFunctionData } from "@scholatempus/shared/schemas";
 import { useGetProfile } from "@/features/onboarding/hooks/getProfile";
 import { useGetWorkEntries } from "../hooks/useGetWorkEntries";
 import { aggregateWorkEntriesByCategory } from "@/lib/helpers/aggregateWorkEntries";

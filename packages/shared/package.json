@@ -9,13 +9,13 @@
     "typecheck": "tsc --noEmit"
   },
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "default": "./dist/index.js"
+    "./enums": {
+      "types": "./src/enums.ts",
+      "default": "./dist/enums.js"
     },
-    "./*": {
-      "types": "./src/*.ts",
-      "default": "./dist/*.js"
+    "./schemas": {
+      "types": "./src/schemas.ts",
+      "default": "./dist/schemas.js"
     }
   },
   "dependencies": {

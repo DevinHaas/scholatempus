@@ -13,11 +13,8 @@ import { calculateMandatoryLectures } from "@/lib/helpers/SetupCalculators";
 import { classDataFormSchema, type SetupFormData } from "@/lib/validations";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import {
-  type ClassData,
-  GRADE_LEVEL_LABELS,
-  GradeLevel,
-} from "@scholatempus/shared";
+import { GRADE_LEVEL_LABELS, GradeLevel } from "@scholatempus/shared/enums";
+import type { ClassData } from "@scholatempus/shared/schemas";
 import { getGradeLevelFromLabel } from "@/lib/helpers/getGradeLevelFromLabel";
 
 interface ClassDataFormProps {

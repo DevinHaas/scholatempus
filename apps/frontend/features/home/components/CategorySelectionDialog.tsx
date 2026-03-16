@@ -26,7 +26,7 @@ import {
   WorkTimeCategory,
 } from "@scholatempus/shared/enums";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { type TimeEntry, TimeEntryZodSchema } from "@scholatempus/shared";
+import { type TimeEntry, TimeEntryZodSchema } from "@scholatempus/shared/schemas";
 import { useAddWorkEntries } from "../hooks/addWorkEntries";
 import { useUpdateWorkEntry } from "@/features/calendar/hooks/useUpdateWorkEntry";
 import { useEffect, useState } from "react";

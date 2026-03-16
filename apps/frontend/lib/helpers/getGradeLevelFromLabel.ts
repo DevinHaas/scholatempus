@@ -1,4 +1,4 @@
-import { GRADE_LEVEL_LABELS, GradeLevel } from "@scholatempus/shared";
+import { GRADE_LEVEL_LABELS, GradeLevel } from "@scholatempus/shared/enums";
 
 export const getGradeLevelFromLabel = (label: string): GradeLevel => {
   const key = Object.entries(GRADE_LEVEL_LABELS).find(

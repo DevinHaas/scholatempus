@@ -1,4 +1,4 @@
-import { GradeLevel, WorkTimeCategory } from "@scholatempus/shared";
+import { GradeLevel, WorkTimeCategory } from "@scholatempus/shared/enums";
 
 export function calculateMandatoryLectures(gradeLevel: GradeLevel): number[] {
   switch (gradeLevel) {

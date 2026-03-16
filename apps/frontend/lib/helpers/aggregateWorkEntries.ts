@@ -1,4 +1,4 @@
-import { WorkTimeCategory } from "@scholatempus/shared";
+import { WorkTimeCategory } from "@scholatempus/shared/enums";
 
 interface WorkEntry {
   category: string;

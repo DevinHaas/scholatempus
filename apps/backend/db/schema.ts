@@ -1,9 +1,12 @@
-import { GradeLevel, WorkTimeCategory, WorkTimeSubCategory } from "@scholatempus/shared";
-import { InferSelectModel, relations } from "drizzle-orm";
-import { boolean, text } from "drizzle-orm/pg-core";
+import {
+  GradeLevel,
+  WorkTimeCategory,
+  WorkTimeSubCategory,
+} from "@scholatempus/shared";
+import { relations } from "drizzle-orm";
+import { boolean } from "drizzle-orm/pg-core";
 import {
   char,
-  date,
   integer,
   numeric,
   pgEnum,
@@ -20,15 +23,13 @@ export const gradeLevelEnum = pgEnum(
 
 export const workTimeCategoryEnum = pgEnum(
   "category",
-  Object.keys(WorkTimeCategory) as [string, ...string[]]
+  Object.keys(WorkTimeCategory) as [string, ...string[]],
 );
-
 
 export const workTimeSubCategories = pgEnum(
   "subcategory",
-  Object.values(WorkTimeSubCategory) as [string, ...string[]]
+  Object.values(WorkTimeSubCategory) as [string, ...string[]],
 );
-
 
 export const profileTable = pgTable("profile", {
   userId: char({ length: 32 }).unique(),

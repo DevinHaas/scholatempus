@@ -4,6 +4,7 @@
   "packageManager": "bun@1.3.9",
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
+    "preinstall": "npx only-allow bun",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "dev:watch": "turbo watch dev",

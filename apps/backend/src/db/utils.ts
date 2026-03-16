@@ -3,77 +3,66 @@
  * @see https://elysiajs.com/recipe/drizzle.html#utility
  */
 
-import { Kind, type TObject } from '@sinclair/typebox'
+import { Kind, type TObject } from "@sinclair/typebox";
 import {
   createInsertSchema,
   createSelectSchema,
   type BuildSchema,
-} from 'drizzle-typebox'
+} from "drizzle-typebox";
 
-import type { Table } from 'drizzle-orm'
+import type { Table } from "drizzle-orm";
 
-type Spread<
-  T extends TObject | Table,
-  Mode extends 'select' | 'insert' | undefined,
-> =
+type Spread<T extends TObject | Table, Mode extends "select" | "insert" | undefined> =
   T extends TObject<infer Fields>
     ? {
-        [K in keyof Fields]: Fields[K]
+        [K in keyof Fields]: Fields[K];
       }
     : T extends Table
-      ? Mode extends 'select'
-        ? BuildSchema<
-            'select',
-            T['_']['columns'],
-            undefined
-          >['properties']
-        : Mode extends 'insert'
-          ? BuildSchema<
-              'insert',
-              T['_']['columns'],
-              undefined
-            >['properties']
-          : {}
-      : {}
+      ? Mode extends "select"
+        ? BuildSchema<"select", T["_"]["columns"], undefined>["properties"]
+        : Mode extends "insert"
+          ? BuildSchema<"insert", T["_"]["columns"], undefined>["properties"]
+          : never
+      : never;
 
 /**
  * Spread a Drizzle schema into a plain object
  */
 export const spread = <
   T extends TObject | Table,
-  Mode extends 'select' | 'insert' | undefined,
+  Mode extends "select" | "insert" | undefined,
 >(
   schema: T,
   mode?: Mode,
 ): Spread<T, Mode> => {
-  const newSchema: Record<string, unknown> = {}
-  let table
+  const newSchema: Record<string, unknown> = {};
+  let table;
 
   switch (mode) {
-    case 'insert':
-    case 'select':
+    case "insert":
+    case "select":
       if (Kind in schema) {
-        table = schema
-        break
+        table = schema;
+        break;
       }
 
       table =
-        mode === 'insert'
+        mode === "insert"
           ? createInsertSchema(schema)
-          : createSelectSchema(schema)
+          : createSelectSchema(schema);
 
-      break
+      break;
 
     default:
-      if (!(Kind in schema)) throw new Error('Expect a schema')
-      table = schema
+      if (!(Kind in schema)) throw new Error("Expect a schema");
+      table = schema;
   }
 
   for (const key of Object.keys(table.properties))
-    newSchema[key] = table.properties[key]
+    newSchema[key] = table.properties[key];
 
-  return newSchema as Spread<T, Mode>
-}
+  return newSchema as Spread<T, Mode>;
+};
 
 /**
  * Spread multiple Drizzle Tables into a plain object
@@ -83,17 +72,17 @@ export const spread = <
  */
 export const spreads = <
   T extends Record<string, TObject | Table>,
-  Mode extends 'select' | 'insert' | undefined,
+  Mode extends "select" | "insert" | undefined,
 >(
   models: T,
   mode?: Mode,
 ): {
-  [K in keyof T]: Spread<T[K], Mode>
+  [K in keyof T]: Spread<T[K], Mode>;
 } => {
-  const newSchema: Record<string, unknown> = {}
-  const keys = Object.keys(models)
+  const newSchema: Record<string, unknown> = {};
+  const keys = Object.keys(models) as (keyof T)[];
 
-  for (const key of keys) newSchema[key] = spread(models[key], mode)
+  for (const key of keys) newSchema[key as string] = spread(models[key], mode);
 
-  return newSchema as { [K in keyof T]: Spread<T[K], Mode> }
-}
+  return newSchema as { [K in keyof T]: Spread<T[K], Mode> };
+};

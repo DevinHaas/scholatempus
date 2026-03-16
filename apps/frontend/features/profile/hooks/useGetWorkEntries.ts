@@ -1,32 +1,19 @@
-import { api } from "@/lib/api";
+import { useEden } from "@/lib/eden";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
-import type { GetWorkEntriesResponse } from "@scholatempus/shared";
-import { AxiosError } from "axios";
 
 export const useGetWorkEntries = () => {
+  const eden = useEden();
   const { user, isLoaded } = useUser();
   return useQuery({
-    queryKey: ["workEntries"],
-    queryFn: () => getWorkEntries(),
+    ...eden.workentries.get.queryOptions(),
     enabled: !!user && !!isLoaded,
-    retry: (failureCount, error) => {
-      // Don't retry on 404 (no work entries is expected for new users)
-      if (
-        error instanceof AxiosError &&
-        (error.response?.status === 500 || error.response?.status === 404)
-      ) {
+    select: (data) => data?.workEntries ?? [],
+    retry: (failureCount, error: any) => {
+      if (error?.status === 500 || error?.status === 404) {
         return false;
       }
-      // Retry other errors up to 3 times (default behavior)
       return failureCount < 3;
     },
   });
 };
-
-const getWorkEntries = async () => {
-  const res = await api.get<GetWorkEntriesResponse>("/workentries");
-  console.log("work entries", res.data.workEntries);
-  return res.data.workEntries ?? [];
-};
-

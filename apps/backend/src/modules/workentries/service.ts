@@ -1,21 +1,21 @@
-import { eq, and } from 'drizzle-orm'
-import { db } from '../../db/index.js'
-import { workTimeEntryTable, profileTable } from '../../../db/schema.js'
-import { WorkTimeCategory } from '@scholatempus/shared'
-import { AppError } from '../../lib/errors.js'
-import type { WorkEntryBodyType, UpdateWorkEntryBodyType } from './model.js'
+import { eq, and } from "drizzle-orm";
+import { db } from "../../db/index.js";
+import { workTimeEntryTable, profileTable } from "../../../db/schema.js";
+import { WorkTimeCategory } from "@scholatempus/shared";
+import { AppError } from "../../lib/errors.js";
+import type { WorkEntryBodyType, UpdateWorkEntryBodyType } from "./model.js";
 
 export class WorkEntryService {
   static async getAll(userId: string) {
     const workEntries = await db
       .select()
       .from(workTimeEntryTable)
-      .where(eq(workTimeEntryTable.userId, userId))
+      .where(eq(workTimeEntryTable.userId, userId));
 
     return {
-      message: 'Worktime entries fetched successfully',
+      message: "Worktime entries fetched successfully",
       workEntries,
-    }
+    };
   }
 
   static async addEntries(userId: string, entries: WorkEntryBodyType[]) {
@@ -24,19 +24,19 @@ export class WorkEntryService {
       .select()
       .from(profileTable)
       .where(eq(profileTable.userId, userId))
-      .limit(1)
+      .limit(1);
 
     if (!profile.length) {
       throw new AppError(
         404,
-        'Profile not found. Please complete your profile setup before adding work entries.',
-      )
+        "Profile not found. Please complete your profile setup before adding work entries.",
+      );
     }
 
     // Validate entries
     for (const entry of entries) {
       if (entry.workingTime <= 0) {
-        throw new AppError(400, 'Working time must be greater than 0')
+        throw new AppError(400, "Working time must be greater than 0");
       }
 
       if (
@@ -44,7 +44,7 @@ export class WorkEntryService {
           entry.category as WorkTimeCategory,
         )
       ) {
-        throw new AppError(400, `Invalid category: ${entry.category}`)
+        throw new AppError(400, `Invalid category: ${entry.category}`);
       }
 
       if (
@@ -54,12 +54,12 @@ export class WorkEntryService {
         throw new AppError(
           400,
           "Subcategory is required for 'Unterrichten, beraten, begleiten' category",
-        )
+        );
       }
     }
 
     const result = await db.transaction(async (tx) => {
-      const inserted = []
+      const inserted = [];
       for (const entry of entries) {
         const [row] = await tx
           .insert(workTimeEntryTable)
@@ -70,16 +70,16 @@ export class WorkEntryService {
             category: entry.category as WorkTimeCategory,
             subcategory: (entry.subcategory ?? null) as any,
           })
-          .returning()
-        inserted.push(row)
+          .returning();
+        inserted.push(row);
       }
-      return inserted
-    })
+      return inserted;
+    });
 
     return {
-      message: 'Work entries added successfully',
+      message: "Work entries added successfully",
       count: result.length,
-    }
+    };
   }
 
   static async updateEntry(
@@ -97,17 +97,17 @@ export class WorkEntryService {
           eq(workTimeEntryTable.userId, userId),
         ),
       )
-      .limit(1)
+      .limit(1);
 
     if (!existing) {
       throw new AppError(
         404,
         "Work entry not found or you don't have permission to update it",
-      )
+      );
     }
 
     if (data.workingTime <= 0) {
-      throw new AppError(400, 'Working time must be greater than 0')
+      throw new AppError(400, "Working time must be greater than 0");
     }
 
     if (
@@ -115,7 +115,7 @@ export class WorkEntryService {
         data.category as WorkTimeCategory,
       )
     ) {
-      throw new AppError(400, `Invalid category: ${data.category}`)
+      throw new AppError(400, `Invalid category: ${data.category}`);
     }
 
     if (
@@ -125,7 +125,7 @@ export class WorkEntryService {
       throw new AppError(
         400,
         "Subcategory is required for 'Unterrichten, beraten, begleiten' category",
-      )
+      );
     }
 
     const [updated] = await db
@@ -142,12 +142,16 @@ export class WorkEntryService {
           eq(workTimeEntryTable.userId, userId),
         ),
       )
-      .returning()
+      .returning();
+
+    if (!updated) {
+      throw new AppError(500, "Failed to update work entry");
+    }
 
     return {
-      message: 'Work entry updated successfully',
+      message: "Work entry updated successfully",
       workEntry: updated,
-    }
+    };
   }
 
   static async deleteEntry(userId: string, entryId: number) {
@@ -161,13 +165,13 @@ export class WorkEntryService {
           eq(workTimeEntryTable.userId, userId),
         ),
       )
-      .limit(1)
+      .limit(1);
 
     if (!entry) {
       throw new AppError(
         404,
         "Work entry not found or you don't have permission to delete it",
-      )
+      );
     }
 
     await db
@@ -177,8 +181,8 @@ export class WorkEntryService {
           eq(workTimeEntryTable.workTimeEntryId, entryId),
           eq(workTimeEntryTable.userId, userId),
         ),
-      )
+      );
 
-    return { message: 'Work entry deleted successfully' }
+    return { message: "Work entry deleted successfully" };
   }
 }

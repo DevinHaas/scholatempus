@@ -1,15 +1,6 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@scholatempus/typescript-config/base.json",
   "compilerOptions": {
-    "lib": ["ES2022"],
-    "target": "ES2022",
-    "module": "ES2022",
-    "types": ["node"],
-    "paths": {
-      "@scholatempus/shared": ["../../packages/shared/src/index.ts"],
-      "@scholatempus/shared/*": ["../../packages/shared/src/*"]
-    },
-
     "composite": false,
     "declaration": false,
 
@@ -25,13 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*.ts",
-    "db/**/*.ts",
-    "drizzle.config.ts",
-    "../../packages/shared/src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts", "db/**/*.ts", "drizzle.config.ts"],
+  "exclude": ["node_modules"]
 }

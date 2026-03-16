@@ -1,17 +1,18 @@
 "use client";
-import { api } from "@/lib/api";
+import { useEden } from "@/lib/eden";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import type { AddWorkEntriesRequest } from "@scholatempus/shared";
 import { toast } from "sonner";
 
 export const useAddWorkEntries = () => {
+  const eden = useEden();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (workEntriesRequest: AddWorkEntriesRequest) =>
-      addWorkEntries(workEntriesRequest),
+    ...eden.workentries.post.mutationOptions(),
     onSuccess: (data) => {
-      toast.success(`😀 ${data.count} work entr${data.count === 1 ? "y" : "ies"} saved successfully`);
+      toast.success(
+        `😀 ${data.count} work entr${data.count === 1 ? "y" : "ies"} saved successfully`,
+      );
     },
     onError: (error) => {
       console.log(error);
@@ -20,14 +21,9 @@ export const useAddWorkEntries = () => {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["workEntries"] });
+      queryClient.invalidateQueries({
+        queryKey: eden.workentries.get.queryKey(),
+      });
     },
   });
 };
-
-const addWorkEntries = async (workEntriesRequest: AddWorkEntriesRequest) => {
-  return await api
-    .post("/workentries", workEntriesRequest)
-    .then((res) => res.data);
-};
-

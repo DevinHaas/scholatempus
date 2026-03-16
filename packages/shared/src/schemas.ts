@@ -44,3 +44,10 @@ export const ProfileDataSchema = z.object({
   classData: ClassDataSchema,
   specialFunctionData: SpecialFunctionDataSchema,
 });
+
+export type WeeklyLessonsForTransportation = z.infer<
+  typeof WeeklyLessonsForTransportationSchema
+>;
+export type ClassData = z.infer<typeof ClassDataSchema>;
+export type SpecialFunctionData = z.infer<typeof SpecialFunctionDataSchema>;
+export type ProfileData = z.infer<typeof ProfileDataSchema>;

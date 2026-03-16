@@ -1,25 +1,21 @@
 "use client";
-import { api } from "@/lib/api";
+import { useEden } from "@/lib/eden";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import type { UpsertProfileRequestData } from "@scholatempus/shared";
 import { toast } from "sonner";
 
 export const useCreateProfile = () => {
+  const eden = useEden();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (createProfileRequestData: UpsertProfileRequestData) =>
-      createProfile(createProfileRequestData),
+    ...eden.profile.put.mutationOptions(),
     onSuccess: async () => {
-      // Update Clerk user metadata to indicate profile exists
       try {
         await fetch("/api/user/update-profile-metadata", {
           method: "POST",
         });
       } catch (error) {
         console.error("Failed to update user metadata:", error);
-        // Don't show error to user as profile was created successfully
-        // The metadata update is a nice-to-have
       }
       toast.success("😀 Profile created successfully");
     },
@@ -33,12 +29,4 @@ export const useCreateProfile = () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
   });
-};
-
-const createProfile = async (
-  createProfileRequestData: UpsertProfileRequestData,
-) => {
-  return await api
-    .put("/profile", createProfileRequestData)
-    .then((res) => res.data);
 };

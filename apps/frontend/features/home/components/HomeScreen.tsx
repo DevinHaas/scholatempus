@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit3 } from "lucide-react";
+import { toast } from "sonner";
 import { CategorySelectionDialog } from "./CategorySelectionDialog";
 
 export function HomeScreen() {
@@ -40,9 +41,16 @@ export function HomeScreen() {
 
   const handleStartStop = () => {
     if (isTracking) {
+      if (elapsedTime < 60000) {
+        setIsTracking(false);
+        setStartTime(null);
+        setElapsedTime(0);
+        toast.error("Session too short", {
+          description: "Sessions must be longer than 1 minute.",
+        });
+        return;
+      }
       setIsTracking(false);
-      console.log("stop tracking");
-      console.log(elapsedTime);
       setIsManually(false); // Timer was running, so not manually added
       setShowCategoryDialog(true);
     } else {

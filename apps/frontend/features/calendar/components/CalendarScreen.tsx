@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DateRangePicker } from "./DateRangePicker";
+import { WorkEntriesTableSkeleton } from "./WorkEntriesTableSkeleton";
 
 export function CalendarScreen() {
   // Initialize with current week range
@@ -36,10 +37,10 @@ export function CalendarScreen() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [entryToDelete, setEntryToDelete] = useState<number | null>(null);
   const [selectedDateForNewEntry, setSelectedDateForNewEntry] = useState<Date>(
-    () => new Date()
+    () => new Date(),
   );
 
-  const { data: allEntries = [] } = useGetWorkEntries();
+  const { data: allEntries = [], isLoading } = useGetWorkEntries();
   const deleteWorkEntryMutation = useDeleteWorkEntry();
 
   // Filter entries for the selected date range
@@ -110,13 +111,26 @@ export function CalendarScreen() {
 
         {/* Work Entries Table */}
         <div className="w-full">
-          <Suspense fallback={<div>Loading Entries...</div>}>
-            <WorkEntriesTable
-              data={filteredEntries}
-            onEdit={handleEditEntry}
-            onDelete={handleDeleteClick}
-            />
-          </Suspense>
+          {isLoading ? (
+            <WorkEntriesTableSkeleton />
+          ) : filteredEntries.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-muted-foreground text-sm">
+                No work entries found for this period.
+              </p>
+              <p className="text-muted-foreground/60 text-xs mt-1">
+                Use the &quot;Add Entry&quot; button to log your first entry.
+              </p>
+            </div>
+          ) : (
+            <Suspense fallback={<WorkEntriesTableSkeleton />}>
+              <WorkEntriesTable
+                data={filteredEntries}
+                onEdit={handleEditEntry}
+                onDelete={handleDeleteClick}
+              />
+            </Suspense>
+          )}
         </div>
 
         {/* Add/Edit Entry Dialog */}

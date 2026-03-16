@@ -1,37 +1,19 @@
-import { api } from "@/lib/api";
+import { useEden } from "@/lib/eden";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
-import type { GetProfileResponse } from "@scholatempus/shared";
-import { AxiosError } from "axios";
 
 export const useGetProfile = () => {
+  const eden = useEden();
   const { user, isLoaded } = useUser();
   return useQuery({
-    queryKey: ["profile"],
-    queryFn: () => getProfile(),
+    ...eden.profile.get.queryOptions(),
     enabled: !!user && !!isLoaded,
-    retry: (failureCount, error) => {
-      // Don't retry on 404 (profile not found is expected for new users)
-      if (error instanceof AxiosError && error.response?.status === 500 || error instanceof AxiosError && error.response?.status === 404) {
+    select: (data) => data?.profile,
+    retry: (failureCount, error: any) => {
+      if (error?.status === 500 || error?.status === 404) {
         return false;
       }
-      // Retry other errors up to 3 times (default behavior)
       return failureCount < 3;
     },
-    onError: async (error) => {
-      if (error instanceof AxiosError && error.response?.status === 404) {
-        await fetch("/api/user/update-profile-metadata", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profileExists: false }),
-        }).catch(() => {}); // best-effort, don't block
-      }
-    },
   });
-};
-
-const getProfile = async () => {
-  const res = await api.get<GetProfileResponse>("/profile");
-  console.log("res", res.data.profile);
-  return res.data.profile;
 };

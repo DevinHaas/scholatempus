@@ -50,7 +50,6 @@ export class ProfileService {
   }
 
   static async upsertProfile(userId: string, data: UpsertProfileBodyType) {
-    console.log("upsert profile");
     const result = await db.transaction(async (tx) => {
       const [newClassData] = await tx
         .insert(classDataTable)

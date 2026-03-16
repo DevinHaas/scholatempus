@@ -1,23 +1,21 @@
 "use client";
-import { api } from "@/lib/api";
+import { edenClient, useEden } from "@/lib/eden";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import type {
-  UpdateWorkEntryRequest,
-  UpdateWorkEntryResponse,
-} from "@scholatempus/shared";
 import { toast } from "sonner";
+import type { UpdateWorkEntryBodyType } from "@backend/modules/workentries/model";
+
+type UpdateWorkEntryInput = { id: number } & UpdateWorkEntryBodyType;
 
 export const useUpdateWorkEntry = () => {
+  const eden = useEden();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      entryId,
-      data,
-    }: {
-      entryId: number;
-      data: UpdateWorkEntryRequest;
-    }) => updateWorkEntry(entryId, data),
+    mutationFn: async ({ id, ...body }: UpdateWorkEntryInput) => {
+      const { data, error } = await edenClient.workentries({ id }).put(body);
+      if (error) throw error;
+      return data;
+    },
     onSuccess: () => {
       toast.success("Work entry updated successfully");
     },
@@ -28,17 +26,9 @@ export const useUpdateWorkEntry = () => {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["workEntries"] });
+      queryClient.invalidateQueries({
+        queryKey: eden.workentries.get.queryKey(),
+      });
     },
   });
 };
-
-const updateWorkEntry = async (
-  entryId: number,
-  data: UpdateWorkEntryRequest
-) => {
-  return await api
-    .put<UpdateWorkEntryResponse>(`/workentries/${entryId}`, { ...data, id: entryId })
-    .then((res) => res.data);
-};
-

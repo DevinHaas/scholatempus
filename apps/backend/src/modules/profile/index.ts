@@ -17,7 +17,7 @@ export const profileModule = new Elysia({ prefix: "/profile" })
       return { message: error.message };
     }
     set.status = 500;
-    return { message: "Internal server error" };
+    return { message: `${error}` };
   })
   .get("/exists", ({ userId }) => ProfileService.checkExists(userId!), {
     requireAuth: true,

@@ -99,8 +99,9 @@ export function WorkEntriesTable({
         const category = row.getValue("category") as string;
         return (
           <div>
-            {WORK_TIME_CATEGORY_LABELS[category as keyof typeof WORK_TIME_CATEGORY_LABELS] ||
-              category}
+            {WORK_TIME_CATEGORY_LABELS[
+              category as keyof typeof WORK_TIME_CATEGORY_LABELS
+            ] || category}
           </div>
         );
       },
@@ -185,14 +186,6 @@ export function WorkEntriesTable({
     },
   });
 
-  if (data.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No entries found for this week.
-      </div>
-    );
-  }
-
   return (
     <div className="w-full">
       <div className="overflow-hidden rounded-md border">
@@ -207,7 +200,7 @@ export function WorkEntriesTable({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -226,7 +219,7 @@ export function WorkEntriesTable({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -248,4 +241,3 @@ export function WorkEntriesTable({
     </div>
   );
 }
-

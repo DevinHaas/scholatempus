@@ -24,13 +24,13 @@ import { FieldError } from "@/components/ui/field";
 import {
   TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES_LABELS,
   WORK_TIME_CATEGORY_LABELS,
-  WorkTimeCategory
+  WorkTimeCategory,
 } from "@scholatempus/shared/enums";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { type TimeEntry, TimeEntryZodSchema } from "@scholatempus/shared";
 import { useAddWorkEntries } from "../hooks/addWorkEntries";
-import type { AddWorkEntriesRequest } from "@scholatempus/shared";
 import { useUpdateWorkEntry } from "@/features/calendar/hooks/useUpdateWorkEntry";
+import { useEffect, useState } from "react";
 
 interface CategorySelectionDialogProps {
   open: boolean;
@@ -62,16 +62,22 @@ export function CategorySelectionDialog({
   const addWorkEntriesMutation = useAddWorkEntries();
   const updateWorkEntryMutation = useUpdateWorkEntry();
   const isEditing = !!entryToEdit;
-  const [selectedDateState, setSelectedDateState] = React.useState<Date | undefined>(selectedDate);
-  
+  const [selectedDateState, setSelectedDateState] = useState<Date | undefined>(
+    selectedDate,
+  );
+
   // For calendar context, use a default total time if not provided
   // For home context, use the provided totalTime
-  const effectiveTotalTime = isCalendarContext 
-    ? (totalTime > 0 ? totalTime : 1000 * 60 * 60) 
-    : (totalTime > 0 ? totalTime : 1000 * 60 * 60);
+  const effectiveTotalTime = isCalendarContext
+    ? totalTime > 0
+      ? totalTime
+      : 1000 * 60 * 60
+    : totalTime > 0
+      ? totalTime
+      : 1000 * 60 * 60;
 
   // Update selected date state when prop changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedDate) {
       setSelectedDateState(selectedDate);
     }
@@ -118,7 +124,9 @@ export function CategorySelectionDialog({
       };
     }
     // If manually adding, start with 0 minutes so user can input time from beginning
-    const defaultWorkingTime = isManually ? 0 : Math.floor(effectiveTotalTime / 60000);
+    const defaultWorkingTime = isManually
+      ? 0
+      : Math.floor(effectiveTotalTime / 60000);
     return {
       entries: [
         {
@@ -145,20 +153,20 @@ export function CategorySelectionDialog({
   });
 
   // Reset form when dialog opens or entryToEdit changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       form.reset(getDefualtValues());
     }
   }, [open, entryToEdit?.workTimeEntryId]);
 
-  const handleCategorySelection = (entries: TimeEntry[]) : void =>  {
+  const handleCategorySelection = (entries: TimeEntry[]): void => {
     // For calendar context, we need to handle date separately
     // Note: The backend addWorkEntries endpoint currently sets date to new Date()
     // We'll need to modify the backend or create a separate endpoint for calendar entries
     // For now, we'll use the existing endpoint and the date will be set on the backend
-    
+
     // Transform entries to API format
-    const apiEntries: AddWorkEntriesRequest = {
+    const apiEntries = {
       entries: entries.map((entry) => ({
         category: entry.category,
         subcategory: entry.subcategory,
@@ -170,7 +178,7 @@ export function CategorySelectionDialog({
     // Save to backend
     addWorkEntriesMutation.mutate(apiEntries, {
       onSuccess: () => {
-        onOpenChangeAction(false)
+        onOpenChangeAction(false);
       },
     });
   };
@@ -178,25 +186,23 @@ export function CategorySelectionDialog({
   const handleUpdateEntry = (entry: TimeEntry): void => {
     if (!entryToEdit) return;
 
-    const updateData = {
-      category: entry.category,
-      subcategory: entry.subcategory,
-      workingTime: entry.workingTime,
-      date: selectedDate || (typeof entryToEdit.date === "string" 
-        ? new Date(entryToEdit.date) 
-        : entryToEdit.date),
-    };
-
     updateWorkEntryMutation.mutate(
       {
-        entryId: entryToEdit.workTimeEntryId,
-        data: updateData,
+        id: entryToEdit.workTimeEntryId,
+        category: entry.category,
+        subcategory: entry.subcategory ?? null,
+        workingTime: entry.workingTime,
+        date:
+          selectedDate ||
+          (typeof entryToEdit.date === "string"
+            ? new Date(entryToEdit.date)
+            : entryToEdit.date),
       },
       {
         onSuccess: () => {
           onOpenChangeAction(false);
         },
-      }
+      },
     );
   };
 
@@ -241,7 +247,7 @@ export function CategorySelectionDialog({
             {isEditing ? "Edit Work Entry" : "Add Work Entry"}
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
-            {isEditing 
+            {isEditing
               ? "Update the work entry details."
               : "Set the dimensions for the layer."}
           </p>
@@ -267,7 +273,9 @@ export function CategorySelectionDialog({
               <div>
                 <Label className="text-sm font-medium">Session Time:</Label>
                 <div className="text-lg font-semibold">
-                  {effectiveTotalTime > 0 ? formatTime(effectiveTotalTime) : "0h00min"}
+                  {effectiveTotalTime > 0
+                    ? formatTime(effectiveTotalTime)
+                    : "0h00min"}
                 </div>
               </div>
 
@@ -275,7 +283,9 @@ export function CategorySelectionDialog({
                 {(entriesLength) =>
                   entriesLength > 1 && (
                     <div className="text-right">
-                      <Label className="text-sm font-medium">Distributed:</Label>
+                      <Label className="text-sm font-medium">
+                        Distributed:
+                      </Label>
                       <div className="text-lg font-semibold">
                         {getTotalDistributedTime(form.state.values.entries)}min
                       </div>
@@ -356,7 +366,10 @@ export function CategorySelectionDialog({
                                         );
                                       }}
                                       disabled={
-                                        !isManually && (form.state.values.entries.length <= 1 || isEditing)
+                                        !isManually &&
+                                        (form.state.values.entries.length <=
+                                          1 ||
+                                          isEditing)
                                       }
                                       className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                                     />
@@ -384,13 +397,13 @@ export function CategorySelectionDialog({
                                       Category
                                     </Label>
                                     <Select
-                                      onValueChange={(value) =>
-                                      {
-
-                                        console.log("work time category", value),
-                                        categoryField.handleChange(value)
-                                      }
-                                      }
+                                      onValueChange={(value) => {
+                                        (console.log(
+                                          "work time category",
+                                          value,
+                                        ),
+                                          categoryField.handleChange(value));
+                                      }}
                                       value={categoryField.state.value}
                                     >
                                       <SelectTrigger>
@@ -439,11 +452,12 @@ export function CategorySelectionDialog({
                                             </Label>
                                             <Select
                                               onValueChange={(value) => {
-
-                                                console.log("subcategory", value)
-                                                field.handleChange(value)
-                                              }
-                                              }
+                                                console.log(
+                                                  "subcategory",
+                                                  value,
+                                                );
+                                                field.handleChange(value);
+                                              }}
                                               value={field.state.value}
                                             >
                                               <SelectTrigger>
@@ -504,10 +518,14 @@ export function CategorySelectionDialog({
                 Back
               </Button>
 
-              <Button 
-                type="submit" 
-                className="flex-1" 
-                disabled={isEditing ? updateWorkEntryMutation.isPending : addWorkEntriesMutation.isPending}
+              <Button
+                type="submit"
+                className="flex-1"
+                disabled={
+                  isEditing
+                    ? updateWorkEntryMutation.isPending
+                    : addWorkEntriesMutation.isPending
+                }
               >
                 {isEditing ? "Update" : "Save"}
               </Button>

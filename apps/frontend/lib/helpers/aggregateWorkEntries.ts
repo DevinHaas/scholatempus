@@ -25,7 +25,7 @@ export function aggregateWorkEntriesByCategory(
   for (const entry of workEntries) {
     const category = entry.category as WorkTimeCategory;
     if (Object.values(WorkTimeCategory).includes(category)) {
-      aggregated[category] = (aggregated[category] || 0) + entry.workingTime;
+      aggregated[category] = (aggregated[category] || 0) + entry.workingTime / 60;
     }
   }
 

@@ -1,14 +1,20 @@
 "use client";
-import { api } from "@/lib/api";
+import { edenClient, useEden } from "@/lib/eden";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import type { DeleteWorkEntryResponse } from "@scholatempus/shared";
 import { toast } from "sonner";
 
 export const useDeleteWorkEntry = () => {
+  const eden = useEden();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (entryId: number) => deleteWorkEntry(entryId),
+    mutationFn: async (entryId: number) => {
+      const { data, error } = await edenClient
+        .workentries({ id: entryId })
+        .delete();
+      if (error) throw error;
+      return data;
+    },
     onSuccess: () => {
       toast.success("Work entry deleted successfully");
     },
@@ -19,16 +25,9 @@ export const useDeleteWorkEntry = () => {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["workEntries"] });
+      queryClient.invalidateQueries({
+        queryKey: [eden.workentries.get.queryKey()],
+      });
     },
   });
 };
-
-const deleteWorkEntry = async (entryId: number) => {
-  return await api
-    .delete<DeleteWorkEntryResponse>(`/workentries/${entryId}`)
-    .then((res) => res.data);
-};
-
-
-

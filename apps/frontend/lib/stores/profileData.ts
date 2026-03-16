@@ -4,12 +4,12 @@ import { useShallow } from "zustand/react/shallow";
 import { useState, useEffect } from "react";
 import { getHourseMultiplierPerCategory } from "../helpers/SetupCalculators";
 import { HOURS_TO_WORK_PER_SEMESTER, NUMBER_OF_SCHOOL_WEEKS } from "../DATA";
+import { GradeLevel, WorkTimeCategory } from "@scholatempus/shared/enums";
 import type {
   ClassData,
   SpecialFunctionData,
   WeeklyLessonsForTransportation,
-} from "@scholatempus/shared";
-import { GradeLevel, WorkTimeCategory } from "@scholatempus/shared";
+} from "@scholatempus/shared/schemas";
 
 interface WorkTimeDetail {
   targetHours: number | null;

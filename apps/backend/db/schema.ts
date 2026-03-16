@@ -2,7 +2,7 @@ import {
   GradeLevel,
   WorkTimeCategory,
   WorkTimeSubCategory,
-} from "@scholatempus/shared";
+} from "@scholatempus/shared/enums";
 import { relations } from "drizzle-orm";
 import { boolean } from "drizzle-orm/pg-core";
 import {

@@ -1,11 +1,11 @@
 import { z } from "zod";
 
+import { GRADE_LEVEL_LABELS } from "@scholatempus/shared/enums";
 import {
   ClassDataSchema,
-  GRADE_LEVEL_LABELS,
   SpecialFunctionDataSchema,
   WeeklyLessonsForTransportationSchema,
-} from "@scholatempus/shared";
+} from "@scholatempus/shared/schemas";
 
 export const classDataFormSchema = ClassDataSchema.extend({
   grade: z.enum(Object.values(GRADE_LEVEL_LABELS) as [string, ...string[]]),

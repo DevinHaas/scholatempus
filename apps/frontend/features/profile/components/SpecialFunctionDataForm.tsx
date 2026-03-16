@@ -14,12 +14,12 @@ import {
   schulleitungSetupFormSchema,
   type SchulleitungSetupFormData,
 } from "@/lib/validations";
-import type { WeeklyLessonsForTransportation } from "@scholatempus/shared";
+import type { WeeklyLessonsForTransportation } from "@scholatempus/shared/schemas";
 import { z } from "zod";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import type { SpecialFunctionData } from "@scholatempus/shared";
+import type { SpecialFunctionData } from "@scholatempus/shared/schemas";
 import { useStore } from "@tanstack/react-form";
 
 interface SpecialFunctionDataFormProps {

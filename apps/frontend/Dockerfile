@@ -17,6 +17,7 @@ ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 COPY --from=pruner /app/out/json/ .
 RUN bun install --frozen-lockfile
 COPY --from=pruner /app/out/full/ .
+RUN cd packages/shared && bun run build
 RUN bun run build
 
 # ---- runner: production image ----

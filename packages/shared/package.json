@@ -13,21 +13,9 @@
       "types": "./src/index.ts",
       "default": "./dist/index.js"
     },
-    "./api-types": {
-      "types": "./src/api-types.ts",
-      "default": "./dist/api-types.js"
-    },
-    "./enums": {
-      "types": "./src/enums.ts",
-      "default": "./dist/enums.js"
-    },
-    "./schemas": {
-      "types": "./src/schemas.ts",
-      "default": "./dist/schemas.js"
-    },
-    "./types": {
-      "types": "./src/types.ts",
-      "default": "./dist/types.js"
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./dist/*.js"
     }
   },
   "dependencies": {

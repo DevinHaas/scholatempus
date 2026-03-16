@@ -5,7 +5,7 @@ import { ProfileScreen } from "@/features/profile";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { GradeLevel } from "@scholatempus/shared";
+import { GradeLevel } from "@scholatempus/shared/enums";
 
 function ProfileScreenSkeleton() {
   return (
@@ -86,4 +86,3 @@ export default function ProfilePage() {
     </Suspense>
   );
 }
-

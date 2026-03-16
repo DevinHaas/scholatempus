@@ -6,6 +6,10 @@ node_modules
 /.vscode/
 /.cursor/
 /.bun/
+.pnpm-store/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
 
 .nx/cache
 .nx/workspace-data

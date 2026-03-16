@@ -46,7 +46,7 @@ export class ProfileService {
       throw new AppError(404, "Profile not found");
     }
 
-    return { message: "good", profile: rows[0] };
+    return { message: "good", profile: rows[0]! };
   }
 
   static async upsertProfile(userId: string, data: UpsertProfileBodyType) {
@@ -101,14 +101,14 @@ export class ProfileService {
         .insert(profileTable)
         .values({
           userId,
-          classDataId: newClassData.id,
-          specialFunctionId: newSpecialFunction.id,
+          classDataId: newClassData!.id,
+          specialFunctionId: newSpecialFunction!.id,
         })
         .onConflictDoUpdate({
           target: profileTable.userId,
           set: {
-            classDataId: newClassData.id,
-            specialFunctionId: newSpecialFunction.id,
+            classDataId: newClassData!.id,
+            specialFunctionId: newSpecialFunction!.id,
           },
         })
         .returning();
@@ -116,6 +116,6 @@ export class ProfileService {
       return profileRecord;
     });
 
-    return { userId: result.userId!, message: "Profile created successfully" };
+    return { userId: result!.userId!, message: "Profile created successfully" };
   }
 }

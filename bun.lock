@@ -137,6 +137,9 @@
       },
       "devDependencies": {
         "@scholatempus/typescript-config": "workspace:*",
+        "@types/react": "^19.0.0",
+        "elysia": "latest",
+        "react": "^19.0.0",
         "scholatempus-backend": "workspace:*",
         "typescript": "^5.2.2",
       },

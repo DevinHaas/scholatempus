@@ -1,20 +1,23 @@
-FROM oven/bun:1 AS build
-
+FROM oven/bun:1 AS base
 WORKDIR /app
 
 # Copy workspace manifests first for layer caching
-COPY package.json bun.lock ./
-COPY apps/backend/package.json ./apps/backend/
-COPY packages/shared/package.json ./packages/shared/
+FROM base AS pruner
+RUN bun add --global turbo@^2
+COPY . .
+RUN turbo prune scholatempus-backend --docker
 
+
+
+FROM base AS builder
+COPY --from=pruner /app/out/json/ .
 # Install all workspace dependencies
-RUN bun install --frozen-lockfile
+RUN bun install 
 
-# Copy source files
-COPY apps/backend/src ./apps/backend/src
-COPY packages/shared ./packages/shared
+COPY --from=pruner /app/out/full/ .
 
 ENV NODE_ENV=production
+RUN bun run build
 
 # Compile to single binary (bundles workspace deps)
 RUN bun build \
@@ -26,11 +29,11 @@ RUN bun build \
   ./apps/backend/src/index.ts
 
 # Minimal runtime image
-FROM gcr.io/distroless/base
+FROM gcr.io/distroless/base AS runner
 
 WORKDIR /app
 
-COPY --from=build /app/server server
+COPY --from=builder /app/server server
 
 ENV NODE_ENV=production
 

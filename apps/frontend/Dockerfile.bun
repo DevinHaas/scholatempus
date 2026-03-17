@@ -1,0 +1,54 @@
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+# ---- base ----
+FROM oven/bun:1-alpine AS base
+WORKDIR /app
+
+# ---- pruner: generate minimal dependency tree ----
+FROM base AS pruner
+RUN bun add --global turbo@^2
+COPY . .
+RUN turbo prune scholatempus-frontend --docker
+
+# ---- builder: install deps + compile ----
+FROM base AS builder
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+# Copy pruned package.json files first for layer caching
+COPY --from=pruner /app/out/json/ .
+# Overwrite pruned lockfile with original to avoid bun --frozen-lockfile mismatch
+COPY --from=pruner /app/bun.lock ./bun.lock
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
+# Copy full pruned source (must come after bun install so workspace symlinks resolve)
+COPY --from=pruner /app/out/full/ .
+ENV NODE_ENV=production
+# turbo run build respects dependsOn: ["^build"] — builds packages/shared first automatically
+RUN bun run build
+
+# ---- runner: minimal production image ----
+FROM oven/bun:1-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Public folder
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/public ./apps/frontend/public
+
+# Pre-create .next dir with correct ownership
+RUN mkdir -p apps/frontend/.next && chown nextjs:nodejs apps/frontend/.next
+
+# Standalone output (bundles all runtime deps — no node_modules needed)
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/standalone ./
+# Static assets must be copied alongside standalone server
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./apps/frontend/.next/static
+
+USER nextjs
+EXPOSE 3000
+# Standalone server entry point (monorepo path)
+CMD ["bun", "apps/frontend/server.js"]

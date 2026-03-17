@@ -2,9 +2,8 @@
 import { edenClient, useEden } from "@/lib/eden";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { UpdateWorkEntryBodyType } from "@backend/modules/workentries/model";
 
-type UpdateWorkEntryInput = { id: number } & UpdateWorkEntryBodyType;
+type UpdateWorkEntryInput = { id: number } & Parameters<ReturnType<typeof edenClient.workentries>['put']>[0];
 
 export const useUpdateWorkEntry = () => {
   const eden = useEden();

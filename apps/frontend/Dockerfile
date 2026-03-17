@@ -15,7 +15,7 @@ FROM base AS installer
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 COPY --from=pruner /app/out/json/ .
-RUN bun install --frozen-lockfile
+RUN bun install --production
 COPY --from=pruner /app/out/full/ .
 RUN cd packages/shared && bun run build
 RUN bun run build
@@ -29,7 +29,7 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 COPY --from=pruner /app/out/json/ .
-RUN bun install --frozen-lockfile --production
+RUN bun install --production
 
 COPY --from=installer --chown=nextjs:nodejs /app/apps/frontend/.next ./apps/frontend/.next
 COPY --from=installer --chown=nextjs:nodejs /app/apps/frontend/public ./apps/frontend/public

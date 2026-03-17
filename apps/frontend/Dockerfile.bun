@@ -1,14 +1,19 @@
 FROM oven/bun:1-alpine AS base
 WORKDIR /app
 
-# ── Install ──────────────────────────────────────────────────────────────────
-FROM base AS installer
+# ── Prepare ───────────────────────────────────────────────────────────────────
+FROM base AS prepare
+RUN bun add -g turbo
 COPY . .
-RUN bun install --frozen-lockfile
+RUN turbo prune scholatempus-frontend --docker
 
 # ── Build ────────────────────────────────────────────────────────────────────
 FROM base AS builder
-COPY --from=installer /app .
+
+COPY --from=prepare /app/out/json/ .
+RUN bun install
+
+COPY --from=prepare /app/out/full/ .
 
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY

@@ -1,0 +1,24 @@
+{
+  "name": "@scholatempus/eden",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@elysiajs/eden": "latest",
+    "eden-tanstack-react-query": "latest"
+  },
+  "devDependencies": {
+    "scholatempus-backend": "workspace:*",
+    "@scholatempus/typescript-config": "workspace:*",
+    "typescript": "^5.2.2"
+  }
+}

@@ -1,0 +1,9 @@
+out/
+.git/
+node_modules/
+**/node_modules/
+**/.next/
+**/dist/
+.turbo/
+**/.turbo/
+**/*.tsbuildinfo

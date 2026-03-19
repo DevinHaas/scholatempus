@@ -33,7 +33,7 @@ function createStepUrl(
 }
 
 export default function Onboarding() {
-  const { isPending, isError, mutate } = useCreateProfile();
+  const { isPending, mutate } = useCreateProfile();
   const classData = useClassData();
   const specialFunctionData = useSpecialFunctionData();
   const router = useRouter();
@@ -68,7 +68,11 @@ export default function Onboarding() {
       const targetIndex =
         direction === "next" ? currentIndex + 1 : currentIndex - 1;
 
-      if (targetIndex === undefined || targetIndex < 0 || targetIndex >= ONBOARDING_STEPS.length) {
+      if (
+        targetIndex === undefined ||
+        targetIndex < 0 ||
+        targetIndex >= ONBOARDING_STEPS.length
+      ) {
         return;
       }
 
@@ -112,7 +116,7 @@ export default function Onboarding() {
               await getToken({ skipCache: true });
               router.push("/home");
             },
-          }
+          },
         );
       }}
       onBackAction={() => navigateRelative("previous")}

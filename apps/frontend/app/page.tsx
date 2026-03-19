@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import {
   Hourglass,
   Menu,
@@ -14,15 +13,7 @@ import {
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
-  const router = useRouter();
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-
-  // Redirect authenticated users to /home
-  useEffect(() => {
-    if (isLoaded && isSignedIn) {
-      router.push("/home");
-    }
-  }, [isLoaded, isSignedIn, router]);
 
   // Timer logic
   useEffect(() => {
@@ -62,18 +53,29 @@ export default function Home() {
 
             {/* Auth Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <Link
-                href="/sign-in"
-                className="text-sm font-normal text-[oklch(0.15_0.02_258)] hover:text-[oklch(0.55_0.18_258)] transition-colors"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)] hover:shadow-[0_0_25px_-5px_oklch(0.55_0.18_258)]"
-              >
-                Start for free
-              </Link>
+              {isLoaded && (isSignedIn ? (
+                <Link
+                  href="/home"
+                  className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)] hover:shadow-[0_0_25px_-5px_oklch(0.55_0.18_258)]"
+                >
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/sign-in"
+                    className="text-sm font-normal text-[oklch(0.15_0.02_258)] hover:text-[oklch(0.55_0.18_258)] transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)] hover:shadow-[0_0_25px_-5px_oklch(0.55_0.18_258)]"
+                  >
+                    Start for free
+                  </Link>
+                </>
+              ))}
             </div>
 
             {/* Mobile Menu Icon */}

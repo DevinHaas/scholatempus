@@ -2,7 +2,7 @@
 
 import { OverviewScreen } from "@/features/onboarding/components/overview-setup-screen";
 import { SchulleitungSetupComponent } from "@/features/onboarding/components/specialfunction-setup-screen";
-import { useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useCallback } from "react";
 import {
   usePathname,
@@ -40,6 +40,7 @@ export default function Onboarding() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
 
   const email = user?.emailAddresses[0]?.emailAddress ?? "nutzer@email.ch";
 
@@ -103,17 +104,16 @@ export default function Onboarding() {
   return (
     <OverviewScreen
       onCompleteAction={() => {
-        mutate({
-          classData: classData,
-          specialFunctionData: specialFunctionData,
-        });
-
-        if (isError) {
-          return;
-        }
-
-        localStorage.removeItem("scholatempus:onboarding");
-        router.push("/home");
+        mutate(
+          { classData, specialFunctionData },
+          {
+            onSuccess: async () => {
+              localStorage.removeItem("scholatempus:onboarding");
+              await getToken({ skipCache: true });
+              router.push("/home");
+            },
+          }
+        );
       }}
       onBackAction={() => navigateRelative("previous")}
       email={email}

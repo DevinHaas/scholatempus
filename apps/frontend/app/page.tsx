@@ -3,13 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import {
-  Hourglass,
-  Menu,
-  ArrowRight,
-  TrendingUp,
-  Zap,
-} from "lucide-react";
+import { Hourglass, Menu, ArrowRight, Eye, Zap } from "lucide-react";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
@@ -53,29 +47,30 @@ export default function Home() {
 
             {/* Auth Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              {isLoaded && (isSignedIn ? (
-                <Link
-                  href="/home"
-                  className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)] hover:shadow-[0_0_25px_-5px_oklch(0.55_0.18_258)]"
-                >
-                  Go to Dashboard
-                </Link>
-              ) : (
-                <>
+              {isLoaded &&
+                (isSignedIn ? (
                   <Link
-                    href="/sign-in"
-                    className="text-sm font-normal text-[oklch(0.15_0.02_258)] hover:text-[oklch(0.55_0.18_258)] transition-colors"
-                  >
-                    Log in
-                  </Link>
-                  <Link
-                    href="/sign-up"
+                    href="/home"
                     className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)] hover:shadow-[0_0_25px_-5px_oklch(0.55_0.18_258)]"
                   >
-                    Start for free
+                    Go to Dashboard
                   </Link>
-                </>
-              ))}
+                ) : (
+                  <>
+                    <Link
+                      href="/sign-in"
+                      className="text-sm font-normal text-[oklch(0.15_0.02_258)] hover:text-[oklch(0.55_0.18_258)] transition-colors"
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href="/sign-up"
+                      className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)] hover:shadow-[0_0_25px_-5px_oklch(0.55_0.18_258)]"
+                    >
+                      Start for free
+                    </Link>
+                  </>
+                ))}
             </div>
 
             {/* Mobile Menu Icon */}
@@ -89,10 +84,10 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <main className="md:pt-40 md:pb-24 overflow-hidden pt-32 pb-16 relative">
+      <main className="md:pt-40 md:pb-24 overflow-hidden pt-32 pb-16 relative min-h-screen">
         {/* Background Decor */}
-        <div className="absolute top-0 right-0 -z-10 w-[50%] h-[80%] rounded-full bg-[oklch(0.55_0.18_258)]/5 blur-[120px]"></div>
-        <div className="absolute bottom-0 left-0 -z-10 w-[40%] h-[60%] rounded-full bg-[oklch(0.6_0.15_200)]/5 blur-[100px]"></div>
+        <div className="absolute top-0 right-0 -z-10 w-full h-full rounded-full bg-[oklch(0.55_0.18_258)]/5 blur-[120px]"></div>
+        <div className="absolute bottom-0 left-0 -z-10 w-full h-full rounded-full bg-[oklch(0.6_0.15_200)]/5 blur-[100px]"></div>
 
         <div className="mx-auto max-w-7xl px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 gap-x-12 gap-y-12 items-center">
@@ -108,9 +103,9 @@ export default function Home() {
 
               {/* Headline */}
               <h1 className="md:text-6xl lg:text-7xl text-[oklch(0.15_0.02_258)] leading-[1.1] text-5xl font-medium tracking-tight mb-6">
-                Time Tracked, <br />
+                Time Tracked. <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[oklch(0.55_0.18_258)] to-[oklch(0.6_0.15_200)]">
-                  Balance Restored.
+                  Transparency Guaranteed.
                 </span>
               </h1>
 
@@ -130,28 +125,6 @@ export default function Home() {
                   <ArrowRight className="size-4" />
                 </Link>
               </div>
-
-              {/* Social Proof / Trusted Text */}
-              <div className="mt-10 flex items-center gap-4 text-sm text-[oklch(0.15_0.02_258)]/50 font-normal">
-                <div className="flex -space-x-2">
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64"
-                    alt="User"
-                    className="inline-block size-8 rounded-full ring-2 ring-white object-cover"
-                  />
-                  <img
-                    src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&h=64"
-                    alt="User"
-                    className="inline-block size-8 rounded-full ring-2 ring-white object-cover"
-                  />
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&h=64"
-                    alt="User"
-                    className="inline-block size-8 rounded-full ring-2 ring-white object-cover"
-                  />
-                </div>
-                <p>Trusted by 10,000+ educators</p>
-              </div>
             </div>
 
             {/* Right Visual */}
@@ -165,7 +138,7 @@ export default function Home() {
                 <img
                   src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/112bb9eb-201c-4831-8eb4-aa1084833dca_1600w.jpg"
                   alt="Hand holding phone with modern interface"
-                  className="[mask-image:radial-gradient(closest-side,black_40%,transparent_100%)] transition-transform duration-700 ease-out hover:scale-135 opacity-90 w-full h-full object-cover scale-125"
+                  className="[mask-image:radial-gradient(closest-side,black_65%,transparent_100%)] transition-transform duration-700 ease-out hover:scale-135 w-full h-full object-cover scale-125"
                   style={{
                     borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
                   }}
@@ -173,17 +146,17 @@ export default function Home() {
               </div>
 
               {/* Floating Card: Stats (Left) */}
-              <div className="absolute top-10 -left-4 md:-left-12 lg:-left-20 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/50 animate-float max-w-[180px] z-20">
+              <div className="absolute top-10 -left-4 md:-left-12 lg:-left-20 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/50 animate-float max-w-[210px] z-20">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 rounded-lg bg-[oklch(0.94_0.01_258)] text-[oklch(0.55_0.18_258)]">
-                    <TrendingUp className="size-5" />
+                    <Eye className="size-5" />
                   </div>
                   <div>
                     <p className="text-xs text-[oklch(0.15_0.02_258)]/60 font-medium">
-                      Efficiency
+                      Transparent Tracking
                     </p>
                     <p className="text-sm font-semibold text-[oklch(0.15_0.02_258)]">
-                      + 5 hrs/wk
+                      of your worktime
                     </p>
                   </div>
                 </div>
@@ -195,10 +168,7 @@ export default function Home() {
               {/* Floating Card: Timer (Right Bottom) */}
               <div className="absolute bottom-12 -right-4 md:-right-8 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/50 animate-float-delayed flex items-center gap-4 z-20">
                 <div className="relative size-12 flex items-center justify-center">
-                  <svg
-                    className="size-full -rotate-90"
-                    viewBox="0 0 36 36"
-                  >
+                  <svg className="size-full -rotate-90" viewBox="0 0 36 36">
                     <path
                       className="text-[oklch(0.94_0.01_258)]"
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -221,7 +191,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-xs text-[oklch(0.15_0.02_258)]/60 font-medium">
-                    Focus Mode
+                    Tracking Mode
                   </p>
                   <p className="text-lg font-semibold text-[oklch(0.15_0.02_258)] font-mono tracking-tight">
                     {formattedTime}

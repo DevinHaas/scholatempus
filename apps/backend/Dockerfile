@@ -34,6 +34,7 @@ FROM gcr.io/distroless/base AS runner
 WORKDIR /app
 
 COPY --from=builder /app/server server
+COPY --from=builder /app/apps/backend/db/drizzle ./db/drizzle
 
 ENV NODE_ENV=production
 

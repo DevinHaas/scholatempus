@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit3 } from "lucide-react";
 import { toast } from "sonner";
+import { useWebHaptics } from "web-haptics/react";
 import { CategorySelectionDialog } from "./CategorySelectionDialog";
 
 export function HomeScreen() {
@@ -12,6 +13,7 @@ export function HomeScreen() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const [isManually, setIsManually] = useState(false);
+  const { trigger } = useWebHaptics();
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -50,10 +52,19 @@ export function HomeScreen() {
         });
         return;
       }
+      trigger([
+        { duration: 60, intensity: 0.7 },
+        { delay: 40, duration: 180, intensity: 1 },
+      ]);
       setIsTracking(false);
-      setIsManually(false); // Timer was running, so not manually added
+      setIsManually(false);
       setShowCategoryDialog(true);
     } else {
+      trigger([
+        { duration: 20, intensity: 0.4 },
+        { delay: 40, duration: 30, intensity: 0.7 },
+        { delay: 40, duration: 40, intensity: 1 },
+      ]);
       setIsTracking(true);
       setStartTime(new Date());
       setElapsedTime(0);

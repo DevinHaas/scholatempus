@@ -128,12 +128,23 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 gap-x-12 gap-y-12 items-center">
             {/* Left Content */}
             <div className="z-10 relative w-full md:w-1/2 lg:w-full text-center md:text-left">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[oklch(0.94_0.01_258)] border border-[oklch(0.9_0.01_258)] mb-8 animate-fade-in-up">
-                <span className="flex h-2 w-2 rounded-full bg-[oklch(0.55_0.18_258)] animate-pulse"></span>
-                <span className="text-xs font-medium text-[oklch(0.55_0.18_258)] uppercase tracking-wide">
-                  Neu: Intelligente Zeitplanung
-                </span>
+              {/* Badges */}
+              <div className="flex flex-wrap items-center gap-3 mb-8 justify-center md:justify-start">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-100 animate-fade-in-up">
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="14"
+                    height="14"
+                    aria-hidden="true"
+                  >
+                    <rect width="20" height="20" fill="#FF0000" rx="2" />
+                    <rect x="4" y="7" width="12" height="6" fill="white" />
+                    <rect x="7" y="4" width="6" height="12" fill="white" />
+                  </svg>
+                  <span className="text-xs font-medium text-red-600 uppercase tracking-wide">
+                    Für Schweizer Schulen
+                  </span>
+                </div>
               </div>
 
               {/* Headline */}
@@ -146,7 +157,8 @@ export default function Home() {
 
               {/* Subhead */}
               <p className="text-lg md:text-xl text-[oklch(0.15_0.02_258)]/70 mb-10 leading-relaxed max-w-lg font-normal mx-auto md:mx-0">
-                Ein übersichtlicher Arbeitsbereich für Lehrpersonen, um die eigene Arbeitsbelastung zu verstehen und zu steuern.
+                Verwalte und analysiere deine Arbeitszeit um mehr Transparenz zu
+                schaffen und deine Arbeitsbelastung immer im Auge zu behalten.
               </p>
 
               {/* CTA Group */}
@@ -168,9 +180,14 @@ export default function Home() {
                 ref={statsCardRef}
                 className="hidden lg:flex absolute -left-8 top-12 z-20 flex-col gap-2 bg-white/90 backdrop-blur-md border border-[oklch(0.9_0.01_258)] rounded-2xl p-4 shadow-xl w-44"
               >
-                <CheckCircle2 className="size-8 text-[oklch(0.55_0.18_258)]" strokeWidth={1.5} />
+                <CheckCircle2
+                  className="size-8 text-[oklch(0.55_0.18_258)]"
+                  strokeWidth={1.5}
+                />
                 <p className="text-sm font-semibold text-[oklch(0.15_0.02_258)] leading-snug">
-                  Transparenz<br />wiederhergestellt
+                  Transparenz
+                  <br />
+                  wiederhergestellt
                 </p>
               </div>
 

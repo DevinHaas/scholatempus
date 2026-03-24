@@ -94,7 +94,7 @@ export function CalendarScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="bg-background p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground mb-4">Kalender</h1>
@@ -119,7 +119,8 @@ export function CalendarScreen() {
                 Keine Arbeitseinträge für diesen Zeitraum vorhanden.
               </p>
               <p className="text-muted-foreground/60 text-xs mt-1">
-                Verwenden Sie «Eintrag hinzufügen», um Ihren ersten Eintrag zu erfassen.
+                Verwenden Sie «Eintrag hinzufügen», um Ihren ersten Eintrag zu
+                erfassen.
               </p>
             </div>
           ) : (
@@ -151,7 +152,8 @@ export function CalendarScreen() {
             <DialogHeader>
               <DialogTitle>Arbeitseintrag löschen</DialogTitle>
               <DialogDescription>
-                Möchten Sie diesen Arbeitseintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+                Möchten Sie diesen Arbeitseintrag wirklich löschen? Diese Aktion
+                kann nicht rückgängig gemacht werden.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -169,7 +171,9 @@ export function CalendarScreen() {
                 onClick={handleDeleteConfirm}
                 disabled={deleteWorkEntryMutation.isPending}
               >
-                {deleteWorkEntryMutation.isPending ? "Wird gelöscht..." : "Löschen"}
+                {deleteWorkEntryMutation.isPending
+                  ? "Wird gelöscht..."
+                  : "Löschen"}
               </Button>
             </DialogFooter>
           </DialogContent>

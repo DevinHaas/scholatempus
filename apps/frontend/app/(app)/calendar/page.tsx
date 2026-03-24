@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function CalendarScreenSkeleton() {
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <Skeleton className="h-8 w-32 mb-4" />
@@ -18,7 +18,10 @@ function CalendarScreenSkeleton() {
         <div className="border rounded-lg overflow-hidden">
           <div className="p-4 space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between border-b pb-4 last:border-0">
+              <div
+                key={i}
+                className="flex items-center justify-between border-b pb-4 last:border-0"
+              >
                 <div className="space-y-2 flex-1">
                   <Skeleton className="h-4 w-48" />
                   <Skeleton className="h-3 w-32" />
@@ -40,4 +43,3 @@ export default function CalendarPage() {
     </Suspense>
   );
 }
-

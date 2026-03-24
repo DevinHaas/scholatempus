@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 import { useState, useEffect } from "react";
-import { getHourseMultiplierPerCategory } from "../helpers/SetupCalculators";
-import { HOURS_TO_WORK_PER_SEMESTER, NUMBER_OF_SCHOOL_WEEKS } from "../DATA";
+import { getHourseMultiplierPerCategory, getSchoolWeeks } from "../helpers/SetupCalculators";
+import { HOURS_TO_WORK_PER_SEMESTER } from "../DATA";
 import { GradeLevel, WorkTimeCategory } from "@scholatempus/shared/enums";
 import type {
   ClassData,
@@ -95,7 +95,7 @@ const calculateTargetOverviewParams = (
     }, {} as WorkedTimePerCategory);
 
   const teachingSupervisionTargetHours =
-    (NUMBER_OF_SCHOOL_WEEKS * classData.givenLectures) / 2;
+    (getSchoolWeeks(classData.grade, classData.mandatoryLectures) * classData.givenLectures) / 2;
 
   const actualTeachingSupervisionHours =
     workTimeOverviewData.details?.[WorkTimeCategory.TeachingSupervision]

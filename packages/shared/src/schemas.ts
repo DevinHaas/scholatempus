@@ -29,7 +29,7 @@ export const WeeklyLessonsForTransportationSchema = z
 export const ClassDataSchema = z.object({
   grade: z.nativeEnum(GradeLevel),
   givenLectures: z.number().int().min(0).max(50),
-  mandatoryLectures: z.number().int().min(0).max(50),
+  mandatoryLectures: z.number().min(0).max(50),
   carryOverLectures: z.number().int().min(0),
 });
 

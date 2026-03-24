@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { calculateMandatoryLectures } from "@/lib/helpers/SetupCalculators";
+import { calculateMandatoryLectures, getSchoolWeeks } from "@/lib/helpers/SetupCalculators";
 import { classDataFormSchema, type SetupFormData } from "@/lib/validations";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -69,6 +69,11 @@ export function ClassDataForm({
   const availableMandatoryLectures = useMemo(
     () => calculateMandatoryLectures(getGradeLevelFromLabel(grade)),
     [grade],
+  );
+
+  const schoolWeeks = useMemo(
+    () => getSchoolWeeks(getGradeLevelFromLabel(grade), mandatoryLectures),
+    [grade, mandatoryLectures],
   );
 
   // Store callback in ref to avoid infinite loops
@@ -204,12 +209,15 @@ export function ClassDataForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel
-                  htmlFor={field.name}
-                  className="text-sm font-medium"
-                >
-                  Pflichtlektionen
-                </FieldLabel>
+                <div className="flex items-center justify-between">
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
+                    Pflichtlektionen
+                  </FieldLabel>
+                  <span className="text-xs text-muted-foreground">{schoolWeeks} Schulwochen</span>
+                </div>
                 <Select
                   name={field.name}
                   value={String(field.state.value ?? "")}

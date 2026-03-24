@@ -26,6 +26,11 @@ export function calculateMandatoryLectures(gradeLevel: GradeLevel): number[] {
   }
 }
 
+export function getSchoolWeeks(grade: GradeLevel, mandatoryLectures: number): number {
+  const options = calculateMandatoryLectures(grade);
+  return options.indexOf(mandatoryLectures) === 0 ? 39 : 38;
+}
+
 export function getHourseMultiplierPerCategory(category: string): number {
   switch (category) {
     case WorkTimeCategory.TeachingAdvisingSupporting:

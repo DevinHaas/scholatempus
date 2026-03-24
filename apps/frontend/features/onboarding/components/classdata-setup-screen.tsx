@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { calculateMandatoryLectures } from "@/lib/helpers/SetupCalculators";
+import { calculateMandatoryLectures, getSchoolWeeks } from "@/lib/helpers/SetupCalculators";
 import {
   useClassData,
   useProfileDataActions,
@@ -80,9 +80,14 @@ export function ClassDataSetupComponent({
   });
 
   const grade = useStore(form.store, (state) => state.values.grade);
+  const selectedMandatoryLectures = useStore(form.store, (state) => state.values.mandatoryLectures);
   const mandatoryLectures = useMemo(
     () => calculateMandatoryLectures(getGradeLevelFromLabel(grade)),
     [grade],
+  );
+  const schoolWeeks = useMemo(
+    () => getSchoolWeeks(getGradeLevelFromLabel(grade), selectedMandatoryLectures),
+    [grade, selectedMandatoryLectures],
   );
 
   // Show skeleton while data is loading from localStorage
@@ -230,12 +235,15 @@ export function ClassDataSetupComponent({
                       field.state.meta.isTouched && !field.state.meta.isValid;
                     return (
                       <Field data-invalid={isInvalid}>
-                        <FieldLabel
-                          htmlFor={field.name}
-                          className="text-sm font-medium"
-                        >
-                          Pflichtlektionen
-                        </FieldLabel>
+                        <div className="flex items-center justify-between">
+                          <FieldLabel
+                            htmlFor={field.name}
+                            className="text-sm font-medium"
+                          >
+                            Pflichtlektionen
+                          </FieldLabel>
+                          <span className="text-xs text-muted-foreground">{schoolWeeks} Schulwochen</span>
+                        </div>
                         <Select
                           name={field.name}
                           value={String(field.state.value ?? "")}

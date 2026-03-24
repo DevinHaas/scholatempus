@@ -60,7 +60,7 @@ export const classDataTable = pgTable("classData", {
   classDataId: serial("id").primaryKey(),
   grade: gradeLevelEnum("grade").notNull(),
   givenLectures: smallint().notNull(),
-  mandatoryLectures: smallint().notNull(),
+  mandatoryLectures: numeric("mandatoryLectures", { mode: "number", precision: 4, scale: 1 }).notNull(),
   carryOverLectures: smallint().notNull().default(0),
 });
 

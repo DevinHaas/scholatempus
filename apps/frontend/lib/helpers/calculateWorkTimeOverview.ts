@@ -1,5 +1,5 @@
-import { getHourseMultiplierPerCategory } from "./SetupCalculators";
-import { HOURS_TO_WORK_PER_SEMESTER, NUMBER_OF_SCHOOL_WEEKS } from "../DATA";
+import { getHourseMultiplierPerCategory, getSchoolWeeks } from "./SetupCalculators";
+import { HOURS_TO_WORK_PER_SEMESTER } from "../DATA";
 import { WorkTimeCategory } from "@scholatempus/shared/enums";
 import type {
   ClassData,
@@ -90,7 +90,7 @@ export function calculateWorkTimeOverview(
     }, {} as WorkedTimePerCategory);
 
   const teachingSupervisionTargetHours =
-    (NUMBER_OF_SCHOOL_WEEKS * classData.givenLectures) / 2;
+    (getSchoolWeeks(classData.grade, classData.mandatoryLectures) * classData.givenLectures) / 2;
 
   const actualTeachingSupervisionHours =
     actualHoursPerCategory[WorkTimeCategory.TeachingSupervision] ?? 0;

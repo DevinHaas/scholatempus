@@ -16,7 +16,6 @@ export const authPlugin = new Elysia()
       if (!enabled) return;
       return {
         beforeHandle({ userId, status }) {
-          console.log(userId);
           if (!userId) {
             throw status(401, "Unauthorized");
           }

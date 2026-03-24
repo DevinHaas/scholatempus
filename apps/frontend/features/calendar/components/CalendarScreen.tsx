@@ -97,14 +97,14 @@ export function CalendarScreen() {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Calendar</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Kalender</h1>
 
           {/* Date Range Picker and Actions */}
           <div className="flex items-center justify-between mb-4">
             <DateRangePicker value={dateRange} onChange={setDateRange} />
             <Button onClick={handleAddEntry} size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              Add Entry
+              Eintrag hinzufügen
             </Button>
           </div>
         </div>
@@ -116,10 +116,10 @@ export function CalendarScreen() {
           ) : filteredEntries.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-muted-foreground text-sm">
-                No work entries found for this period.
+                Keine Arbeitseinträge für diesen Zeitraum vorhanden.
               </p>
               <p className="text-muted-foreground/60 text-xs mt-1">
-                Use the &quot;Add Entry&quot; button to log your first entry.
+                Verwenden Sie «Eintrag hinzufügen», um Ihren ersten Eintrag zu erfassen.
               </p>
             </div>
           ) : (
@@ -149,10 +149,9 @@ export function CalendarScreen() {
         <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Delete Work Entry</DialogTitle>
+              <DialogTitle>Arbeitseintrag löschen</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this work entry? This action
-                cannot be undone.
+                Möchten Sie diesen Arbeitseintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -163,14 +162,14 @@ export function CalendarScreen() {
                   setEntryToDelete(null);
                 }}
               >
-                Cancel
+                Abbrechen
               </Button>
               <Button
                 variant="destructive"
                 onClick={handleDeleteConfirm}
                 disabled={deleteWorkEntryMutation.isPending}
               >
-                {deleteWorkEntryMutation.isPending ? "Deleting..." : "Delete"}
+                {deleteWorkEntryMutation.isPending ? "Wird gelöscht..." : "Löschen"}
               </Button>
             </DialogFooter>
           </DialogContent>

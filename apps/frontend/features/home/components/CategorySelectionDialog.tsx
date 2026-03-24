@@ -243,19 +243,19 @@ export function CategorySelectionDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? "Edit Work Entry" : "Add Work Entry"}
+            {isEditing ? "Arbeitseintrag bearbeiten" : "Arbeitseintrag erfassen"}
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
             {isEditing
-              ? "Update the work entry details."
-              : "Set the dimensions for the layer."}
+              ? "Aktualisieren Sie die Details des Arbeitseintrags."
+              : "Erfassen Sie Ihre geleistete Arbeitszeit."}
           </p>
         </DialogHeader>
 
         <div className="space-y-6">
           {isCalendarContext && !isEditing && selectedDateState && (
             <div>
-              <Label className="text-sm font-medium mb-2 block">Date</Label>
+              <Label className="text-sm font-medium mb-2 block">Datum</Label>
               <Input
                 type="date"
                 defaultValue={selectedDateState.toISOString().split("T")[0]}
@@ -270,7 +270,7 @@ export function CategorySelectionDialog({
           {!isCalendarContext && (
             <div className="flex justify-between items-center">
               <div>
-                <Label className="text-sm font-medium">Session Time:</Label>
+                <Label className="text-sm font-medium">Sitzungszeit:</Label>
                 <div className="text-lg font-semibold">
                   {effectiveTotalTime > 0
                     ? formatTime(effectiveTotalTime)
@@ -283,13 +283,13 @@ export function CategorySelectionDialog({
                   entriesLength > 1 && (
                     <div className="text-right">
                       <Label className="text-sm font-medium">
-                        Distributed:
+                        Verteilt:
                       </Label>
                       <div className="text-lg font-semibold">
                         {getTotalDistributedTime(form.state.values.entries)}min
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        Remaining:{" "}
+                        Verbleibend:{" "}
                         {Math.max(
                           0,
                           Math.floor(effectiveTotalTime / 60000) -
@@ -325,7 +325,7 @@ export function CategorySelectionDialog({
                           >
                             <div className="flex items-center gap-2">
                               <Label className="text-sm font-medium">
-                                Working Time (minutes):
+                                Arbeitszeit (Minuten):
                               </Label>
                               <div className="flex-1" />
                               {form.state.values.entries.length > 1 && (
@@ -393,7 +393,7 @@ export function CategorySelectionDialog({
                                 return (
                                   <div>
                                     <Label className="text-sm font-medium mb-2 block">
-                                      Category
+                                      Kategorie
                                     </Label>
                                     <Select
                                       onValueChange={(value) => {
@@ -406,7 +406,7 @@ export function CategorySelectionDialog({
                                       value={categoryField.state.value}
                                     >
                                       <SelectTrigger>
-                                        <SelectValue placeholder="Select category..." />
+                                        <SelectValue placeholder="Kategorie auswählen..." />
                                       </SelectTrigger>
                                       <SelectContent>
                                         {Object.entries(
@@ -447,7 +447,7 @@ export function CategorySelectionDialog({
                                         return (
                                           <div>
                                             <Label className="text-sm font-medium mb-2 block">
-                                              Subcategory
+                                              Unterkategorie
                                             </Label>
                                             <Select
                                               onValueChange={(value) => {
@@ -460,7 +460,7 @@ export function CategorySelectionDialog({
                                               value={field.state.value}
                                             >
                                               <SelectTrigger>
-                                                <SelectValue placeholder="Select subcategory..." />
+                                                <SelectValue placeholder="Unterkategorie auswählen..." />
                                               </SelectTrigger>
                                               <SelectContent>
                                                 {Object.entries(
@@ -504,7 +504,7 @@ export function CategorySelectionDialog({
                 className="w-full flex items-center gap-2 text-muted-foreground hover:text-foreground"
               >
                 <Plus className="h-4 w-4" />
-                Add more
+                Weiteren Eintrag hinzufügen
               </Button>
             )}
 
@@ -514,7 +514,7 @@ export function CategorySelectionDialog({
                 onClick={handleCancel}
                 className="flex-1 bg-transparent"
               >
-                Back
+                Zurück
               </Button>
 
               <Button
@@ -526,7 +526,7 @@ export function CategorySelectionDialog({
                     : addWorkEntriesMutation.isPending
                 }
               >
-                {isEditing ? "Update" : "Save"}
+                {isEditing ? "Aktualisieren" : "Speichern"}
               </Button>
             </div>
           </form>

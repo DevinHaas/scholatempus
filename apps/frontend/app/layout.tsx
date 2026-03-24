@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Suspense } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
+import { deDE } from "@clerk/localizations";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { Toaster } from "sonner";
 
@@ -32,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={deDE}>
       <html lang="de">
         <body
           className={`font-sans ${inter.variable} ${switzer.variable} antialiased`}

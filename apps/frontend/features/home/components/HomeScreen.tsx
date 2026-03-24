@@ -47,8 +47,8 @@ export function HomeScreen() {
         setIsTracking(false);
         setStartTime(null);
         setElapsedTime(0);
-        toast.error("Session too short", {
-          description: "Sessions must be longer than 1 minute.",
+        toast.error("Sitzung zu kurz", {
+          description: "Die Sitzung muss länger als 1 Minute dauern.",
         });
         return;
       }
@@ -90,7 +90,7 @@ export function HomeScreen() {
         {(isTracking || elapsedTime > 0) && (
           <>
             <div className="text-sm text-muted-foreground mb-2">
-              {isTracking ? "Working Time:" : "Worked Time:"}
+              {isTracking ? "Arbeitszeit:" : "Geleistete Arbeitszeit:"}
             </div>
             <div className="text-2xl font-mono font-semibold text-foreground">
               {formatTime(elapsedTime)}
@@ -146,7 +146,7 @@ export function HomeScreen() {
           className="mb-4 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 bg-transparent"
           onClick={handleCancel}
         >
-          Cancel Timer
+          Zeitmessung abbrechen
         </Button>
       )}
 
@@ -159,7 +159,7 @@ export function HomeScreen() {
         }}
       >
         <Edit3 className="h-4 w-4" />
-        Add manually
+        Manuell erfassen
       </Button>
 
       <CategorySelectionDialog

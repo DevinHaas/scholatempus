@@ -82,7 +82,7 @@ export default function Home() {
                     href="/home"
                     className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)] hover:shadow-[0_0_25px_-5px_oklch(0.55_0.18_258)]"
                   >
-                    Go to Dashboard
+                    Zur Übersicht
                   </Link>
                 ) : (
                   <>
@@ -90,13 +90,13 @@ export default function Home() {
                       href="/sign-in"
                       className="text-sm font-normal text-[oklch(0.15_0.02_258)] hover:text-[oklch(0.55_0.18_258)] transition-colors"
                     >
-                      Log in
+                      Anmelden
                     </Link>
                     <Link
                       href="/sign-up"
                       className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)] hover:shadow-[0_0_25px_-5px_oklch(0.55_0.18_258)]"
                     >
-                      Start for free
+                      Kostenlos starten
                     </Link>
                   </>
                 ))}
@@ -132,22 +132,21 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[oklch(0.94_0.01_258)] border border-[oklch(0.9_0.01_258)] mb-8 animate-fade-in-up">
                 <span className="flex h-2 w-2 rounded-full bg-[oklch(0.55_0.18_258)] animate-pulse"></span>
                 <span className="text-xs font-medium text-[oklch(0.55_0.18_258)] uppercase tracking-wide">
-                  New: Smart Scheduling
+                  Neu: Intelligente Zeitplanung
                 </span>
               </div>
 
               {/* Headline */}
               <h1 className="md:text-6xl lg:text-7xl text-[oklch(0.15_0.02_258)] leading-[1.1] text-5xl font-medium tracking-tight mb-6">
-                Time Tracked. <br />
+                Arbeitszeit erfasst. <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[oklch(0.55_0.18_258)] to-[oklch(0.6_0.15_200)]">
-                  Transparency Guaranteed.
+                  Transparenz garantiert.
                 </span>
               </h1>
 
               {/* Subhead */}
               <p className="text-lg md:text-xl text-[oklch(0.15_0.02_258)]/70 mb-10 leading-relaxed max-w-lg font-normal mx-auto md:mx-0">
-                A focused workspace for educators to see, feel, and master their
-                workload in minutes. reclaim your evenings.
+                Ein übersichtlicher Arbeitsbereich für Lehrpersonen, um die eigene Arbeitsbelastung zu verstehen und zu steuern.
               </p>
 
               {/* CTA Group */}
@@ -156,7 +155,7 @@ export default function Home() {
                   href="/sign-up"
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[oklch(0.55_0.18_258)] px-8 text-base font-medium text-white shadow-lg shadow-[oklch(0.55_0.18_258)]/25 transition-transform hover:scale-105 hover:bg-[oklch(0.55_0.18_258)]/90"
                 >
-                  Get started
+                  Jetzt starten
                   <ArrowRight className="size-4" />
                 </Link>
               </div>
@@ -171,7 +170,7 @@ export default function Home() {
               >
                 <CheckCircle2 className="size-8 text-[oklch(0.55_0.18_258)]" strokeWidth={1.5} />
                 <p className="text-sm font-semibold text-[oklch(0.15_0.02_258)] leading-snug">
-                  Transparency<br />Restored
+                  Transparenz<br />wiederhergestellt
                 </p>
               </div>
 
@@ -183,14 +182,14 @@ export default function Home() {
                 <div className="flex items-center gap-2 text-[oklch(0.6_0.15_200)] mb-2">
                   <Zap className="size-4" />
                   <span className="text-xs font-semibold uppercase tracking-wide">
-                    Active Timer
+                    Laufende Zeitmessung
                   </span>
                 </div>
                 <p className="text-2xl font-bold text-[oklch(0.15_0.02_258)] font-mono">
                   01:24:07
                 </p>
                 <p className="text-xs text-[oklch(0.15_0.02_258)]/50 mt-1">
-                  Lesson planning
+                  Unterrichtsvorbereitung
                 </p>
               </div>
 

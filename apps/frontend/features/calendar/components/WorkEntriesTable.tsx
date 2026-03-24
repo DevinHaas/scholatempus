@@ -74,7 +74,7 @@ export function WorkEntriesTable({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-8 px-2"
           >
-            Date
+            Datum
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -94,7 +94,7 @@ export function WorkEntriesTable({
     },
     {
       accessorKey: "category",
-      header: "Category",
+      header: "Kategorie",
       cell: ({ row }) => {
         const category = row.getValue("category") as string;
         return (
@@ -108,7 +108,7 @@ export function WorkEntriesTable({
     },
     {
       accessorKey: "subcategory",
-      header: "Subcategory",
+      header: "Unterkategorie",
       cell: ({ row }) => {
         const subcategory = row.getValue("subcategory") as string | null;
         if (!subcategory) return <div className="text-muted-foreground">—</div>;
@@ -130,7 +130,7 @@ export function WorkEntriesTable({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-8 px-2"
           >
-            Working Time
+            Arbeitszeit
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -155,18 +155,18 @@ export function WorkEntriesTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel>Aktionen</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onEdit(entry)}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                Bearbeiten
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(entry.workTimeEntryId)}
                 className="text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                Löschen
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -231,7 +231,7 @@ export function WorkEntriesTable({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Keine Einträge vorhanden.
                 </TableCell>
               </TableRow>
             )}

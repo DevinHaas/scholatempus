@@ -3,7 +3,7 @@ import { db } from "../../db/index.js";
 import { workTimeEntryTable, profileTable } from "../../../db/schema.js";
 import { WorkTimeCategory } from "@scholatempus/shared/enums";
 import { AppError } from "../../lib/errors.js";
-import type { WorkEntryBodyType, UpdateWorkEntryBodyType } from "./model.js";
+import type { WorkEntryBodyType, UpdateWorkEntryBodyType, ImportWorkEntryBodyType } from "./model.js";
 
 export class WorkEntryService {
   static async getAll(userId: string) {
@@ -152,6 +152,34 @@ export class WorkEntryService {
       message: "Work entry updated successfully",
       workEntry: updated,
     };
+  }
+
+  static async importEntries(userId: string, entries: ImportWorkEntryBodyType[]) {
+    const profile = await db
+      .select()
+      .from(profileTable)
+      .where(eq(profileTable.userId, userId))
+      .limit(1);
+
+    if (!profile.length) {
+      throw new AppError(
+        404,
+        "Profile not found. Please complete your profile setup before importing work entries.",
+      );
+    }
+
+    return db.transaction(async (tx) => {
+      for (const entry of entries) {
+        await tx.insert(workTimeEntryTable).values({
+          userId,
+          date: new Date(entry.date),
+          workingTime: entry.workingTime,
+          category: entry.category as WorkTimeCategory,
+          subcategory: (entry.subcategory ?? null) as any,
+        });
+      }
+      return { message: "Import successful", count: entries.length };
+    });
   }
 
   static async deleteEntry(userId: string, entryId: number) {

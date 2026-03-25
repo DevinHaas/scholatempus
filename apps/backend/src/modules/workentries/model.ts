@@ -53,3 +53,17 @@ export const GetWorkEntriesResponse = t.Object({
 export const DeleteWorkEntryResponse = t.Object({
   message: t.String(),
 })
+
+// POST /workentries/import body
+export const ImportWorkEntryBody = t.Object({
+  date: t.String(), // ISO date string
+  workingTime: WorkEntryBody.properties.workingTime,
+  category: WorkEntryBody.properties.category,
+  subcategory: WorkEntryBody.properties.subcategory,
+})
+
+export type ImportWorkEntryBodyType = typeof ImportWorkEntryBody.static
+
+export const ImportWorkEntriesBody = t.Object({
+  entries: t.Array(ImportWorkEntryBody),
+})

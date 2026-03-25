@@ -8,7 +8,11 @@ import { adminModule } from "./modules/admin/index.js";
 const app = new Elysia()
   .use(
     cors({
-      origin: ["http://localhost:3000", "https://scholatempus.bleat.ch"],
+      origin: [
+        "http://localhost:3001",
+        "http://localhost:3000",
+        "https://scholatempus.bleat.ch",
+      ],
       credentials: true,
     }),
   )
@@ -23,7 +27,7 @@ const app = new Elysia()
   .get("/", () => {
     return "Welcome to the Scholatempus backend!";
   })
-  .listen(process.env.PORT ?? 4000);
+  .listen(process.env.PORT ?? 4001);
 
 console.log(
   `Backend running at http://${app.server?.hostname}:${app.server?.port}`,

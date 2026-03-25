@@ -5,7 +5,6 @@ import { ProfileScreen } from "@/features/profile";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { GradeLevel } from "@scholatempus/shared/enums";
 
 function ProfileScreenSkeleton() {
   return (
@@ -48,41 +47,13 @@ function ProfileScreenSkeleton() {
   );
 }
 
-function ProfileContent() {
-  const { user } = useUser();
-
-  // Middleware has already verified profile exists, so we can render directly
-  const testUser = {
-    email: user?.emailAddresses[0]?.emailAddress ?? "test@example.com",
-  };
-
-  const testSetupData = {
-    grade: GradeLevel.GymnasiumAcademicTrack,
-    givenLectures: 28,
-    mandatoryLectures: 26,
-    carryOverLectures: 2,
-  };
-
-  const testSchulleitungData = {
-    headshipEmploymentFactor: 85,
-    carryOverLessons: 1,
-    classTeacher: true,
-    weeklyLessonsForTransportation: 2,
-  };
-
-  return (
-    <ProfileScreen
-      user={testUser}
-      setupData={testSetupData}
-      schulleitungData={testSchulleitungData}
-    />
-  );
-}
-
 export default function ProfilePage() {
+  const { user } = useUser();
   return (
     <Suspense fallback={<ProfileScreenSkeleton />}>
-      <ProfileContent />
+      <ProfileScreen
+        user={{ email: user?.emailAddresses[0]?.emailAddress ?? null }}
+      />
     </Suspense>
   );
 }

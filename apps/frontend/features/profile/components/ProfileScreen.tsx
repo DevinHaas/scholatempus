@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -39,8 +39,6 @@ import {
 
 interface ProfileScreenProps {
   user: { email: string | null } | null;
-  setupData: ClassData;
-  schulleitungData: SpecialFunctionData;
 }
 
 function getGravatarUrl(email: string) {
@@ -131,27 +129,24 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
     name: clerkUser?.firstName || "",
     username: clerkUser?.emailAddresses[0]?.emailAddress || "",
   });
+  const [overviewData, setOverviewData] = useState<WorkTimeOverviewData | null>(
+    null,
+  );
 
   // Fetch profile and work entries
   const { data: profile, error: profileError } = useGetProfile();
   const { data: workEntries } = useGetWorkEntries();
 
-  // Calculate overview from fetched data
-  const overviewData = useMemo<WorkTimeOverviewData | null>(() => {
-    if (!profile?.classData || !profile?.specialFunctionData || !workEntries) {
-      return null;
-    }
-
-    // Transform API response to ClassData and SpecialFunctionData
-    const classData: ClassData = {
+  // Sync profile data to state and recompute overview on load / refetch
+  useEffect(() => {
+    if (!profile?.classData || !profile?.specialFunctionData) return;
+    const setupData: ClassData = {
       grade: profile.classData.grade as GradeLevel,
       givenLectures: profile.classData.givenLectures,
       mandatoryLectures: profile.classData.mandatoryLectures,
       carryOverLectures: profile.classData.carryOverLectures,
     };
-    setCurrentSetupData(classData);
-
-    const specialFunctionData: SpecialFunctionData = {
+    const schulleitungData: SpecialFunctionData = {
       headshipEmploymentFactor:
         profile.specialFunctionData.headshipEmploymentFactor,
       carryOverLessons: profile.specialFunctionData.carryOverLessons,
@@ -159,16 +154,19 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
       weeklyLessonsForTransportation:
         profile.specialFunctionData.weeklyLessonsForTransportation,
     };
-    setCurrentSchulleitungData(specialFunctionData);
-    // Aggregate work entries by category
-    const actualHoursPerCategory = aggregateWorkEntriesByCategory(workEntries);
-
-    // Calculate overview
-    return calculateWorkTimeOverview(
-      classData,
-      specialFunctionData,
-      actualHoursPerCategory,
-    );
+    setCurrentSetupData(setupData);
+    setCurrentSchulleitungData(schulleitungData);
+    if (workEntries) {
+      const actualHoursPerCategory =
+        aggregateWorkEntriesByCategory(workEntries);
+      setOverviewData(
+        calculateWorkTimeOverview(
+          setupData,
+          schulleitungData,
+          actualHoursPerCategory,
+        ),
+      );
+    }
   }, [profile, workEntries]);
 
   const emailAddress = () => {
@@ -207,12 +205,20 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
     newSchulleitungData: SpecialFunctionData,
     newProfileData: any,
   ) => {
-    // The profile will be automatically refetched via useGetProfile
-    // due to query invalidation in useCreateProfile hook
-    // This is just for immediate UI update if needed
     setCurrentSetupData(newSetupData);
     setCurrentSchulleitungData(newSchulleitungData);
     setProfileData(newProfileData);
+    if (workEntries) {
+      const actualHoursPerCategory =
+        aggregateWorkEntriesByCategory(workEntries);
+      setOverviewData(
+        calculateWorkTimeOverview(
+          newSetupData,
+          newSchulleitungData,
+          actualHoursPerCategory,
+        ),
+      );
+    }
   };
 
   // Show error state if profile fetch failed (but work entries might still be loading/empty)
@@ -234,7 +240,7 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
   }
 
   return (
-    <div className="h-screen overflow-y-auto bg-background p-4 pb-24">
+    <div className="bg-background p-4 pb-24">
       <div className="max-w-md mx-auto ">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground">Profil</h1>

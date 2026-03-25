@@ -267,43 +267,108 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
           </p>
         </div>
 
-        <Card className="border-border/50 shadow-lg gap-1 py-2">
+        <Card className="border-border/50 shadow-lg gap-1 py-4">
           <CardHeader className="gap-0 pb-2">
-            <CardTitle className="text-md p-0 md:text-lg">
-              Arbeitszeit Übersicht
-            </CardTitle>
-            <CardDescription>Soll-Zustand vs. Ist-Zustand</CardDescription>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg p-0 md:text-lg">
+                Übersicht
+              </CardTitle>
+              {overviewData && (
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
+                    overviewData.summary.totalEmploymentFactor > 105
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      overviewData.summary.totalEmploymentFactor > 105
+                        ? "bg-red-500"
+                        : "bg-green-500"
+                    }`}
+                  />
+                  Pensum {overviewData.summary.totalEmploymentFactor.toFixed(0)}
+                  %
+                </span>
+              )}
+            </div>
           </CardHeader>
           <Suspense fallback={<WorkTimeTableSkeleton />}>
             <CardContent className="space-y-4 pt-0">
               {overviewData ? (
                 <>
-                  {/* Employment badge */}
-                  <div>
-                    <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                        overviewData.summary.totalEmploymentFactor > 105
-                          ? "bg-red-100 text-red-700"
-                          : "bg-green-100 text-green-700"
-                      }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          overviewData.summary.totalEmploymentFactor > 105
-                            ? "bg-red-500"
-                            : "bg-green-500"
-                        }`}
-                      />
-                      Beschäftigungsgrad:{" "}
-                      {overviewData.summary.totalEmploymentFactor.toFixed(0)}%
-                    </span>
+                  {/* Summary */}
+                  <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                    {/* Unterrichtskontrolle — lessons */}
+                    {overviewData.details?.[
+                      WorkTimeCategory.TeachingSupervision
+                    ] &&
+                      (() => {
+                        const ts =
+                          overviewData.details[
+                            WorkTimeCategory.TeachingSupervision
+                          ]!;
+                        const fmt = (n: number) =>
+                          n % 1 === 0 ? n.toFixed(0) : n.toFixed(1);
+                        return (
+                          <div className="space-y-1.5">
+                            <p className="text-sm text-muted-foreground font-semibold ">
+                              Unterrichtskontrolle
+                            </p>
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="bg-card rounded-md border  p-2 text-center">
+                                <p className="text-xs text-muted-foreground mb-0.5">
+                                  Soll
+                                </p>
+                                <p className="text-sm font-bold">
+                                  {fmt(ts.targetHours)}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Lekt.
+                                </p>
+                              </div>
+                              <div className="bg-card rounded-md border  p-2 text-center">
+                                <p className="text-xs text-muted-foreground mb-0.5">
+                                  Ist
+                                </p>
+                                <p className="text-sm font-bold">
+                                  {fmt(ts.actualHours)}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Lekt.
+                                </p>
+                              </div>
+                              <div className="bg-card rounded-md border  p-2 text-center">
+                                <p className="text-xs text-muted-foreground mb-0.5">
+                                  Bilanz
+                                </p>
+                                <p
+                                  className={`text-sm font-bold ${ts.differenceHours > 0 ? "text-red-600" : "text-green-600"}`}
+                                >
+                                  {ts.differenceHours > 0 ? "+" : ""}
+                                  {fmt(ts.differenceHours)}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Lekt.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
                   </div>
 
                   {/* Table */}
-                  <div className="rounded-lg border border-border overflow-hidden">
+                  <div className="rounded-lg border-2 border-border overflow-hidden">
+                    <div className="px-3 py-2 border-b-2 border-border bg-muted/50">
+                      <p className="text-xs font-semibold text-foreground tracking-wide">
+                        Arbeitszeitübersicht
+                      </p>
+                    </div>
                     <Table>
                       <TableHeader>
-                        <TableRow>
+                        <TableRow className="border-b-2 border-border bg-muted/30">
                           <TableHead className="text-muted-foreground text-xs h-7 px-2">
                             Kategorie
                           </TableHead>
@@ -318,18 +383,18 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
                           </TableHead>
                         </TableRow>
                       </TableHeader>
-                      <TableBody>
+                      <TableBody className="[&_tr]:border-b [&_tr]:border-border">
                         <TableRow className="bg-yellow-50">
-                          <TableCell className="text-xs py-2 px-2 font-medium">
+                          <TableCell className="text-xs py-2 px-2 font-medium border-r border-border">
                             Schulleitung
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
+                          <TableCell className="text-xs py-2 px-2 text-right border-r border-border">
                             {overviewData.details?.[
                               WorkTimeCategory.SchoolManagement
                             ]?.targetHours.toFixed(0)}
                             h
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
+                          <TableCell className="text-xs py-2 px-2 text-right border-r border-border">
                             {overviewData.details?.[
                               WorkTimeCategory.SchoolManagement
                             ]?.actualHours.toFixed(0)}
@@ -357,16 +422,16 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className="text-xs py-2 px-2">
+                          <TableCell className="text-xs py-2 px-2 border-r border-border">
                             Unterrichten
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
+                          <TableCell className="text-xs py-2 px-2 text-right border-r border-border">
                             {overviewData.details?.[
                               WorkTimeCategory.TeachingAdvisingSupporting
                             ]?.targetHours.toFixed(0)}
                             h
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
+                          <TableCell className="text-xs py-2 px-2 text-right border-r border-border">
                             {overviewData.details?.[
                               WorkTimeCategory.TeachingAdvisingSupporting
                             ]?.actualHours.toFixed(0)}
@@ -394,16 +459,16 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className="text-xs py-2 px-2">
+                          <TableCell className="text-xs py-2 px-2 border-r border-border">
                             Zusammenarbeit
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
+                          <TableCell className="text-xs py-2 px-2 text-right border-r border-border">
                             {overviewData.details?.[
                               WorkTimeCategory.Collaboration
                             ]?.targetHours.toFixed(0)}
                             h
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
+                          <TableCell className="text-xs py-2 px-2 text-right border-r border-border">
                             {overviewData.details?.[
                               WorkTimeCategory.Collaboration
                             ]?.actualHours.toFixed(0)}
@@ -431,16 +496,16 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className="text-xs py-2 px-2">
+                          <TableCell className="text-xs py-2 px-2 border-r border-border">
                             Weiterbildung
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
+                          <TableCell className="text-xs py-2 px-2 text-right border-r border-border">
                             {overviewData.details?.[
                               WorkTimeCategory.FurtherEducation
                             ]?.targetHours.toFixed(0)}
                             h
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
+                          <TableCell className="text-xs py-2 px-2 text-right border-r border-border">
                             {overviewData.details?.[
                               WorkTimeCategory.FurtherEducation
                             ]?.actualHours.toFixed(0)}
@@ -467,117 +532,43 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
                           </TableCell>
                         </TableRow>
 
-                        <TableRow className="bg-orange-50">
-                          <TableCell className="text-xs py-2 px-2 font-medium">
-                            Unterrichtskontrolle
+                        {/* Total row */}
+                        <TableRow className="border-t-2 border-border bg-muted/40">
+                          <TableCell className="text-xs py-2 px-2 font-bold border-r border-border">
+                            Total
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
-                            {overviewData.details?.[
-                              WorkTimeCategory.TeachingSupervision
-                            ]?.targetHours.toFixed(0)}
+                          <TableCell className="text-xs py-2 px-2 text-right font-bold border-r border-border">
+                            {overviewData.summary.totalTeacherWorkTime.targetHours.toFixed(
+                              0,
+                            )}
                             h
                           </TableCell>
-                          <TableCell className="text-xs py-2 px-2 text-right">
-                            {overviewData.details?.[
-                              WorkTimeCategory.TeachingSupervision
-                            ]?.actualHours.toFixed(0)}
+                          <TableCell className="text-xs py-2 px-2 text-right font-bold border-r border-border">
+                            {overviewData.summary.totalTeacherWorkTime.actualHours.toFixed(
+                              0,
+                            )}
                             h
                           </TableCell>
                           <TableCell
-                            className={`text-xs py-2 px-2 text-right font-semibold ${
-                              (overviewData.details?.[
-                                WorkTimeCategory.TeachingSupervision
-                              ]?.differenceHours ?? 0) > 0
+                            className={`text-xs py-2 px-2 text-right font-bold ${
+                              overviewData.summary.totalTeacherWorkTime
+                                .balanceHours > 0
                                 ? "text-red-600"
                                 : "text-green-600"
                             }`}
                           >
-                            {(overviewData.details?.[
-                              WorkTimeCategory.TeachingSupervision
-                            ]?.differenceHours ?? 0) > 0
+                            {overviewData.summary.totalTeacherWorkTime
+                              .balanceHours > 0
                               ? "+"
                               : ""}
-                            {overviewData.details?.[
-                              WorkTimeCategory.TeachingSupervision
-                            ]?.differenceHours.toFixed(0)}
+                            {overviewData.summary.totalTeacherWorkTime.balanceHours.toFixed(
+                              0,
+                            )}
                             h
                           </TableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
-                  </div>
-
-                  {/* Summary */}
-                  <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-                    <p className="text-xs font-semibold text-foreground">
-                      Zusammenfassung — Lehrperson Total
-                    </p>
-                    <div className="bg-card rounded-md border border-border p-2.5 grid grid-cols-3 gap-2">
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-0.5">
-                          Soll
-                        </p>
-                        <p className="text-sm font-bold">
-                          {overviewData.summary.totalTeacherWorkTime.targetHours.toFixed(
-                            0,
-                          )}
-                          h
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-0.5">
-                          Ist
-                        </p>
-                        <p className="text-sm font-bold">
-                          {overviewData.summary.totalTeacherWorkTime.actualHours.toFixed(
-                            0,
-                          )}
-                          h
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-0.5">
-                          Bilanz
-                        </p>
-                        <p
-                          className={`text-sm font-bold ${
-                            overviewData.summary.totalTeacherWorkTime
-                              .balanceHours > 0
-                              ? "text-red-600"
-                              : "text-green-600"
-                          }`}
-                        >
-                          {overviewData.summary.totalTeacherWorkTime
-                            .balanceHours > 0
-                            ? "+"
-                            : ""}
-                          {overviewData.summary.totalTeacherWorkTime.balanceHours.toFixed(
-                            0,
-                          )}
-                          h
-                        </p>
-                      </div>
-                    </div>
-                    <div className="bg-card rounded-md border border-border p-2.5 flex justify-between items-center">
-                      <span className="text-xs text-muted-foreground">
-                        Az Schulleitung Bilanz
-                      </span>
-                      <span
-                        className={`text-xs font-bold ${
-                          overviewData.summary.schoolManagementBalanceHours > 0
-                            ? "text-red-600"
-                            : "text-green-600"
-                        }`}
-                      >
-                        {overviewData.summary.schoolManagementBalanceHours > 0
-                          ? "+"
-                          : ""}
-                        {overviewData.summary.schoolManagementBalanceHours.toFixed(
-                          0,
-                        )}
-                        h
-                      </span>
-                    </div>
                   </div>
                 </>
               ) : (

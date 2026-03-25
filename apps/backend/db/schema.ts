@@ -86,7 +86,7 @@ export const workTimeEntryTable = pgTable("workTimeEntry", {
     .notNull()
     .references(() => profileTable.userId, { onDelete: "cascade" }),
   date: timestamp().notNull(),
-  workingTime: smallint().notNull(),
+  workingTime: numeric("workingTime", { mode: "number", precision: 6, scale: 1 }).notNull(),
   category: workTimeCategoryEnum("category").notNull(),
   subcategory: workTimeSubCategories("subcategory"),
 });

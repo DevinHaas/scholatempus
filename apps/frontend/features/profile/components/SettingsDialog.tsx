@@ -7,33 +7,41 @@ import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Building, GraduationCap, Upload, User } from "lucide-react";
+  ArrowLeft,
+  Building,
+  ChevronRight,
+  GraduationCap,
+  LogOut,
+  Upload,
+  User,
+} from "lucide-react";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import { GRADE_LEVEL_LABELS } from "@scholatempus/shared/enums";
-import type { ClassData, SpecialFunctionData } from "@scholatempus/shared/schemas";
+import type {
+  ClassData,
+  SpecialFunctionData,
+} from "@scholatempus/shared/schemas";
 import { ClassDataForm } from "./ClassDataForm";
 import { SpecialFunctionDataForm } from "./SpecialFunctionDataForm";
 import { useCreateProfile } from "@/features/onboarding/hooks/createProfile";
 import { ImportWidget } from "@/features/import/components/ImportWidget";
+
+type ActiveView = "list" | "profile" | "setup" | "schulleitung" | "import";
 
 interface SettingsDialogProps {
   open: boolean;
   onOpenChangeAction: (open: boolean) => void;
   setupData: ClassData | undefined;
   schulleitungData: SpecialFunctionData | undefined;
-  onSaveAction: (setupData: ClassData, schulleitungData: SpecialFunctionData, profileData: any) => void;
+  onSaveAction: (
+    setupData: ClassData,
+    schulleitungData: SpecialFunctionData,
+    profileData: any,
+  ) => void;
 }
 
 export function SettingsDialog({
@@ -44,43 +52,38 @@ export function SettingsDialog({
   onSaveAction,
 }: SettingsDialogProps) {
   const { isLoaded, user } = useUser();
-  const { mutate: updateProfile, isPending: isUpdatingProfile } = useCreateProfile();
+  const { mutate: updateProfile, isPending: isUpdatingProfile } =
+    useCreateProfile();
+  const [activeView, setActiveView] = useState<ActiveView>("list");
   const [profileData, setProfileData] = useState({
     name: "",
     username: "",
   });
 
   const [classData, setClassData] = useState<ClassData | null>(null);
-  const [specialFunctionData, setSpecialFunctionData] = useState<SpecialFunctionData | null>(null);
+  const [specialFunctionData, setSpecialFunctionData] =
+    useState<SpecialFunctionData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
-    if (open && isLoaded && user) {
-      // Initialize profile data from Clerk user
-      const firstName = user.firstName || "";
-      const lastName = user.lastName || "";
-      const fullName = [firstName, lastName].filter(Boolean).join(" ") || "";
-      setProfileData({
-        name: fullName || firstName || "",
-        username: user.username || "",
-      });
+    if (open) {
+      setActiveView("list");
+      if (isLoaded && user) {
+        const firstName = user.firstName || "";
+        const lastName = user.lastName || "";
+        const fullName = [firstName, lastName].filter(Boolean).join(" ") || "";
+        setProfileData({
+          name: fullName || firstName || "",
+          username: user.username || "",
+        });
+      }
     }
-    // Seed form data from props so Save works without any interaction
     if (setupData) setClassData(setupData);
     if (schulleitungData) setSpecialFunctionData(schulleitungData);
   }, [open, isLoaded, user, setupData, schulleitungData]);
 
-  const handleClassDataSubmit = async (data: ClassData) => {
-    setClassData(data);
-  };
-
   const handleClassDataChange = (data: ClassData) => {
     setClassData(data);
-  };
-
-  const handleSpecialFunctionDataSubmit = async (data: SpecialFunctionData) => {
-    setSpecialFunctionData(data);
   };
 
   const handleSpecialFunctionDataChange = (data: SpecialFunctionData) => {
@@ -96,7 +99,6 @@ export function SettingsDialog({
 
     setIsLoading(true);
     try {
-      // Update Clerk user data
       const nameParts = profileData.name.trim().split(/\s+/);
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || "";
@@ -106,7 +108,6 @@ export function SettingsDialog({
         lastName: lastName,
       });
 
-      // Update profile via API
       updateProfile(
         {
           classData: classData,
@@ -114,18 +115,13 @@ export function SettingsDialog({
         },
         {
           onSuccess: () => {
-            // Call the parent save action with transformed data
-            onSaveAction(
-              classData,
-              specialFunctionData,
-              profileData
-            );
+            onSaveAction(classData, specialFunctionData, profileData);
             onOpenChangeAction(false);
           },
           onError: (error) => {
             console.error("Error updating profile:", error);
           },
-        }
+        },
       );
     } catch (error) {
       console.error("Error updating user:", error);
@@ -134,157 +130,198 @@ export function SettingsDialog({
     }
   };
 
+  const sections = [
+    {
+      title: "Konto",
+      subtitle: "Verwalten Sie Ihre persönlichen Daten",
+      items: [
+        {
+          id: "profile" as ActiveView,
+          label: "Profil Informationen",
+          icon: <User className="w-5 h-5 text-muted-foreground" />,
+        },
+      ],
+    },
+    {
+      title: "Nutzerdaten",
+      subtitle: "Konfigurieren Sie Ihre Nutzerdaten",
+      items: [
+        {
+          id: "setup" as ActiveView,
+          label: "Lehrperson",
+          icon: <GraduationCap className="w-5 h-5 text-muted-foreground" />,
+        },
+        {
+          id: "schulleitung" as ActiveView,
+          label: "Schulleitung",
+          icon: <Building className="w-5 h-5 text-muted-foreground" />,
+        },
+        {
+          id: "import" as ActiveView,
+          label: "Import",
+          icon: <Upload className="w-5 h-5 text-muted-foreground" />,
+        },
+      ],
+    },
+  ];
+
+  const viewTitles: Record<ActiveView, string> = {
+    list: "Einstellungen",
+    profile: "Profil Informationen",
+    setup: "Lehrperson",
+    schulleitung: "Schulleitung",
+    import: "Import",
+  };
+
+  const showFooter = activeView !== "list" && activeView !== "import";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className="max-w-md">
         <DialogHeader className="pb-0">
-          <DialogTitle>Einstellungen</DialogTitle>
-          <DialogDescription className="text-xs">
-            Bearbeiten Sie Ihre Profil- und Arbeitszeit-Einstellungen
-          </DialogDescription>
+          <div className="flex items-center gap-2">
+            {activeView !== "list" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 -ml-2"
+                onClick={() => setActiveView("list")}
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Zurück
+              </Button>
+            )}
+            <DialogTitle>{viewTitles[activeView]}</DialogTitle>
+          </div>
         </DialogHeader>
 
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profile" className="text-[10px] sm:text-xs px-1">
-              <User className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 shrink-0" />
-              Profil
-            </TabsTrigger>
-            <TabsTrigger value="setup" className="text-[10px] sm:text-xs px-1">
-              <GraduationCap className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 shrink-0" />
-              Lehrperson
-            </TabsTrigger>
-            <TabsTrigger value="schulleitung" className="text-[10px] sm:text-xs px-1">
-              <Building className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 shrink-0" />
-              Schulleitung
-            </TabsTrigger>
-            <TabsTrigger value="import" className="text-xs">
-              <Upload className="w-3 h-3 mr-1" />
-              Import
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="profile" className="space-y-2 sm:space-y-4 mt-2">
-            <Card>
-              <CardHeader className="pb-1 sm:pb-3 pt-3 sm:pt-6">
-                <CardTitle className="text-sm">Profil Informationen</CardTitle>
-                <CardDescription className="text-xs">
-                  Bearbeiten Sie Ihre persönlichen Daten
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4 pb-3 sm:pb-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value={profileData.name}
-                    onChange={(event) =>
-                      setProfileData((prev) => ({
-                        ...prev,
-                        name: event.target.value,
-                      }))
-                    }
-                    className="h-9"
-                    placeholder="Vor- und Nachname"
-                    disabled={!isLoaded || isLoading}
-                  />
+        {activeView === "list" && (
+          <div className="space-y-4">
+            {sections.map((section) => (
+              <div key={section.title}>
+                <p className="text-base font-bold mb-0.5">{section.title}</p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  {section.subtitle}
+                </p>
+                <div className="rounded-xl border bg-muted/30 overflow-hidden divide-y">
+                  {section.items.map((item) => (
+                    <button
+                      key={item.id}
+                      className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left"
+                      onClick={() => setActiveView(item.id)}
+                    >
+                      {item.icon}
+                      <span className="flex-1 text-sm font-medium">
+                        {item.label}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  ))}
                 </div>
-                <SignOutButton
-                  children={
-                    <Button className="w-full" variant="outline">
-                      Ausloggen
-                    </Button>
-                  }
-                ></SignOutButton>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            ))}
 
-          <TabsContent value="setup" className="space-y-2 sm:space-y-4 mt-2">
-            <Card>
-              <CardHeader className="pb-1 sm:pb-3 pt-3 sm:pt-6">
-                <CardTitle className="text-sm">
-                  Lehrperson Einstellungen
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Arbeitszeit-Berechnungsparameter
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4 pb-3 sm:pb-6">
-                <ClassDataForm
-                  defaultValues={
-                    setupData
-                      ? {
-                          grade: GRADE_LEVEL_LABELS[setupData.grade],
-                          givenLectures: setupData.givenLectures,
-                          mandatoryLectures: setupData.mandatoryLectures,
-                          carryOverLectures: setupData.carryOverLectures,
-                        }
-                      : undefined
-                  }
-                  onSubmit={handleClassDataSubmit}
-                  onValuesChange={handleClassDataChange}
-                  isLoading={isLoading || isUpdatingProfile}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
+            {/* Sign out */}
+            <SignOutButton>
+              <Button
+                variant="outline"
+                className="w-full text-destructive border-destructive hover:bg-destructive/10"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Ausloggen
+              </Button>
+            </SignOutButton>
+          </div>
+        )}
 
-          <TabsContent value="schulleitung" className="space-y-2 sm:space-y-4 mt-2">
-            <Card>
-              <CardHeader className="pb-1 sm:pb-3 pt-3 sm:pt-6">
-                <CardTitle className="text-sm">
-                  Schulleitung Einstellungen
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Spezialfunktion und Führungsaufgaben
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4 pb-3 sm:pb-6">
-                <SpecialFunctionDataForm
-                  defaultValues={
-                    schulleitungData
-                      ? {
-                          headshipEmploymentFactor:
-                            schulleitungData.headshipEmploymentFactor,
-                          carryOverLessons: schulleitungData.carryOverLessons,
-                          classTeacher: schulleitungData.classTeacher,
-                          weeklyLessonsForTransportation:
-                            schulleitungData.weeklyLessonsForTransportation,
-                        }
-                      : undefined
+        {activeView === "profile" && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={profileData.name}
+                onChange={(e) =>
+                  setProfileData((prev) => ({ ...prev, name: e.target.value }))
+                }
+                className="h-9"
+                placeholder="Vor- und Nachname"
+                disabled={!isLoaded || isLoading}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeView === "setup" && (
+          <ClassDataForm
+            defaultValues={
+              setupData
+                ? {
+                    grade: GRADE_LEVEL_LABELS[setupData.grade],
+                    givenLectures: setupData.givenLectures,
+                    mandatoryLectures: setupData.mandatoryLectures,
+                    carryOverLectures: setupData.carryOverLectures,
                   }
-                  onSubmit={handleSpecialFunctionDataSubmit}
-                  onValuesChange={handleSpecialFunctionDataChange}
-                  isLoading={isLoading || isUpdatingProfile}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="import" className="space-y-4">
+                : undefined
+            }
+            onSubmit={handleClassDataChange}
+            onValuesChange={handleClassDataChange}
+            isLoading={isLoading || isUpdatingProfile}
+          />
+        )}
+
+        {activeView === "schulleitung" && (
+          <SpecialFunctionDataForm
+            defaultValues={
+              schulleitungData
+                ? {
+                    headshipEmploymentFactor:
+                      schulleitungData.headshipEmploymentFactor,
+                    carryOverLessons: schulleitungData.carryOverLessons,
+                    classTeacher: schulleitungData.classTeacher,
+                    weeklyLessonsForTransportation:
+                      schulleitungData.weeklyLessonsForTransportation,
+                  }
+                : undefined
+            }
+            onSubmit={handleSpecialFunctionDataChange}
+            onValuesChange={handleSpecialFunctionDataChange}
+            isLoading={isLoading || isUpdatingProfile}
+          />
+        )}
+
+        {activeView === "import" && (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Importieren Sie Ihre bisherigen Arbeitseinträge aus der kantonalen Arbeitszeiterfassung (Excel oder CSV).
+            </p>
             <ImportWidget compact />
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
 
-        <div className="flex gap-3 pt-2 sm:pt-4">
-          <Button
-            variant="outline"
-            className="flex-1 bg-transparent"
-            onClick={() => onOpenChangeAction(false)}
-            disabled={isLoading}
-          >
-            Abbrechen
-          </Button>
-          <Button
-            className="flex-1"
-            onClick={handleSave}
-            disabled={isLoading || isUpdatingProfile}
-          >
-            {isLoading || isUpdatingProfile ? "Wird gespeichert..." : "Speichern"}
-          </Button>
-        </div>
+        {showFooter && (
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              className="flex-1 bg-transparent"
+              onClick={() => setActiveView("list")}
+              disabled={isLoading}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={handleSave}
+              disabled={isLoading || isUpdatingProfile}
+            >
+              {isLoading || isUpdatingProfile
+                ? "Wird gespeichert..."
+                : "Speichern"}
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

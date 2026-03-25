@@ -1,0 +1,274 @@
+{
+  "id": "691c7594-5b3b-4a72-9617-108a7a44265b",
+  "prevId": "cb3b0ec7-3edf-4d95-91f3-a6f65de839cd",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.classData": {
+      "name": "classData",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "grade": {
+          "name": "grade",
+          "type": "grade",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "givenLectures": {
+          "name": "givenLectures",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mandatoryLectures": {
+          "name": "mandatoryLectures",
+          "type": "numeric(4, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "carryOverLectures": {
+          "name": "carryOverLectures",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profile": {
+      "name": "profile",
+      "schema": "",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "char(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "classDataId": {
+          "name": "classDataId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "specialFunctionId": {
+          "name": "specialFunctionId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profile_classDataId_classData_id_fk": {
+          "name": "profile_classDataId_classData_id_fk",
+          "tableFrom": "profile",
+          "tableTo": "classData",
+          "columnsFrom": [
+            "classDataId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "profile_specialFunctionId_specialFunctionTable_id_fk": {
+          "name": "profile_specialFunctionId_specialFunctionTable_id_fk",
+          "tableFrom": "profile",
+          "tableTo": "specialFunctionTable",
+          "columnsFrom": [
+            "specialFunctionId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profile_userId_unique": {
+          "name": "profile_userId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "userId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.specialFunctionTable": {
+      "name": "specialFunctionTable",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "headshipEmploymentFactor": {
+          "name": "headshipEmploymentFactor",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "carryOverLessons": {
+          "name": "carryOverLessons",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "classTeacher": {
+          "name": "classTeacher",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "weeklyLessonsForTransportation": {
+          "name": "weeklyLessonsForTransportation",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.workTimeEntry": {
+      "name": "workTimeEntry",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "char(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "workingTime": {
+          "name": "workingTime",
+          "type": "numeric(6, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subcategory": {
+          "name": "subcategory",
+          "type": "subcategory",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "workTimeEntry_userId_profile_userId_fk": {
+          "name": "workTimeEntry_userId_profile_userId_fk",
+          "tableFrom": "workTimeEntry",
+          "tableTo": "profile",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "userId"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.grade": {
+      "name": "grade",
+      "schema": "public",
+      "values": [
+        "PRIMARY_SCHOOL_GYM",
+        "VOC_PREP_FULL",
+        "VOC_PREP_PRACT",
+        "COMM_MID_VOC_EXT",
+        "VOC_BACC_SPEC",
+        "GYMNASIUM_ACADEMIC"
+      ]
+    },
+    "public.category": {
+      "name": "category",
+      "schema": "public",
+      "values": [
+        "SchoolManagement",
+        "TeachingAdvisingSupporting",
+        "Collaboration",
+        "FurtherEducation",
+        "TeachingSupervision"
+      ]
+    },
+    "public.subcategory": {
+      "name": "subcategory",
+      "schema": "public",
+      "values": [
+        "Class",
+        "Preparation",
+        "Supporting"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

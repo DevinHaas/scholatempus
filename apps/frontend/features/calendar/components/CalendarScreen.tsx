@@ -6,7 +6,6 @@ import { Plus } from "lucide-react";
 import { useGetWorkEntries } from "@/features/profile/hooks/useGetWorkEntries";
 import { WorkEntriesTable, type WorkEntry } from "./WorkEntriesTable";
 import {
-  getWeekStart,
   isDateInRange,
   getDateRangePreset,
 } from "@/lib/helpers/calendarHelpers";

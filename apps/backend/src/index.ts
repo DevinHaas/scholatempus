@@ -27,7 +27,7 @@ const app = new Elysia()
   .get("/", () => {
     return "Welcome to the Scholatempus backend!";
   })
-  .listen(process.env.PORT ?? 4001);
+  .listen(process.env.PORT ?? 4000);
 
 console.log(
   `Backend running at http://${app.server?.hostname}:${app.server?.port}`,

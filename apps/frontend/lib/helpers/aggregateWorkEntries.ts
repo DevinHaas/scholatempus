@@ -21,11 +21,16 @@ export function aggregateWorkEntriesByCategory(
     {} as Record<WorkTimeCategory, number>,
   );
 
-  // Sum up workingTime for each category
+  // Sum up workingTime for each category.
+  // TeachingSupervision stores raw lesson count; all others store minutes → convert to hours.
   for (const entry of workEntries) {
     const category = entry.category as WorkTimeCategory;
     if (Object.values(WorkTimeCategory).includes(category)) {
-      aggregated[category] = (aggregated[category] || 0) + entry.workingTime / 60;
+      if (category === WorkTimeCategory.TeachingSupervision) {
+        aggregated[category] = (aggregated[category] || 0) + entry.workingTime;
+      } else {
+        aggregated[category] = (aggregated[category] || 0) + entry.workingTime / 60;
+      }
     }
   }
 

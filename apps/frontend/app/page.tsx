@@ -60,8 +60,32 @@ export default function Home() {
 
   return (
     <div className="scroll-smooth">
+      {/* Beta Announcement Bar */}
+      <div className="fixed top-0 left-0 right-0 z-[60] h-9 bg-[oklch(0.13_0.025_258)] border-b border-[oklch(0.22_0.04_258)] flex items-center justify-center px-4 overflow-hidden">
+        {/* Subtle radial glow behind text */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_100%_at_50%_50%,oklch(0.55_0.18_258)/8%,transparent)] pointer-events-none" />
+        <div className="flex items-center gap-2.5">
+          {/* Beta pill */}
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[oklch(0.78_0.16_85)] text-[oklch(0.13_0.025_258)] text-[10px] font-bold uppercase tracking-widest shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-[oklch(0.13_0.025_258)]/60 animate-pulse" />
+            Beta
+          </span>
+          <span className="text-[oklch(0.75_0.02_258)] text-xs tracking-wide">
+            ScholaTempus befindet sich aktuell in der Beta-Phase.
+          </span>
+          <a
+            href="https://scholatempus.featurespace.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors border border-white/15 hover:border-white/30 shrink-0"
+          >
+            💬 Feedback geben
+          </a>
+        </div>
+      </div>
+
       {/* Navbar */}
-      <nav className="fixed top-0 z-50 w-full backdrop-blur-md bg-[oklch(0.98_0.005_106)]/80 border-b border-[oklch(0.9_0.01_258)]">
+      <nav className="fixed top-9 z-50 w-full backdrop-blur-md bg-[oklch(0.98_0.005_106)]/80 border-b border-[oklch(0.9_0.01_258)]">
         <div className="mx-auto max-w-7xl px-6 md:px-12">
           <div className="flex h-20 items-center justify-between">
             {/* Logo */}
@@ -113,7 +137,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <main className="md:pt-40 md:pb-24 overflow-hidden pt-32 pb-16 relative min-h-screen">
+      <main className="md:pt-[12.25rem] md:pb-24 overflow-hidden pt-[7.25rem] pb-16 relative min-h-screen">
         {/* Background Decor */}
         <div
           ref={blob1Ref}

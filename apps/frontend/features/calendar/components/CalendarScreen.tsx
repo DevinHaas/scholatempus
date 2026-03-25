@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { DateRangePicker } from "./DateRangePicker";
 import { WorkEntriesTableSkeleton } from "./WorkEntriesTableSkeleton";
+import { ImportWidget } from "@/features/import/components/ImportWidget";
 
 export function CalendarScreen() {
   // Initialize with current week range
@@ -113,6 +114,10 @@ export function CalendarScreen() {
         <div className="w-full">
           {isLoading ? (
             <WorkEntriesTableSkeleton />
+          ) : allEntries.length === 0 ? (
+            <div className="py-8">
+              <ImportWidget />
+            </div>
           ) : filteredEntries.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-muted-foreground text-sm">

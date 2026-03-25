@@ -14,9 +14,10 @@ import { useCreateProfile } from "@/features/onboarding/hooks/createProfile";
 import { useClassData, useSpecialFunctionData } from "@/lib/stores/profileData";
 import { ClassDataSetupSkeleton } from "@/features/onboarding/components/classdata-skeleton";
 import { ClassDataSetupComponent } from "@/features/onboarding/components/classdata-setup-screen";
+import { ImportWidget } from "@/features/import/components/ImportWidget";
 
 const DEFAULT_STEP = "setup" as const;
-const ONBOARDING_STEPS = ["setup", "schulleitung", "overview"] as const;
+const ONBOARDING_STEPS = ["setup", "schulleitung", "overview", "import"] as const;
 type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 type StepDirection = "next" | "previous";
@@ -105,6 +106,17 @@ export default function Onboarding() {
     );
   }
 
+  if (currentStep === "import") {
+    return (
+      <div className="flex items-center justify-center min-h-screen p-6">
+        <ImportWidget
+          onSuccess={() => router.push("/home")}
+          onSkip={() => router.push("/home")}
+        />
+      </div>
+    );
+  }
+
   return (
     <OverviewScreen
       onCompleteAction={() => {
@@ -114,7 +126,7 @@ export default function Onboarding() {
             onSuccess: async () => {
               localStorage.removeItem("scholatempus:onboarding");
               await getToken({ skipCache: true });
-              router.push("/home");
+              navigateRelative("next");
             },
           },
         );

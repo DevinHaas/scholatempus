@@ -97,9 +97,17 @@ export function getPreviousWeek(weekStart: Date): Date {
 /**
  * Format a date for display in the table
  */
-export function formatDateForTable(date: Date | string): string {
+export function formatDateForTable(date: Date | string, variant: "short" | "long" = "long"): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  return format(dateObj, "EEE, MMM d");
+  if (variant === "short") {
+    // e.g. "Wed 1.8.23"
+    const day = format(dateObj, "EEE");
+    const d = dateObj.getDate();
+    const m = dateObj.getMonth() + 1;
+    const y = String(dateObj.getFullYear()).slice(2);
+    return `${day} ${d}.${m}.${y}`;
+  }
+  return format(dateObj, "EEE, MMM d, yyyy");
 }
 
 /**

@@ -82,7 +82,12 @@ export function WorkEntriesTable({
       cell: ({ row }) => {
         const date = row.getValue("date") as Date | string;
         const dateObj = typeof date === "string" ? new Date(date) : date;
-        return <div>{formatDateForTable(dateObj)}</div>;
+        return (
+          <>
+            <div className="sm:hidden">{formatDateForTable(dateObj, "short")}</div>
+            <div className="hidden sm:block">{formatDateForTable(dateObj)}</div>
+          </>
+        );
       },
       sortingFn: (rowA, rowB) => {
         const dateA = rowA.original.date;
@@ -97,11 +102,13 @@ export function WorkEntriesTable({
       header: "Kategorie",
       cell: ({ row }) => {
         const category = row.getValue("category") as string;
+        const label =
+          WORK_TIME_CATEGORY_LABELS[
+            category as keyof typeof WORK_TIME_CATEGORY_LABELS
+          ] || category;
         return (
-          <div>
-            {WORK_TIME_CATEGORY_LABELS[
-              category as keyof typeof WORK_TIME_CATEGORY_LABELS
-            ] || category}
+          <div className="max-w-[120px] sm:max-w-none truncate" title={label}>
+            {label}
           </div>
         );
       },

@@ -19,13 +19,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Building, GraduationCap, User } from "lucide-react";
+import { Building, GraduationCap, Upload, User } from "lucide-react";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import { GRADE_LEVEL_LABELS } from "@scholatempus/shared/enums";
 import type { ClassData, SpecialFunctionData } from "@scholatempus/shared/schemas";
 import { ClassDataForm } from "./ClassDataForm";
 import { SpecialFunctionDataForm } from "./SpecialFunctionDataForm";
 import { useCreateProfile } from "@/features/onboarding/hooks/createProfile";
+import { ImportWidget } from "@/features/import/components/ImportWidget";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -52,6 +53,7 @@ export function SettingsDialog({
   const [classData, setClassData] = useState<ClassData | null>(null);
   const [specialFunctionData, setSpecialFunctionData] = useState<SpecialFunctionData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
     if (open && isLoaded && user) {
@@ -139,8 +141,8 @@ export function SettingsDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs defaultValue="profile" className="w-full" onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="profile" className="text-xs">
               <User className="w-3 h-3 mr-1" />
               Profil
@@ -152,6 +154,10 @@ export function SettingsDialog({
             <TabsTrigger value="schulleitung" className="text-xs">
               <Building className="w-3 h-3 mr-1" />
               Schulleitung
+            </TabsTrigger>
+            <TabsTrigger value="import" className="text-xs">
+              <Upload className="w-3 h-3 mr-1" />
+              Import
             </TabsTrigger>
           </TabsList>
 
@@ -254,9 +260,12 @@ export function SettingsDialog({
               </CardContent>
             </Card>
           </TabsContent>
+          <TabsContent value="import" className="space-y-4">
+            <ImportWidget compact />
+          </TabsContent>
         </Tabs>
 
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-3 pt-4" hidden={activeTab === "import"}>
           <Button
             variant="outline"
             className="flex-1 bg-transparent"

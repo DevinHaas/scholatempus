@@ -54,7 +54,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   );
   const [endInput, setEndInput] = useState(format(value.end, "MMM d, yyyy"));
   const [selectedPreset, setSelectedPreset] = useState<DateRangePreset | null>(
-    null
+    "thisMonth"
   );
 
   const handlePresetSelect = (preset: DateRangePreset) => {
@@ -158,7 +158,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
         <Button
           variant="outline"
           className={cn(
-            "w-fit lg:w-50% justify-start text-left font-normal mr-2",
+            "w-full md:w-[320px] justify-start text-left font-normal",
             !value && "text-muted-foreground"
           )}
         >

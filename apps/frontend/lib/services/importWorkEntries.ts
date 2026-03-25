@@ -6,7 +6,7 @@ import {
 
 export interface ParsedImportEntry {
   date: string; // ISO string
-  workingTime: number; // minutes
+  workingTime: number; // minutes for hour-based categories; raw lesson count for TeachingSupervision
   category: WorkTimeCategory;
   subcategory?: WorkTimeSubCategory;
 }
@@ -40,7 +40,7 @@ export function isValidMonthSheet(rows: unknown[][]): boolean {
 // Column mapping (0-indexed):
 // 0  = Tag (date serial)
 // 4  = AZ SL          → SchoolManagement         hours × 60
-// 5  = Unterrichtskontrolle → TeachingSupervision  lessons × 45
+// 5  = Unterrichtskontrolle → TeachingSupervision  lessons (raw count, no conversion)
 // 6  = Unterricht      → TeachingAdvisingSupporting/Class  hours × 60
 // 7  = Vor-/Nachbereitung → TeachingAdvisingSupporting/Preparation hours × 60
 // 8  = Beraten, begleiten → TeachingAdvisingSupporting/Supporting  hours × 60
@@ -52,10 +52,11 @@ const COL_MAPPINGS: Array<{
   label: string;
   category: WorkTimeCategory;
   subcategory?: WorkTimeSubCategory;
-  multiplier: number; // factor to convert to minutes
+  multiplier: number;
+  round?: boolean; // false = preserve decimals (e.g. 0.5 lessons)
 }> = [
   { col: 4, label: "AZ SL", category: WorkTimeCategory.SchoolManagement, multiplier: 60 },
-  { col: 5, label: "Unterrichtskontrolle", category: WorkTimeCategory.TeachingSupervision, multiplier: 45 },
+  { col: 5, label: "Unterrichtskontrolle", category: WorkTimeCategory.TeachingSupervision, multiplier: 1, round: false },
   {
     col: 6,
     label: "Unterricht",
@@ -115,7 +116,8 @@ export function parseMonthSheet(
       const val = row[mapping.col];
       if (typeof val !== "number" || val <= 0) continue;
 
-      const workingTime = Math.round(val * mapping.multiplier);
+      const raw = val * mapping.multiplier;
+      const workingTime = mapping.round === false ? raw : Math.round(raw);
       if (workingTime <= 0) continue;
 
       entries.push({
@@ -125,8 +127,9 @@ export function parseMonthSheet(
         subcategory: mapping.subcategory,
       });
 
+      const unit = mapping.round === false ? "Lekt." : "min";
       rowEntries.push(
-        `${mapping.label}: ${val} → ${workingTime} min`,
+        `${mapping.label}: ${val} → ${workingTime} ${unit}`,
       );
     }
 

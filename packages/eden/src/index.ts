@@ -3,7 +3,7 @@ import { createEdenTanStackQuery } from "eden-tanstack-react-query";
 import type { App } from "scholatempus-backend";
 
 export const edenClient = treaty<App>(
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4001",
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000",
   {
     async onRequest(_path, options) {
       if (typeof window !== "undefined" && (window as any).Clerk) {

@@ -7,8 +7,8 @@ import { useGetWorkEntries } from "@/features/profile/hooks/useGetWorkEntries";
 import { WorkEntriesTable, type WorkEntry } from "./WorkEntriesTable";
 import {
   getWeekStart,
-  getWeekRange,
   isDateInRange,
+  getDateRangePreset,
 } from "@/lib/helpers/calendarHelpers";
 import { CategorySelectionDialog } from "@/features/home/components/CategorySelectionDialog";
 import { useDeleteWorkEntry } from "../hooks/useDeleteWorkEntry";
@@ -25,13 +25,9 @@ import { WorkEntriesTableSkeleton } from "./WorkEntriesTableSkeleton";
 import { ImportWidget } from "@/features/import/components/ImportWidget";
 
 export function CalendarScreen() {
-  // Initialize with current week range
+  // Initialize with current month range
   const [dateRange, setDateRange] = useState(() => {
-    const weekRange = getWeekRange(getWeekStart(new Date()));
-    return {
-      start: weekRange.start,
-      end: weekRange.end,
-    };
+    return getDateRangePreset("thisMonth");
   });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
@@ -100,13 +96,9 @@ export function CalendarScreen() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground mb-4">Kalender</h1>
 
-          {/* Date Range Picker and Actions */}
-          <div className="flex items-center justify-between mb-4">
+          {/* Date Range Picker */}
+          <div className="mb-4">
             <DateRangePicker value={dateRange} onChange={setDateRange} />
-            <Button onClick={handleAddEntry} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Eintrag hinzufügen
-            </Button>
           </div>
         </div>
 
@@ -138,6 +130,16 @@ export function CalendarScreen() {
             </Suspense>
           )}
         </div>
+
+        {/* Floating Action Button */}
+        <Button
+          onClick={handleAddEntry}
+          size="icon"
+          className="fixed bottom-24 right-4 z-20 h-14 w-14 rounded-full shadow-lg"
+        >
+          <Plus className="h-6 w-6" />
+          <span className="sr-only">Eintrag hinzufügen</span>
+        </Button>
 
         {/* Add/Edit Entry Dialog */}
         <CategorySelectionDialog

@@ -1,4 +1,7 @@
-import { getHourseMultiplierPerCategory, getSchoolWeeks } from "./SetupCalculators";
+import {
+  getHourseMultiplierPerCategory,
+  getSchoolWeeks,
+} from "./SetupCalculators";
 import { HOURS_TO_WORK_PER_SEMESTER } from "../DATA";
 import { WorkTimeCategory } from "@scholatempus/shared/enums";
 import type {
@@ -57,6 +60,8 @@ export function calculateWorkTimeOverview(
   specialFunctionData: SpecialFunctionData,
   actualHoursPerCategory: Record<WorkTimeCategory, number>,
 ): WorkTimeOverviewData {
+  const totalEmploymentFactor = calculateTotalEmploymentFactor(classData, specialFunctionData);
+
   let totalTeacherWorkTime = 0;
   let totalTeacherActualWorkTime = 0;
   const details = Object.values(WorkTimeCategory)
@@ -73,7 +78,8 @@ export function calculateWorkTimeOverview(
           100;
         totalTeacherWorkTime += targetHours;
       } else {
-        targetHours = multiplier * HOURS_TO_WORK_PER_SEMESTER;
+        targetHours =
+          HOURS_TO_WORK_PER_SEMESTER * (totalEmploymentFactor / 100) * multiplier;
         totalTeacherWorkTime += targetHours;
       }
 
@@ -90,7 +96,9 @@ export function calculateWorkTimeOverview(
     }, {} as WorkedTimePerCategory);
 
   const teachingSupervisionTargetHours =
-    (getSchoolWeeks(classData.grade, classData.mandatoryLectures) * classData.givenLectures) / 2;
+    (getSchoolWeeks(classData.grade, classData.mandatoryLectures) *
+      classData.givenLectures) /
+    2;
 
   const actualTeachingSupervisionHours =
     actualHoursPerCategory[WorkTimeCategory.TeachingSupervision] ?? 0;
@@ -107,12 +115,9 @@ export function calculateWorkTimeOverview(
       actualHours: totalTeacherActualWorkTime,
       balanceHours: totalTeacherActualWorkTime - totalTeacherWorkTime,
     },
-    totalEmploymentFactor: calculateTotalEmploymentFactor(
-      classData,
-      specialFunctionData,
-    ),
+    totalEmploymentFactor,
     schoolManagementBalanceHours:
-      totalTeacherActualWorkTime - totalTeacherWorkTime,
+      details[WorkTimeCategory.SchoolManagement]?.differenceHours ?? 0,
   };
 
   return {
@@ -120,4 +125,3 @@ export function calculateWorkTimeOverview(
     summary,
   };
 }
-

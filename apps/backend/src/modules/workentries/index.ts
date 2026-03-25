@@ -8,6 +8,7 @@ import {
   UpdateWorkEntryResponse,
   GetWorkEntriesResponse,
   DeleteWorkEntryResponse,
+  ImportWorkEntriesBody,
 } from "./model.js";
 import { WorkEntryService } from "./service.js";
 
@@ -31,6 +32,15 @@ export const workentriesModule = new Elysia({ prefix: "/workentries" })
     {
       requireAuth: true,
       body: AddWorkEntriesBody,
+      response: { 200: AddWorkEntriesResponse },
+    },
+  )
+  .post(
+    "/import",
+    ({ body, userId }) => WorkEntryService.importEntries(userId!, body.entries),
+    {
+      requireAuth: true,
+      body: ImportWorkEntriesBody,
       response: { 200: AddWorkEntriesResponse },
     },
   )

@@ -26,6 +26,17 @@ export const WeeklyLessonsForTransportationSchema = z
   
   export type TimeEntry = z.infer<typeof TimeEntryZodSchema>;
 
+export const ImportWorkEntrySchema = z.object({
+  date: z.string(), // ISO date string
+  workingTime: z.number().positive(),
+  category: z.enum(Object.keys(WorkTimeCategory) as [string, ...string[]]),
+  subcategory: z
+    .enum(Object.values(WorkTimeSubCategory) as [string, ...string[]])
+    .optional(),
+});
+
+export type ImportWorkEntry = z.infer<typeof ImportWorkEntrySchema>;
+
 export const ClassDataSchema = z.object({
   grade: z.nativeEnum(GradeLevel),
   givenLectures: z.number().int().min(0).max(50),

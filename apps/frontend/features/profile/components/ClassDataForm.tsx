@@ -118,7 +118,7 @@ export function ClassDataForm({
       }}
       className={className}
     >
-      <FieldGroup>
+      <FieldGroup className="gap-3 sm:gap-7">
         <form.Field
           name="grade"
           listeners={{

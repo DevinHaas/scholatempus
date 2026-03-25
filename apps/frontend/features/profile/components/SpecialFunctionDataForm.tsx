@@ -129,7 +129,7 @@ export function SpecialFunctionDataForm({
       }}
       className={className}
     >
-      <FieldGroup>
+      <FieldGroup className="gap-3 sm:gap-7">
         <form.Field
           name="headshipEmploymentFactor"
           children={(field) => {

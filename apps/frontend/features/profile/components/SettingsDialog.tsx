@@ -66,7 +66,10 @@ export function SettingsDialog({
         username: user.username || "",
       });
     }
-  }, [open, isLoaded, user]);
+    // Seed form data from props so Save works without any interaction
+    if (setupData) setClassData(setupData);
+    if (schulleitungData) setSpecialFunctionData(schulleitungData);
+  }, [open, isLoaded, user, setupData, schulleitungData]);
 
   const handleClassDataSubmit = async (data: ClassData) => {
     setClassData(data);
@@ -133,26 +136,26 @@ export function SettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-md">
+        <DialogHeader className="pb-0">
           <DialogTitle>Einstellungen</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs">
             Bearbeiten Sie Ihre Profil- und Arbeitszeit-Einstellungen
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="profile" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="profile" className="text-xs">
-              <User className="w-3 h-3 mr-1" />
+        <Tabs defaultValue="profile" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="profile" className="text-[10px] sm:text-xs px-1">
+              <User className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 shrink-0" />
               Profil
             </TabsTrigger>
-            <TabsTrigger value="setup" className="text-xs">
-              <GraduationCap className="w-3 h-3 mr-1" />
+            <TabsTrigger value="setup" className="text-[10px] sm:text-xs px-1">
+              <GraduationCap className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 shrink-0" />
               Lehrperson
             </TabsTrigger>
-            <TabsTrigger value="schulleitung" className="text-xs">
-              <Building className="w-3 h-3 mr-1" />
+            <TabsTrigger value="schulleitung" className="text-[10px] sm:text-xs px-1">
+              <Building className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 shrink-0" />
               Schulleitung
             </TabsTrigger>
             <TabsTrigger value="import" className="text-xs">
@@ -161,15 +164,15 @@ export function SettingsDialog({
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="profile" className="space-y-4">
+          <TabsContent value="profile" className="space-y-2 sm:space-y-4 mt-2">
             <Card>
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-1 sm:pb-3 pt-3 sm:pt-6">
                 <CardTitle className="text-sm">Profil Informationen</CardTitle>
                 <CardDescription className="text-xs">
                   Bearbeiten Sie Ihre persönlichen Daten
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4 pb-3 sm:pb-6">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-sm">
                     Name
@@ -199,9 +202,9 @@ export function SettingsDialog({
             </Card>
           </TabsContent>
 
-          <TabsContent value="setup" className="space-y-4">
+          <TabsContent value="setup" className="space-y-2 sm:space-y-4 mt-2">
             <Card>
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-1 sm:pb-3 pt-3 sm:pt-6">
                 <CardTitle className="text-sm">
                   Lehrperson Einstellungen
                 </CardTitle>
@@ -209,7 +212,7 @@ export function SettingsDialog({
                   Arbeitszeit-Berechnungsparameter
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4 pb-3 sm:pb-6">
                 <ClassDataForm
                   defaultValues={
                     setupData
@@ -229,9 +232,9 @@ export function SettingsDialog({
             </Card>
           </TabsContent>
 
-          <TabsContent value="schulleitung" className="space-y-4">
+          <TabsContent value="schulleitung" className="space-y-2 sm:space-y-4 mt-2">
             <Card>
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-1 sm:pb-3 pt-3 sm:pt-6">
                 <CardTitle className="text-sm">
                   Schulleitung Einstellungen
                 </CardTitle>
@@ -239,7 +242,7 @@ export function SettingsDialog({
                   Spezialfunktion und Führungsaufgaben
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4 pb-3 sm:pb-6">
                 <SpecialFunctionDataForm
                   defaultValues={
                     schulleitungData
@@ -265,7 +268,7 @@ export function SettingsDialog({
           </TabsContent>
         </Tabs>
 
-        <div className="flex gap-3 pt-4" hidden={activeTab === "import"}>
+        <div className="flex gap-3 pt-2 sm:pt-4">
           <Button
             variant="outline"
             className="flex-1 bg-transparent"

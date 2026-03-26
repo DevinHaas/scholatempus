@@ -47,15 +47,6 @@ export class WorkEntryService {
         throw new AppError(400, `Invalid category: ${entry.category}`);
       }
 
-      if (
-        entry.category === WorkTimeCategory.TeachingAdvisingSupporting &&
-        !entry.subcategory
-      ) {
-        throw new AppError(
-          400,
-          "Subcategory is required for 'Unterrichten, beraten, begleiten' category",
-        );
-      }
     }
 
     const result = await db.transaction(async (tx) => {
@@ -116,16 +107,6 @@ export class WorkEntryService {
       )
     ) {
       throw new AppError(400, `Invalid category: ${data.category}`);
-    }
-
-    if (
-      data.category === WorkTimeCategory.TeachingAdvisingSupporting &&
-      !data.subcategory
-    ) {
-      throw new AppError(
-        400,
-        "Subcategory is required for 'Unterrichten, beraten, begleiten' category",
-      );
     }
 
     const [updated] = await db

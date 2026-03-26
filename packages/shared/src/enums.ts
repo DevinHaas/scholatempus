@@ -32,7 +32,7 @@ export const WORK_TIME_CATEGORY_LABELS: Record<WorkTimeCategory, string> = {
     "Unterrichten, beraten, begleiten",
   [WorkTimeCategory.Collaboration]: "Zusammenarbeit",
   [WorkTimeCategory.FurtherEducation]: "Weiterbildung",
-  [WorkTimeCategory.TeachingSupervision]: "Unterrichtskontrolle",
+  [WorkTimeCategory.TeachingSupervision]: "Lektionen",
 };
 
 export const TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES_LABELS: Record<

@@ -311,6 +311,12 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
                           ]!;
                         const fmt = (n: number) =>
                           n % 1 === 0 ? n.toFixed(0) : n.toFixed(1);
+                        const lessonCount = (workEntries ?? []).filter(
+                          (e) =>
+                            e.category ===
+                              WorkTimeCategory.TeachingAdvisingSupporting &&
+                            !e.subcategory,
+                        ).length;
                         return (
                           <div className="space-y-1.5">
                             <p className="text-sm text-muted-foreground font-semibold ">
@@ -333,7 +339,7 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
                                   Ist
                                 </p>
                                 <p className="text-sm font-bold">
-                                  {fmt(ts.actualHours)}
+                                  {lessonCount}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
                                   Lekt.
@@ -344,10 +350,10 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
                                   Bilanz
                                 </p>
                                 <p
-                                  className={`text-sm font-bold ${ts.differenceHours > 0 ? "text-red-600" : "text-green-600"}`}
+                                  className={`text-sm font-bold ${lessonCount - ts.targetHours > 0 ? "text-red-600" : "text-green-600"}`}
                                 >
-                                  {ts.differenceHours > 0 ? "+" : ""}
-                                  {fmt(ts.differenceHours)}
+                                  {lessonCount - ts.targetHours > 0 ? "+" : ""}
+                                  {fmt(lessonCount - ts.targetHours)}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
                                   Lekt.

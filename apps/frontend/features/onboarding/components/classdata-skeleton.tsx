@@ -5,22 +5,26 @@ export function ClassDataSetupSkeleton() {
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-md mx-auto space-y-6 pt-8">
-        {/* Header */}
-        <div className="flex items-center space-x-4">
-          <div>
-            <Skeleton className="h-7 w-24 mb-2" />
-            <Skeleton className="h-4 w-32" />
-          </div>
+        {/* Logo */}
+        <Skeleton className="h-7 w-32" />
+
+        {/* Step indicator */}
+        <div className="flex items-center justify-center gap-2">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              {i < 3 && <Skeleton className="h-px w-12 mx-2" />}
+            </div>
+          ))}
         </div>
 
-        <Card className="border-border/50 shadow-lg">
+        <Card className="border-border/40 shadow-sm">
           <CardHeader className="space-y-1">
             <Skeleton className="h-6 w-48" />
             <Skeleton className="h-4 w-64" />
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              {/* Form fields skeleton */}
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-16" />
@@ -39,8 +43,6 @@ export function ClassDataSetupSkeleton() {
                   <Skeleton className="h-11 w-full" />
                 </div>
               </div>
-
-              {/* Submit button skeleton */}
               <Skeleton className="h-11 w-full" />
             </div>
           </CardContent>

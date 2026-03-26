@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft } from "lucide-react";
 import {
   schulleitungSetupFormSchema,
   type SchulleitungSetupFormData,
@@ -34,78 +33,50 @@ import type { WeeklyLessonsForTransportation } from "@scholatempus/shared/schema
 import { z } from "zod";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../../../components/ui/field";
-import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../../../components/ui/input-group";
 
 interface SchulleitungSetupScreenProps {
   onCompleteAction: () => void;
   onBackAction: () => void;
-  email: string;
+  email?: string;
 }
 
 // Skeleton component for loading state
-function SchulleitungSetupSkeleton({
-  onBackAction,
-}: {
-  onBackAction: () => void;
-}) {
+function SchulleitungSetupSkeleton() {
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto space-y-6 pt-8">
-        {/* Header */}
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10"
-            onClick={onBackAction}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <Skeleton className="h-7 w-24 mb-2" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-        </div>
-
-        <Card className="border-border/50 shadow-lg">
-          <CardHeader className="space-y-1">
-            <Skeleton className="h-6 w-64" />
-            <Skeleton className="h-4 w-64" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {/* Form fields skeleton */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-48" />
-                  <Skeleton className="h-11 w-full" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="h-11 w-full" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-6 w-12" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-56" />
-                  <Skeleton className="h-11 w-full" />
-                </div>
+    <div className="space-y-4">
+      <Card className="border-border/40 shadow-sm">
+        <CardHeader className="space-y-1">
+          <Skeleton className="h-6 w-64" />
+          <Skeleton className="h-4 w-64" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-11 w-full" />
               </div>
-
-              {/* Buttons skeleton */}
-              <div className="flex gap-3 pt-4">
-                <Skeleton className="flex-1 h-11" />
-                <Skeleton className="flex-1 h-11" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-6 w-12" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-56" />
+                <Skeleton className="h-11 w-full" />
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        <Skeleton className="h-3 w-72 mx-auto" />
-      </div>
+            <div className="flex gap-3 pt-4">
+              <Skeleton className="flex-1 h-11" />
+              <Skeleton className="flex-1 h-11" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -113,7 +84,6 @@ function SchulleitungSetupSkeleton({
 export function SchulleitungSetupComponent({
   onCompleteAction,
   onBackAction,
-  email,
 }: SchulleitungSetupScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
   const hydrated = useHydration();
@@ -157,32 +127,12 @@ export function SchulleitungSetupComponent({
 
   // Show skeleton while data is loading from localStorage
   if (!hydrated) {
-    return <SchulleitungSetupSkeleton onBackAction={onBackAction} />;
+    return <SchulleitungSetupSkeleton />;
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto space-y-6 pt-8">
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10"
-            onClick={onBackAction}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-xl font-semibold text-foreground">
-              Einrichtung
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Willkommen, {getNameFromEmailadress(email)}
-            </p>
-          </div>
-        </div>
-
-        <Card className="border-border/50 shadow-lg">
+    <div className="space-y-4">
+        <Card className="border-border/40 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-lg">
               Zeiterfassung Schulleitung/Spezialfunktion
@@ -369,12 +319,6 @@ export function SchulleitungSetupComponent({
             </form>
           </CardContent>
         </Card>
-
-        <div className="text-center text-xs text-muted-foreground">
-          Diese Einstellungen können später in den Profileinstellungen geändert
-          werden.
-        </div>
-      </div>
     </div>
   );
 }

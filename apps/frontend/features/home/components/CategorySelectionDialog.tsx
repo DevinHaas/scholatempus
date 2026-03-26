@@ -24,12 +24,35 @@ import {
   TEACHING_ADVINSING_SUPPORTING_SUBCATEGORIES_LABELS,
   WORK_TIME_CATEGORY_LABELS,
   WorkTimeCategory,
+  WorkTimeSubCategory,
 } from "@scholatempus/shared/enums";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { type TimeEntry, TimeEntryZodSchema } from "@scholatempus/shared/schemas";
 import { useAddWorkEntries } from "../hooks/addWorkEntries";
 import { useUpdateWorkEntry } from "@/features/calendar/hooks/useUpdateWorkEntry";
 import { useEffect, useState } from "react";
+
+function expandLessonEntries(entries: TimeEntry[]): TimeEntry[] {
+  const result: TimeEntry[] = [];
+  for (const entry of entries) {
+    if (entry.category === WorkTimeCategory.TeachingSupervision) {
+      const n = entry.workingTime ?? 0;
+      result.push({
+        workingTime: Math.round(n * 45),
+        category: WorkTimeCategory.TeachingAdvisingSupporting,
+        subcategory: WorkTimeSubCategory.Class,
+      });
+      result.push({
+        workingTime: Math.round(n * 15),
+        category: WorkTimeCategory.TeachingAdvisingSupporting,
+        subcategory: undefined,
+      });
+    } else {
+      result.push(entry);
+    }
+  }
+  return result;
+}
 
 interface CategorySelectionDialogProps {
   open: boolean;
@@ -83,10 +106,13 @@ export function CategorySelectionDialog({
   }, [selectedDate]);
 
   const getTotalDistributedTime = (entries: TimeEntry[]) => {
-    return entries.reduce(
-      (total, entry) => total + (entry.workingTime || 0),
-      0,
-    );
+    return entries.reduce((total, entry) => {
+      const mins =
+        entry.category === WorkTimeCategory.TeachingSupervision
+          ? (entry.workingTime || 0) * 60
+          : entry.workingTime || 0;
+      return total + mins;
+    }, 0);
   };
 
   const schema = z.object({
@@ -94,6 +120,15 @@ export function CategorySelectionDialog({
       .array(TimeEntryZodSchema)
       .min(1, { message: "At least one entry is required" })
       .superRefine((entries, ctx) => {
+        entries.forEach((entry, i) => {
+          if (!entry.workingTime || entry.workingTime <= 0) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Bitte geben Sie eine gültige Zeit oder Anzahl ein",
+              path: [i, "workingTime"],
+            });
+          }
+        });
         // Only validate total time for non-calendar context (home screen)
         if (!isCalendarContext) {
           const totalDistributed = getTotalDistributedTime(entries);
@@ -159,14 +194,11 @@ export function CategorySelectionDialog({
   }, [open, entryToEdit?.workTimeEntryId]);
 
   const handleCategorySelection = (entries: TimeEntry[]): void => {
-    // For calendar context, we need to handle date separately
-    // Note: The backend addWorkEntries endpoint currently sets date to new Date()
-    // We'll need to modify the backend or create a separate endpoint for calendar entries
-    // For now, we'll use the existing endpoint and the date will be set on the backend
+    const expanded = expandLessonEntries(entries);
 
     // Transform entries to API format
     const apiEntries = {
-      entries: entries.map((entry) => ({
+      entries: expanded.map((entry) => ({
         category: entry.category,
         subcategory: entry.subcategory,
         workingTime: entry.workingTime, // Already in minutes from the form
@@ -323,67 +355,6 @@ export function CategorySelectionDialog({
                             key={i}
                             className="space-y-3 p-4 border rounded-lg"
                           >
-                            <div className="flex items-center gap-2">
-                              <Label className="text-sm font-medium">
-                                Arbeitszeit (Minuten):
-                              </Label>
-                              <div className="flex-1" />
-                              {form.state.values.entries.length > 1 && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeEntry(i)}
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-
-                            <form.Field
-                              name={`entries[${i}].workingTime`}
-                              children={(workingTimeField) => {
-                                const workingTimeInvalid =
-                                  workingTimeField.state.meta.isTouched &&
-                                  !workingTimeField.state.meta.isValid;
-                                return (
-                                  <div>
-                                    <Input
-                                      type="time"
-                                      id="time-picker"
-                                      defaultValue={calculateTimeForInput(
-                                        entry.workingTime,
-                                      )}
-                                      onChange={(event) => {
-                                        const timeElements =
-                                          event.target.value.split(":");
-
-                                        const hourse = Number(timeElements[0]);
-                                        const minutes = Number(timeElements[1]);
-                                        workingTimeField.handleChange(
-                                          hourse * 60 + minutes,
-                                        );
-                                      }}
-                                      disabled={
-                                        !isManually &&
-                                        (form.state.values.entries.length <=
-                                          1 ||
-                                          isEditing)
-                                      }
-                                      className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                                    />
-                                    {workingTimeInvalid && (
-                                      <FieldError
-                                        errors={
-                                          workingTimeField.state.meta.errors
-                                        }
-                                      ></FieldError>
-                                    )}
-                                  </div>
-                                );
-                              }}
-                            />
-
                             <form.Field
                               name={`entries[${i}].category`}
                               children={(categoryField) => {
@@ -392,16 +363,25 @@ export function CategorySelectionDialog({
                                   !categoryField.state.meta.isValid;
                                 return (
                                   <div>
-                                    <Label className="text-sm font-medium mb-2 block">
-                                      Kategorie
-                                    </Label>
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <Label className="text-sm font-medium">
+                                        Kategorie
+                                      </Label>
+                                      <div className="flex-1" />
+                                      {form.state.values.entries.length > 1 && (
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => removeEntry(i)}
+                                          className="h-8 w-8 p-0"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      )}
+                                    </div>
                                     <Select
                                       onValueChange={(value) => {
-                                        (console.log(
-                                          "work time category",
-                                          value,
-                                        ),
-                                          categoryField.handleChange(value));
+                                        categoryField.handleChange(value);
                                       }}
                                       value={categoryField.state.value}
                                     >
@@ -427,6 +407,7 @@ export function CategorySelectionDialog({
                                 );
                               }}
                             />
+
                             <form.Subscribe
                               selector={(state) =>
                                 state.values.entries[i]?.category ?? ""
@@ -451,10 +432,6 @@ export function CategorySelectionDialog({
                                             </Label>
                                             <Select
                                               onValueChange={(value) => {
-                                                console.log(
-                                                  "subcategory",
-                                                  value,
-                                                );
                                                 field.handleChange(value);
                                               }}
                                               value={field.state.value}
@@ -488,6 +465,93 @@ export function CategorySelectionDialog({
                                 }
                               }}
                             </form.Subscribe>
+
+                            <form.Field
+                              name={`entries[${i}].workingTime`}
+                              children={(workingTimeField) => {
+                                const workingTimeInvalid =
+                                  workingTimeField.state.meta.isTouched &&
+                                  !workingTimeField.state.meta.isValid;
+                                return (
+                                  <form.Subscribe
+                                    selector={(state) =>
+                                      state.values.entries[i]?.category ?? ""
+                                    }
+                                  >
+                                    {(category) => {
+                                      const isTeachingSupervision =
+                                        category ===
+                                        WorkTimeCategory.TeachingSupervision;
+                                      return (
+                                        <div>
+                                          <Label className="text-sm font-medium mb-2 block">
+                                            {isTeachingSupervision
+                                              ? "Lektionen"
+                                              : "Arbeitszeit (Minuten):"}
+                                          </Label>
+                                          {isTeachingSupervision ? (
+                                            <Input
+                                              key="number-input"
+                                              type="number"
+                                              value={
+                                                workingTimeField.state.value ||
+                                                ""
+                                              }
+                                              onChange={(e) =>
+                                                workingTimeField.handleChange(
+                                                  e.target.value === ""
+                                                    ? 0
+                                                    : Number(e.target.value),
+                                                )
+                                              }
+                                              min={0}
+                                              placeholder="0"
+                                            />
+                                          ) : (
+                                            <Input
+                                              key="time-input"
+                                              type="time"
+                                              id="time-picker"
+                                              defaultValue={calculateTimeForInput(
+                                                entry.workingTime,
+                                              )}
+                                              onChange={(event) => {
+                                                const timeElements =
+                                                  event.target.value.split(":");
+                                                const hours = Number(
+                                                  timeElements[0],
+                                                );
+                                                const minutes = Number(
+                                                  timeElements[1],
+                                                );
+                                                workingTimeField.handleChange(
+                                                  hours * 60 + minutes,
+                                                );
+                                              }}
+                                              disabled={
+                                                !isManually &&
+                                                (form.state.values.entries
+                                                  .length <= 1 ||
+                                                  isEditing)
+                                              }
+                                              className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                            />
+                                          )}
+                                          {workingTimeInvalid && (
+                                            <FieldError
+                                              errors={
+                                                workingTimeField.state.meta
+                                                  .errors
+                                              }
+                                            ></FieldError>
+                                          )}
+                                        </div>
+                                      );
+                                    }}
+                                  </form.Subscribe>
+                                );
+                              }}
+                            />
                           </div>
                         );
                       })}

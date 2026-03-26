@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, Suspense } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useGetWorkEntries } from "@/features/profile/hooks/useGetWorkEntries";
@@ -37,6 +38,7 @@ export function CalendarScreen() {
     () => new Date(),
   );
 
+  const { isLoaded } = useUser();
   const { data: allEntries = [], isLoading } = useGetWorkEntries();
   const deleteWorkEntryMutation = useDeleteWorkEntry();
 
@@ -119,7 +121,7 @@ export function CalendarScreen() {
 
         {/* Work Entries Table */}
         <div className="w-full">
-          {isLoading ? (
+          {(!isLoaded || isLoading) ? (
             <WorkEntriesTableSkeleton />
           ) : allEntries.length === 0 ? (
             <div className="py-8">

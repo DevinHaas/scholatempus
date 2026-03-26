@@ -4,7 +4,6 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -225,7 +224,7 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
   if (profileError && !profile) {
     return (
       <div className="min-h-screen bg-background p-4">
-        <div className="max-w-md mx-auto space-y-6">
+        <div className="max-w-md lg:max-w-3xl mx-auto space-y-6">
           <Card>
             <CardContent className="pt-6">
               <p className="text-center text-muted-foreground">
@@ -241,7 +240,7 @@ export function ProfileScreen({ user }: ProfileScreenProps) {
 
   return (
     <div className="bg-background p-4 pb-24">
-      <div className="max-w-md mx-auto ">
+      <div className="max-w-md lg:max-w-3xl mx-auto">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground">Profil</h1>
           <Button

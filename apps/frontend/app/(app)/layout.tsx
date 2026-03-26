@@ -5,7 +5,7 @@ import { TabNavigation } from "@/features/app-shell";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-background test flex flex-col">
-      <div className="flex-1 pb-20">{children}</div>
+      <div className="flex-1 pb-24">{children}</div>
       <TabNavigation />
     </div>
   );

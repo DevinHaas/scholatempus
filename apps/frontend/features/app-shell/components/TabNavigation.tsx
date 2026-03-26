@@ -3,26 +3,35 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Calendar, Home, User } from "lucide-react";
+import { motion } from "framer-motion";
 
-interface TabButtonProps {
+interface DockTabProps {
   icon: typeof Calendar;
+  label: string;
   isActive: boolean;
   href: string;
 }
 
-function TabButton({ icon: Icon, isActive, href }: TabButtonProps) {
+function DockTab({ icon: Icon, label, isActive, href }: DockTabProps) {
   return (
     <Link
       href={href}
       prefetch={true}
-      className={`flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
+      className={`relative flex items-center gap-2 px-4 py-2 rounded-full z-10 transition-colors ${
         isActive
-          ? "text-primary"
+          ? "text-primary-foreground"
           : "text-muted-foreground hover:text-foreground"
       }`}
     >
-      <Icon className="h-6 w-6" />
-      {isActive && <div className="w-8 h-1 bg-primary rounded-full mt-1" />}
+      {isActive && (
+        <motion.div
+          layoutId="dock-active-pill"
+          className="absolute inset-0 bg-primary rounded-full -z-10"
+          transition={{ type: "spring", stiffness: 400, damping: 35 }}
+        />
+      )}
+      <Icon className="h-5 w-5" />
+      <span className="text-sm font-medium">{label}</span>
     </Link>
   );
 }
@@ -30,27 +39,15 @@ function TabButton({ icon: Icon, isActive, href }: TabButtonProps) {
 export function TabNavigation() {
   const pathname = usePathname();
 
-  // Map pathnames to active state
   const isHomeActive = pathname === "/home";
   const isCalendarActive = pathname === "/calendar";
   const isProfileActive = pathname === "/profile";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-border z-50">
-      <div className="flex items-center justify-around py-2">
-        <TabButton
-          icon={Calendar}
-          isActive={isCalendarActive}
-          href="/calendar"
-        />
-        <TabButton icon={Home} isActive={isHomeActive} href="/home" />
-        <TabButton
-          icon={User}
-          isActive={isProfileActive}
-          href="/profile"
-        />
-      </div>
+    <nav className="flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 items-center gap-1 rounded-full bg-background/80 backdrop-blur border border-border shadow-lg px-2 py-2">
+      <DockTab icon={Calendar} label="Kalender" isActive={isCalendarActive} href="/calendar" />
+      <DockTab icon={Home} label="Home" isActive={isHomeActive} href="/home" />
+      <DockTab icon={User} label="Profil" isActive={isProfileActive} href="/profile" />
     </nav>
   );
 }
-

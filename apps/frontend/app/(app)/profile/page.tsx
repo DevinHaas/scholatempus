@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 function ProfileScreenSkeleton() {
   return (
     <div className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto space-y-6">
+      <div className="max-w-md lg:max-w-3xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <Skeleton className="h-8 w-24" />
           <Skeleton className="h-10 w-10 rounded-full" />

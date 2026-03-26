@@ -26,7 +26,7 @@ export const useDeleteWorkEntry = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: [eden.workentries.get.queryKey()],
+        queryKey: eden.workentries.get.queryKey(),
       });
     },
   });

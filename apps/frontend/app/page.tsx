@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
-import { useRef } from "react";
-import { Hourglass, Menu, ArrowRight, CheckCircle2, Zap } from "lucide-react";
+import { useRef, useState } from "react";
+import { Hourglass, Menu, X, ArrowRight, CheckCircle2, Zap } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const statsCardRef = useRef<HTMLDivElement>(null);
   const timerCardRef = useRef<HTMLDivElement>(null);
@@ -128,11 +129,52 @@ export default function Home() {
 
             {/* Mobile Menu Icon */}
             <div className="md:hidden">
-              <button className="p-2 text-[oklch(0.15_0.02_258)]">
-                <Menu className="size-6" />
+              <button
+                className="p-2 text-[oklch(0.15_0.02_258)]"
+                onClick={() => setMobileMenuOpen((o) => !o)}
+                aria-label="Menü öffnen"
+              >
+                {mobileMenuOpen ? (
+                  <X className="size-6" />
+                ) : (
+                  <Menu className="size-6" />
+                )}
               </button>
             </div>
           </div>
+
+          {/* Mobile Menu Panel */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-[oklch(0.9_0.01_258)] py-4 flex flex-col gap-3">
+              {isLoaded &&
+                (isSignedIn ? (
+                  <Link
+                    href="/home"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)]"
+                  >
+                    Zur Übersicht
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/sign-in"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-center h-10 px-5 text-sm font-normal text-[oklch(0.15_0.02_258)] hover:text-[oklch(0.55_0.18_258)] transition-colors"
+                    >
+                      Anmelden
+                    </Link>
+                    <Link
+                      href="/sign-up"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-[oklch(0.55_0.18_258)] text-white text-sm font-medium transition-all hover:bg-[oklch(0.55_0.18_258)]/90 shadow-[0_0_20px_-5px_oklch(0.55_0.18_258)]"
+                    >
+                      Kostenlos starten
+                    </Link>
+                  </>
+                ))}
+            </div>
+          )}
         </div>
       </nav>
 

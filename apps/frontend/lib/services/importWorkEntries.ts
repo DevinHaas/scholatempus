@@ -120,17 +120,28 @@ export function parseMonthSheet(
       const workingTime = mapping.round === false ? raw : Math.round(raw);
       if (workingTime <= 0) continue;
 
-      entries.push({
-        date: dateStr,
-        workingTime,
-        category: mapping.category,
-        subcategory: mapping.subcategory,
-      });
-
-      const unit = mapping.round === false ? "Lekt." : "min";
-      rowEntries.push(
-        `${mapping.label}: ${val} → ${workingTime} ${unit}`,
-      );
+      // Expand TeachingSupervision lesson count into work-time entries (no raw count entry)
+      if (mapping.category === WorkTimeCategory.TeachingSupervision) {
+        const n = workingTime; // raw lesson count
+        entries.push({
+          date: dateStr,
+          workingTime: Math.round(n * 45),
+          category: WorkTimeCategory.TeachingAdvisingSupporting,
+          subcategory: WorkTimeSubCategory.Class,
+        });
+        entries.push({
+          date: dateStr,
+          workingTime: Math.round(n * 15),
+          category: WorkTimeCategory.TeachingAdvisingSupporting,
+          subcategory: undefined,
+        });
+        rowEntries.push(`${mapping.label}: ${val} → ${n} Lekt. (+${Math.round(n * 45)}min Class +${Math.round(n * 15)}min TAS)`);
+      } else {
+        const unit = mapping.round === false ? "Lekt." : "min";
+        rowEntries.push(
+          `${mapping.label}: ${val} → ${workingTime} ${unit}`,
+        );
+      }
     }
 
     if (rowEntries.length > 0) {

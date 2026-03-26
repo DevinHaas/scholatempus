@@ -32,6 +32,7 @@ export function CalendarScreen() {
   const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [entryToDelete, setEntryToDelete] = useState<number | null>(null);
+  const [entriesToDelete, setEntriesToDelete] = useState<number[]>([]);
   const [selectedDateForNewEntry, setSelectedDateForNewEntry] = useState<Date>(
     () => new Date(),
   );
@@ -65,16 +66,31 @@ export function CalendarScreen() {
   };
 
   const handleDeleteClick = (entryId: number) => {
+    setEntriesToDelete([entryId]);
     setEntryToDelete(entryId);
     setDeleteConfirmOpen(true);
   };
 
+  const handleDeleteMultiple = (entryIds: number[]) => {
+    setEntriesToDelete(entryIds);
+    setEntryToDelete(null);
+    setDeleteConfirmOpen(true);
+  };
+
   const handleDeleteConfirm = () => {
-    if (entryToDelete !== null) {
-      deleteWorkEntryMutation.mutate(entryToDelete, {
+    const ids = entriesToDelete.length > 0 ? entriesToDelete : entryToDelete !== null ? [entryToDelete] : [];
+    if (ids.length === 0) return;
+
+    let completed = 0;
+    for (const id of ids) {
+      deleteWorkEntryMutation.mutate(id, {
         onSuccess: () => {
-          setDeleteConfirmOpen(false);
-          setEntryToDelete(null);
+          completed++;
+          if (completed === ids.length) {
+            setDeleteConfirmOpen(false);
+            setEntryToDelete(null);
+            setEntriesToDelete([]);
+          }
         },
       });
     }
@@ -125,6 +141,7 @@ export function CalendarScreen() {
                 data={filteredEntries}
                 onEdit={handleEditEntry}
                 onDelete={handleDeleteClick}
+                onDeleteMultiple={handleDeleteMultiple}
               />
             </Suspense>
           )}
@@ -158,8 +175,9 @@ export function CalendarScreen() {
             <DialogHeader>
               <DialogTitle>Arbeitseintrag löschen</DialogTitle>
               <DialogDescription>
-                Möchten Sie diesen Arbeitseintrag wirklich löschen? Diese Aktion
-                kann nicht rückgängig gemacht werden.
+                {entriesToDelete.length > 1
+                  ? `Möchten Sie diese ${entriesToDelete.length} Arbeitseinträge wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.`
+                  : "Möchten Sie diesen Arbeitseintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -168,6 +186,7 @@ export function CalendarScreen() {
                 onClick={() => {
                   setDeleteConfirmOpen(false);
                   setEntryToDelete(null);
+                  setEntriesToDelete([]);
                 }}
               >
                 Abbrechen

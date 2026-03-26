@@ -27,7 +27,6 @@ import { classDataFormSchema, type SetupFormData } from "@/lib/validations";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useMemo, useState } from "react";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../../../components/ui/field";
-import getNameFromEmailadress from "@/lib/helpers/getNameFromEmailadress";
 import { GRADE_LEVEL_LABELS, GradeLevel } from "@scholatempus/shared/enums";
 import type { ClassData } from "@scholatempus/shared/schemas";
 import { getGradeLevelFromLabel } from "@/lib/helpers/getGradeLevelFromLabel";
@@ -35,12 +34,11 @@ import { ClassDataSetupSkeleton } from "./classdata-skeleton";
 
 interface SetupScreenProps {
   onCompleteAction: () => void;
-  email: string;
+  email?: string;
 }
 
 export function ClassDataSetupComponent({
   onCompleteAction,
-  email,
 }: SetupScreenProps) {
   const { updateClassData } = useProfileDataActions();
   const classData = useClassData();
@@ -96,26 +94,12 @@ export function ClassDataSetupComponent({
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto space-y-6 pt-8">
-        {/* Header */}
-        <div className="flex items-center space-x-4">
-          <div>
-            <h1 className="text-xl font-semibold text-foreground">
-              Einrichtung
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Willkommen, {getNameFromEmailadress(email)}
-            </p>
-          </div>
-        </div>
-
-        <Card className="border-border/50 shadow-lg">
+    <div className="space-y-4">
+        <Card className="border-border/40 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-lg">Zeiterfassung Lehrperson</CardTitle>
             <CardDescription className="text-pretty">
-              Hier werden die Daten für die Berechnung der Arbeitszeit
-              eingegeben
+              Gib die Daten deiner Klasse ein — wir berechnen daraus deine Sollarbeitszeit.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -324,12 +308,6 @@ export function ClassDataSetupComponent({
             </form>
           </CardContent>
         </Card>
-
-        <div className="text-center text-xs text-muted-foreground">
-          Diese Einstellungen können später in den Profileinstellungen geändert
-          werden.
-        </div>
-      </div>
     </div>
   );
 }

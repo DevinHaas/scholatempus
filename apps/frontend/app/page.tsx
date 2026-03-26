@@ -70,8 +70,8 @@ export default function Home() {
             <span className="w-1.5 h-1.5 rounded-full bg-[oklch(0.13_0.025_258)]/60 animate-pulse" />
             Beta
           </span>
-          <span className="text-[oklch(0.75_0.02_258)] text-xs tracking-wide">
-            ScholaTempus befindet sich aktuell in der Beta-Phase.
+          <span className="text-[oklch(0.75_0.02_258)] text-[10px] sm:text-xs tracking-wide">
+            Scholatempus ist in der Beta-Phase
           </span>
           <a
             href="https://scholatempus.featurespace.dev"
@@ -153,7 +153,7 @@ export default function Home() {
             {/* Left Content */}
             <div className="z-10 relative w-full md:w-1/2 lg:w-full text-center md:text-left">
               {/* Badges */}
-              <div className="flex flex-wrap items-center gap-3 mb-8 justify-center md:justify-start">
+              <div className="flex flex-wrap items-center gap-3 mb-8 justify-center md:justify-start mt-4 sm:mt-0">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-100 animate-fade-in-up">
                   <svg
                     viewBox="0 0 20 20"
@@ -235,7 +235,7 @@ export default function Home() {
               </div>
 
               {/* Main Image Container with Fade Effect */}
-              <div className="relative z-10 w-full max-w-md mx-auto lg:mr-0 aspect-[4/5] overflow-visible">
+              <div className="relative z-10 w-full top-[-2em] md:top-0 max-w-md mx-auto lg:mr-0 aspect-[4/5] overflow-visible">
                 <img
                   src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/112bb9eb-201c-4831-8eb4-aa1084833dca_1600w.jpg"
                   alt="Hand holding phone with modern interface"

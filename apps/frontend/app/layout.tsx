@@ -1,5 +1,5 @@
 import type React from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
@@ -23,11 +23,14 @@ const switzer = localFont({
   variable: "--font-switzer",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#4A6CF7",
+};
+
 export const metadata: Metadata = {
   title: "ScholaTempus - Zeiterfassung für Lehrpersonen",
   description: "Professionelle Zeiterfassung für Lehrpersonen",
   manifest: "/manifest.json",
-  themeColor: "#4A6CF7",
   icons: {
     apple: "/icons/icon-180x180.png",
   },

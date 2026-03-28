@@ -30,7 +30,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "ScholaTempus - Zeiterfassung für Lehrpersonen",
   description: "Professionelle Zeiterfassung für Lehrpersonen",
-  manifest: "/manifest.json",
   icons: {
     apple: "/icons/icon-180x180.png",
   },

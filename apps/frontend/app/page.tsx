@@ -190,11 +190,11 @@ export default function Home() {
         {/* Background Decor */}
         <div
           ref={blob1Ref}
-          className="absolute top-0 right-0 -z-10 w-full h-full rounded-full bg-[oklch(0.55_0.18_258)]/5 blur-[120px]"
+          className="absolute top-0 right-0 -z-20 w-full h-full rounded-full bg-[oklch(0.55_0.18_258)]/5 blur-[120px]"
         ></div>
         <div
           ref={blob2Ref}
-          className="absolute bottom-0 left-0 -z-10 w-full h-full rounded-full bg-[oklch(0.6_0.15_200)]/5 blur-[100px]"
+          className="absolute bottom-0 left-0 -z-20 w-full h-full rounded-full bg-[oklch(0.6_0.15_200)]/5 blur-[100px]"
         ></div>
 
         <div className="mx-auto max-w-7xl px-6 md:px-12">
@@ -284,7 +284,7 @@ export default function Home() {
               </div>
 
               {/* Main Image Container with Fade Effect */}
-              <div className="relative z-10 w-full top-[-2em] md:top-0 max-w-md mx-auto lg:mr-0 aspect-[4/5] overflow-visible">
+              <div className="relative -z-10 w-full top-[-2em] md:top-0 max-w-md mx-auto lg:mr-0 aspect-[4/5] overflow-visible">
                 <img
                   src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/112bb9eb-201c-4831-8eb4-aa1084833dca_1600w.jpg"
                   alt="Hand holding phone with modern interface"

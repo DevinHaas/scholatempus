@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useRef, useState } from "react";
-import { Hourglass, Menu, X, ArrowRight, CheckCircle2, Zap } from "lucide-react";
+import {
+  Hourglass,
+  Menu,
+  X,
+  ArrowRight,
+  CheckCircle2,
+  Zap,
+} from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
@@ -195,7 +202,7 @@ export default function Home() {
             {/* Left Content */}
             <div className="z-10 relative w-full md:w-1/2 lg:w-full text-center md:text-left">
               {/* Badges */}
-              <div className="flex flex-wrap items-center gap-3 mb-4 md:mb-8 justify-center md:justify-start mt-2 sm:mt-0">
+              <div className="flex flex-wrap items-center gap-3 mb-6 mt-4 md:mb-8 justify-center md:justify-start">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-100 animate-fade-in-up">
                   <svg
                     viewBox="0 0 20 20"
@@ -214,7 +221,7 @@ export default function Home() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[oklch(0.15_0.02_258)] leading-[1.1] font-medium tracking-tight mb-4 md:mb-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[oklch(0.15_0.02_258)] leading-[1.15] font-medium tracking-tight mb-6 md:mb-6">
                 Arbeitszeit erfasst. <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[oklch(0.55_0.18_258)] to-[oklch(0.6_0.15_200)]">
                   Transparenz garantiert.
@@ -222,7 +229,7 @@ export default function Home() {
               </h1>
 
               {/* Subhead */}
-              <p className="text-base sm:text-lg md:text-xl text-[oklch(0.15_0.02_258)]/70 mb-6 md:mb-10 leading-relaxed max-w-lg font-normal mx-auto md:mx-0">
+              <p className="text-base sm:text-lg md:text-xl text-[oklch(0.15_0.02_258)]/70 mb-8 md:mb-10 leading-relaxed max-w-lg font-normal mx-auto md:mx-0">
                 Verwalte und analysiere deine Arbeitszeit um mehr Transparenz zu
                 schaffen und deine Arbeitsbelastung immer im Auge zu behalten.
               </p>
@@ -240,7 +247,7 @@ export default function Home() {
             </div>
 
             {/* Right Visual */}
-            <div className="relative mt-12 lg:mt-0 flex justify-center lg:justify-end">
+            <div className="relative mt-4 lg:mt-0 flex justify-center lg:justify-end">
               {/* Stats Card — desktop only */}
               <div
                 ref={statsCardRef}

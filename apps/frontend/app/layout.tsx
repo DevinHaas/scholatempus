@@ -9,7 +9,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { deDE } from "@clerk/localizations";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { Toaster } from "sonner";
-import { SplashScreen } from "@/components/SplashScreen";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -98,7 +97,6 @@ export default function RootLayout({
         <body
           className={`font-sans ${inter.variable} ${switzer.variable} antialiased`}
         >
-          <SplashScreen />
           <Suspense>
             <QueryProvider>{children}</QueryProvider>
             <Analytics />
